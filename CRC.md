@@ -14,7 +14,7 @@
 - Event
 - Geolocation Service
 - Notification Service
-- 
+
 # Organizer
 # Admin
 # Event

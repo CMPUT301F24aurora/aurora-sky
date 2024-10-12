@@ -1,4 +1,7 @@
 # Entrant
+### Responsiblities
+- Join/Leave the Waiting List
+- 
 # Organizer
 # Admin
 # Event

@@ -9,7 +9,7 @@
 - Opt out of receiving notifications from organizers and admins.
 - Be identified by the device (bypass username/password).
 - Acknowledge geolocation requirements before joining a waiting list.
-###Collaborators
+### Collaborators
 - Waiting List
 - Event
 - Geolocation Service

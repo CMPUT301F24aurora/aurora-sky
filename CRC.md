@@ -16,7 +16,24 @@
 - Notification Service
 
 # Organizer
+### Responsibilities
+- Create new events with specific details (name, dates, capacity).
+- Generate and store unique QR codes for each event.
+- View, update, and manage event details (including uploading posters).
+- Manage waiting lists: view entrants, select participants, draw replacements.
+- Send notifications to entrants regarding sign-ups, reminders, and cancellations.
+- Optionally set limits on waiting list size.
+- Enable or disable geolocation requirements for events.
+
+### Collaborators
+- Events
+- Entrants
+- Waiting List
+- Notification Service
+- Geolocation Service
+
 # Admin
+
 # Event
 # Waiting List
 # Facility

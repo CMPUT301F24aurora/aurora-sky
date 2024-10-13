@@ -45,7 +45,26 @@
 - Facility
 
 # Event
-# Waiting List
-# Facility
-# Notification Service
-# Geolocation Service
+### Responsibilities
+- Store and manage event information (name, dates, capacity).
+- Store event poster images
+- Generate and store unique QR codes for each event.
+- Handle waiting lists of entrants and manage sign-ups/cancellations.
+- Notify selected entrants about their status.
+- Resample entrants when someone declines an invitation.
+  
+### Collaborators
+- WaitingList
+- Organizer
+- Entrant
+- NotificationService
+
+# WaitingList
+### Responsibilities:
+- Record all entrants who joined an event's waiting list.
+- Allow organizers to manage entrants (select, replace, cancel).
+
+### Collaborators:
+- Entrant
+- Event
+

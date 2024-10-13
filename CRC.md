@@ -33,9 +33,19 @@
 - Geolocation Service
 
 # Admin
+### Responsibilities
+- Remove events, profiles, images, and hashed QR code data.
+- Browse events, profiles, and images.
+- Enforce policies by removing facilities that violate guidelines.
+
+### Collaborators
+- Entrants
+- Organizer
+- Events
+- Facility
 
 # Event
 # Waiting List
 # Facility
 # Notification Service
-# Geoloccation Service
+# Geolocation Service

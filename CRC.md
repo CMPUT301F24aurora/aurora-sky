@@ -68,3 +68,26 @@
 - Entrant
 - Event
 
+# GeolocationService
+### Responsibilities:
+- Handle geolocation verification for entrants joining waiting lists.
+- Provide location data to organizers to visualize where entrants are joining from.
+### Collaborators:
+- Entrant
+- Organizer
+
+# Facility
+### Responsibilities:
+- Store and update facility details (profile, location).
+- Manage events hosted by the facility.
+### Collaborators:
+- Event
+- Organizer
+
+# NotificationService
+### Responsibilities:
+- Send notifications to entrants about their selection status (chosen or not).
+- Manage opt-in/opt-out preferences for notifications.
+### Collaborators:
+- Entrant
+- Organizer

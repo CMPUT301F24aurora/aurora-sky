@@ -42,11 +42,11 @@ public class MainActivity extends AppCompatActivity {
     private void addTestData() {
         // Create test data
         Map<String, Object> testData = new HashMap<>();
-        testData.put("name", "Test User");
-        testData.put("age", 30);
+        testData.put("name", "Siddharth");
+        testData.put("age", 18);
 
         // Add the test document to Firestore
-        db.collection("testCollection").document("testDocument")
+        db.collection("testCollection").document("nameDocument")
                 .set(testData)
                 .addOnSuccessListener(aVoid -> {
                     Log.d(TAG, "DocumentSnapshot successfully written!");

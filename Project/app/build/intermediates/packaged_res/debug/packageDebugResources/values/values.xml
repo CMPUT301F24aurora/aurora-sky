@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="app_name">LotteryApp</string>
+    <string name="gcm_defaultSenderId" translatable="false">276872819066</string>
+    <string name="google_api_key" translatable="false">AIzaSyA4yM97uWHKVTMZ-d6zqhJ0Lf9GsJ8xEec</string>
+    <string name="google_app_id" translatable="false">1:276872819066:android:9dc39e1beaa28426f866c3</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyA4yM97uWHKVTMZ-d6zqhJ0Lf9GsJ8xEec</string>
+    <string name="google_storage_bucket" translatable="false">lotteryapp-b7d24.appspot.com</string>
+    <string name="project_id" translatable="false">lotteryapp-b7d24</string>
+    <style name="Base.Theme.LotteryApp" parent="Theme.Material3.DayNight.NoActionBar">
+        
+        
+    </style>
+    <style name="Theme.LotteryApp" parent="Base.Theme.LotteryApp"/>
+</resources>

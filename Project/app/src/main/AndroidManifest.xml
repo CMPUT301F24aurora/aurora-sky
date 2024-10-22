@@ -12,15 +12,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LotteryApp"
         tools:targetApi="31">
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".EntrantProfileEditActivity" android:exported="true"></activity>
+
+        <!-- Add other activities as needed -->
+
     </application>
 
+    <!-- Add permissions if needed -->
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

@@ -1,9 +1,11 @@
 package com.example.lotteryapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,6 +38,14 @@ public class MainActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        // Button for Entrant
+        Button entrantButton = findViewById(R.id.entrantButton);
+        entrantButton.setOnClickListener(v -> {
+            // Start the EntrantProfileActivity when the entrant button is clicked
+            Intent intent = new Intent(MainActivity.this, EntrantProfileEditActivity.class);
+            startActivity(intent);
         });
 
         // Store device ID on the first run

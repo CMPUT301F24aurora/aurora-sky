@@ -48,6 +48,14 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Button for Organizer
+        Button organizerButton = findViewById(R.id.organizerButton);
+        organizerButton.setOnClickListener(v -> {
+            // Start the OrganizerRegistration when the organizer button is clicked
+            Intent intent = new Intent(MainActivity.this, OrganizerRegistration.class);
+            startActivity(intent);
+        });
+
         // Store device ID on the first run
         storeDeviceIdIfFirstRun();
     }

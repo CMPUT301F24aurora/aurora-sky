@@ -4,12 +4,25 @@ public abstract class User {
     private String id;
     private String name;
     private String email;
+    private String phone;
 
-    // Constructor
+    // Default constructor required for Firestore
+    public User() {
+    }
+
+    // Constructor with parameters
     public User(String id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
+    }
+
+    // Constructor with parameters
+    public User(String id, String name, String email, String phone) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
     }
 
     // Getters and setters
@@ -35,6 +48,14 @@ public abstract class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhone(){
+        return phone;
+    }
+
+    public void setPhone(String phone){
+        this.phone = phone;
     }
 
     // Abstract method for displaying user info

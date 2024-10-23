@@ -1,6 +1,7 @@
 package com.example.lotteryapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -75,6 +76,9 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
                     Log.d("EntrantProfileEdit", "DocumentSnapshot successfully written!");
+                    // Navigate to EntrantEventsActivity after successful save
+                    Intent intent = new Intent(EntrantProfileEditActivity.this, EntrantsEventsActivity.class);
+                    startActivity(intent);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error saving profile", Toast.LENGTH_SHORT).show();

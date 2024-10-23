@@ -24,8 +24,7 @@
 
         <activity android:name=".EntrantProfileEditActivity" android:exported="true"></activity>
         <activity android:name=".OrganizerRegistration" android:exported="true"></activity>
-
-        <!-- Add other activities as needed -->
+        <activity android:name=".EntrantsEventsActivity" />
 
     </application>
 

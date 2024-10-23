@@ -12,11 +12,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class EntrantProfileEditActivity extends AppCompatActivity {
+
+    private static final String TAG = "EntrantProfileEditActivity"; // Tag for logging
 
     private EditText editName, editEmail, editPhone;
     private Button updateProfilePicture, confirmChanges;
@@ -78,6 +81,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
                     Log.d("EntrantProfileEdit", "DocumentSnapshot successfully written!");
                     // Navigate to EntrantEventsActivity after successful save
                     Intent intent = new Intent(EntrantProfileEditActivity.this, EntrantsEventsActivity.class);
+                    intent.putExtra("entrant_data", entrant);
                     startActivity(intent);
                 })
                 .addOnFailureListener(e -> {

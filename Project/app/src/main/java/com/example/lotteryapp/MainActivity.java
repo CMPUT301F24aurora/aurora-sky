@@ -16,9 +16,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -43,9 +40,7 @@ public class MainActivity extends AppCompatActivity {
         // Button for Entrant
         Button entrantButton = findViewById(R.id.entrantButton);
         entrantButton.setOnClickListener(v -> {
-            // Start the EntrantProfileActivity when the entrant button is clicked
-            Intent intent = new Intent(MainActivity.this, EntrantProfileEditActivity.class);
-            startActivity(intent);
+            checkEntrantExistsAndNavigate();
         });
 
         // Button for Organizer
@@ -55,41 +50,36 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, OrganizerRegistration.class);
             startActivity(intent);
         });
-
-        // Store device ID on the first run
-        storeDeviceIdIfFirstRun();
     }
 
-    private void storeDeviceIdIfFirstRun() {
+    private void checkEntrantExistsAndNavigate() {
         // Get the device's unique ID
         String deviceId = getDeviceId(this);
 
-        // Check if the device ID is already stored
-        db.collection("devices").document(deviceId)
+        // Check if the entrant exists in the entrants collection
+        db.collection("entrants").document(deviceId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        Log.d(TAG, "Device ID already exists in Firestore: " + deviceId);
+                        Log.d(TAG, "Entrant found for device ID: " + deviceId);
+
+                        // Retrieve the entrant data from the document
+                        Entrant entrant = documentSnapshot.toObject(Entrant.class);
+
+                        if (entrant != null) {
+                            // Pass the entrant object to the next activity
+                            Intent intent = new Intent(MainActivity.this, EntrantsEventsActivity.class);
+                            intent.putExtra("entrant_data", entrant);  // Pass the entrant object
+                            startActivity(intent);
+                        }
                     } else {
-                        // Device ID not found, add it to Firestore
-                        Log.d(TAG, "Device ID not found. Storing the device ID.");
-                        storeDeviceIdInFirestore(deviceId);
+                        Log.d(TAG, "Entrant not found. Navigating to profile edit.");
+                        // Start the EntrantProfileEditActivity when no entrant is found
+                        Intent intent = new Intent(MainActivity.this, EntrantProfileEditActivity.class);
+                        startActivity(intent);
                     }
                 })
-                .addOnFailureListener(e -> Log.w(TAG, "Error checking device ID in Firestore", e));
-    }
-
-    private void storeDeviceIdInFirestore(String deviceId) {
-        // Create a map with the device information
-        Map<String, Object> deviceData = new HashMap<>();
-        deviceData.put("deviceId", deviceId);
-        deviceData.put("firstOpened", System.currentTimeMillis()); // You can add more info if needed
-
-        // Add the device information to Firestore
-        db.collection("devices").document(deviceId)
-                .set(deviceData)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Device ID successfully stored in Firestore!"))
-                .addOnFailureListener(e -> Log.w(TAG, "Error storing device ID in Firestore", e));
+                .addOnFailureListener(e -> Log.w(TAG, "Error checking entrant in Firestore", e));
     }
 
     private String getDeviceId(Context context) {

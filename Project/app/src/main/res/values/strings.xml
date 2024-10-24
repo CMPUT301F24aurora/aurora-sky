@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">LotteryApp</string>
+    <string name="name">Name</string>
 </resources>

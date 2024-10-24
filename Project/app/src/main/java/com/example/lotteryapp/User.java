@@ -1,6 +1,8 @@
 package com.example.lotteryapp;
 
-public abstract class User {
+import java.io.Serializable;
+
+public abstract class User implements Serializable {
     private String id;
     private String name;
     private String email;
@@ -50,11 +52,11 @@ public abstract class User {
         this.email = email;
     }
 
-    public String getPhone(){
+    public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone){
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 

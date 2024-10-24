@@ -23,8 +23,10 @@
         </activity>
 
         <activity android:name=".EntrantProfileEditActivity" android:exported="true"></activity>
+        <activity android:name=".OrganizerRegistration" android:exported="true"></activity>
+        <activity android:name=".EntrantsEventsActivity" />
+        <activity android:name=".EntrantProfileActivity" />
 
-        <!-- Add other activities as needed -->
 
     </application>
 

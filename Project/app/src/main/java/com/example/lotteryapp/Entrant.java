@@ -1,6 +1,8 @@
 package com.example.lotteryapp;
 
-public class Entrant extends User {
+import java.io.Serializable;
+
+public class Entrant extends User implements Serializable { // Implement Serializable
     // Default constructor required for Firestore
     public Entrant() {
     }

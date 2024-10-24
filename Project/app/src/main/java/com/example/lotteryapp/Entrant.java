@@ -1,8 +1,12 @@
 package com.example.lotteryapp;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.Serializable;
 
-public class Entrant extends User implements Serializable { // Implement Serializable
+public class Entrant extends User implements Serializable {
+
+    private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
     // Default constructor required for Firestore
     public Entrant() {
     }
@@ -15,6 +19,21 @@ public class Entrant extends User implements Serializable { // Implement Seriali
     // Constructor with parameters
     public Entrant(String id, String name, String email, String phone) {
         super(id, name, email, phone);
+    }
+
+    // Method to check if an entrant exists in Firestore
+    public static void checkEntrantExists(String deviceId, FirestoreCallback callback) {
+        db.collection("entrants").document(deviceId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Entrant entrant = documentSnapshot.toObject(Entrant.class);
+                        callback.onEntrantExists(entrant);
+                    } else {
+                        callback.onEntrantNotFound();
+                    }
+                })
+                .addOnFailureListener(e -> callback.onError(e));
     }
 
     @Override

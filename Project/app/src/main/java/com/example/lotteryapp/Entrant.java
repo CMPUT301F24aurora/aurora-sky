@@ -22,7 +22,7 @@ public class Entrant extends User implements Serializable {
     }
 
     // Method to check if an entrant exists in Firestore
-    public static void checkEntrantExists(String deviceId, FirestoreCallback callback) {
+    public static void checkEntrantExists(String deviceId, EntrantCheckCallback callback) {
         db.collection("entrants").document(deviceId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -34,6 +34,18 @@ public class Entrant extends User implements Serializable {
                     }
                 })
                 .addOnFailureListener(e -> callback.onError(e));
+    }
+
+    // Save Entrant object to Firestore
+    public void saveToFirestore(SaveEntrantCallback callback) {
+        db.collection("entrants").document(this.getId())
+                .set(this)
+                .addOnSuccessListener(aVoid -> {
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(e);
+                });
     }
 
     @Override

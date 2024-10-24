@@ -13,7 +13,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
@@ -56,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         // Get the device's unique ID
         String deviceId = getDeviceId(this);
 
-        Entrant.checkEntrantExists(deviceId, new FirestoreCallback() {
+        Entrant.checkEntrantExists(deviceId, new EntrantCheckCallback() {
             @Override
             public void onEntrantExists(Entrant entrant) {
                 // Pass the entrant object to the next activity
@@ -77,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
             public void onError(Exception e) {
                 Log.w(TAG, "Error checking entrant in Firestore", e);
             }
+
         });
 
     }

@@ -65,23 +65,8 @@ public class Event {
         this.geolocationRequired = geolocationRequired;
     }
 
-    // Method to check if the event exists in Firestore
-    public static void checkEntrantExists(String deviceId, EntrantCheckCallback callback) {
-        db.collection("events").document(deviceId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Entrant entrant = documentSnapshot.toObject(Entrant.class);
-                        callback.onEntrantExists(entrant);
-                    } else {
-                        callback.onEntrantNotFound();
-                    }
-                })
-                .addOnFailureListener(e -> callback.onError(e));
-    }
-
     // Save Event object to Firestore
-    public void saveToFirestore(SaveEntrantCallback callback) {
+    public void saveToFirestore(SaveEventCallback callback) {
         db.collection("events").document(this.getEventQRHash())
                 .set(this)
                 .addOnSuccessListener(aVoid -> {
@@ -92,8 +77,7 @@ public class Event {
                 });
     }
 
-    @Override
-    public void displayUserInfo() {
+    public void displayEventInfo() {
         System.out.println("Event Identifier: " + getEventQRHash());
         System.out.println("Event title: " + getName());
     }

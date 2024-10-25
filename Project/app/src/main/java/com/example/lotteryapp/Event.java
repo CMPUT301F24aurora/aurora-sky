@@ -77,6 +77,12 @@ public class Event {
                 });
     }
 
+    // Interface for callback
+    public interface SaveEventCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
     public void deleteEvent(String eventQRHash){
 
     }

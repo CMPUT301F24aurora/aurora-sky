@@ -77,6 +77,10 @@ public class Event {
                 });
     }
 
+    public void deleteEvent(String eventQRHash){
+
+    }
+
     public void displayEventInfo() {
         System.out.println("Event Identifier: " + getEventQRHash());
         System.out.println("Event title: " + getName());

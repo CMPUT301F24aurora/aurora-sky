@@ -50,6 +50,19 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, OrganizerRegistration.class);
             startActivity(intent);
         });
+
+        Event event = new Event("Dance Class", new Date(), "posterImageURL", true);
+        event.saveToFirestore(new Event.SaveEventCallback() {
+            @Override
+            public void onSuccess() {
+                System.out.println("Event saved successfully!");
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                System.out.println("Failed to save event: " + e.getMessage());
+            }
+        });
     }
 
     private void checkEntrantExistsAndNavigate() {
@@ -86,17 +99,4 @@ public class MainActivity extends AppCompatActivity {
         // Get the unique device ID (ANDROID_ID)
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
-
-    Event event = new Event("Dance Class", new Date(), "posterImageURL", true);
-    event.saveToFirestore(new Event.SaveEventCallback() {
-        @Override
-        public void onSuccess() {
-            System.out.println("Event saved successfully!");
-        }
-
-        @Override
-        public void onFailure(Exception e) {
-            System.out.println("Failed to save event: " + e.getMessage());
-        }
-    });
 }

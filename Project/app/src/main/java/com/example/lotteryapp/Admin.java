@@ -1,9 +1,16 @@
 package com.example.lotteryapp;
 
 public class Admin extends User{
-        //private EntrantsOrganizer entrantsOrganizer;
-        private Event eventsFacility;
+    //private EntrantsOrganizer entrantsOrganizer;
+    private Event eventsFacility;
 
+    @Override
+    public void displayUserInfo() {
+        
+    }
+
+
+/*
         // Constructor
     public Admin() {
         //this.entrantsOrganizer = new EntrantsOrganizer();
@@ -51,4 +58,5 @@ public class Admin extends User{
         System.out.println("Admin Name: " + getName());
         System.out.println("Admin Email: " + getEmail());
     }
+ */
 }

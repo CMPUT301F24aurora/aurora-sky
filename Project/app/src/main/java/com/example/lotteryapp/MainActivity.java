@@ -14,6 +14,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,6 +50,19 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
             startActivity(intent);
         });
+
+//        Event event = new Event("Dance Class", new Date(), "posterImageURL", true);
+//        event.saveToFirestore(new Event.SaveEventCallback() {
+//            @Override
+//            public void onSuccess() {
+//                System.out.println("Event saved successfully!");
+//            }
+//
+//            @Override
+//            public void onFailure(Exception e) {
+//                System.out.println("Failed to save event: " + e.getMessage());
+//            }
+//        });
     }
 
     private void checkEntrantExistsAndNavigate() {

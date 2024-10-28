@@ -1,57 +1,101 @@
 package com.example.lotteryapp;
 
-import android.widget.EditText;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-public class Event {
-    private String name;
-    private String dateTime;
-    private String numofPeople;
+public class Event implements Serializable {
+    //Donna did the XML file
+
+    private String posterImage;
+    private String eventName;
+
+    //for now event date is a string
+    private String eventDate;
+    private ArrayList<Entrant> attendees;
+//    String eventQRHash;
+    private ArrayList<Entrant> waitingList;
+    private Boolean geolocationRequired = Boolean.FALSE;
+    private Integer numPeople;
     private String description;
+    private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public Event() {
+    public Event(){
+        //Empty constructor for Firebase
     }
 
-    public Event(String name, String dateTime, String numofPeople, String description) {
-        this.name = name;
-        this.dateTime = dateTime;
-        this.numofPeople = numofPeople;
+    public Event(String eventName, String eventDate, Integer numPeople, String description) {
+        this.eventName = eventName;
+        this.eventDate = eventDate;
+        this.numPeople = numPeople;
         this.description = description;
     }
 
-//    public Event(EditText eventName, EditText eventDateTime, EditText eventNumberOfPeople, EditText eventDescription) {
-//
-//    }
-
-    // Getters and Setters
     public String getName() {
-        return name;
+        return eventName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String eventName){
+        this.eventName = eventName;
     }
 
-    public String getDateTime() {
-        return dateTime;
+    private String generateQRHash() {
+        // To-do: Implement QR code generation and hashing logic
+        return "temp";
     }
 
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
+    public String getEventDate(){
+        return this.eventDate;
     }
 
-    public String getNumofPeople() {
-        return numofPeople;
+    public void setEventDate(String eventDate){
+        this.eventDate = eventDate;
     }
 
-    public void setNumofPeople(String numofPeople) {
-        this.numofPeople = numofPeople;
+    public int getNumPeople(){
+        return this.numPeople;
     }
 
-    public String getDescription() {
-        return description;
+    public void setNumPeople(int numPeople){
+        this.numPeople = numPeople;
     }
 
-    public void setDescription(String description) {
+    public String getDescription(){
+        return this.description;
+    }
+
+    public void setDescription(String description){
         this.description = description;
     }
+
+    public boolean getGeolocationRequirement(){
+        return geolocationRequired;
+    }
+
+    public void setGeolocationRequired(Boolean geolocationRequired){
+        this.geolocationRequired = geolocationRequired;
+    }
+
+    // Save Event object to Firestore
+    public void saveToFirestore(SaveEventCallback callback) {
+        // Use Firestore's automatic ID generation
+        db.collection("events").add(this)
+                .addOnSuccessListener(documentReference -> {
+                    // Optionally, you can pass the document ID back through the callback if needed
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(e);
+                });
+    }
+
+    public void deleteEvent(String eventQRHash){
+
+    }
+
+//    public void displayEventInfo() {
+//        System.out.println("Event Identifier: " + getEventQRHash());
+//        System.out.println("Event title: " + getName());
+//    }
 }

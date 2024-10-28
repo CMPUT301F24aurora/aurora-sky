@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
         // Button for Organizer
         Button organizerButton = findViewById(R.id.organizerButton);
         organizerButton.setOnClickListener(v -> {
-            // Start the OrganizerRegistration when the organizer button is clicked
-            Intent intent = new Intent(MainActivity.this, OrganizerRegistration.class);
+            // Start the Organizer Main Page when the organizer button is clicked
+            Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
             startActivity(intent);
         });
     }

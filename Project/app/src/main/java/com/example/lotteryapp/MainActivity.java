@@ -13,7 +13,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
@@ -56,30 +55,30 @@ public class MainActivity extends AppCompatActivity {
         // Get the device's unique ID
         String deviceId = getDeviceId(this);
 
-        // Check if the entrant exists in the entrants collection
-        db.collection("entrants").document(deviceId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Log.d(TAG, "Entrant found for device ID: " + deviceId);
+        Entrant.checkEntrantExists(deviceId, new EntrantCheckCallback() {
+            @Override
+            public void onEntrantExists(Entrant entrant) {
+                // Pass the entrant object to the next activity
+                Intent intent = new Intent(MainActivity.this, EntrantsEventsActivity.class);
+                intent.putExtra("entrant_data", entrant);  // Pass the entrant object
+                startActivity(intent);
+            }
 
-                        // Retrieve the entrant data from the document
-                        Entrant entrant = documentSnapshot.toObject(Entrant.class);
+            @Override
+            public void onEntrantNotFound() {
+                Log.d(TAG, "Entrant not found. Navigating to profile edit.");
+                // Start the EntrantProfileEditActivity when no entrant is found
+                Intent intent = new Intent(MainActivity.this, EntrantProfileEditActivity.class);
+                startActivity(intent);
+            }
 
-                        if (entrant != null) {
-                            // Pass the entrant object to the next activity
-                            Intent intent = new Intent(MainActivity.this, EntrantsEventsActivity.class);
-                            intent.putExtra("entrant_data", entrant);  // Pass the entrant object
-                            startActivity(intent);
-                        }
-                    } else {
-                        Log.d(TAG, "Entrant not found. Navigating to profile edit.");
-                        // Start the EntrantProfileEditActivity when no entrant is found
-                        Intent intent = new Intent(MainActivity.this, EntrantProfileEditActivity.class);
-                        startActivity(intent);
-                    }
-                })
-                .addOnFailureListener(e -> Log.w(TAG, "Error checking entrant in Firestore", e));
+            @Override
+            public void onError(Exception e) {
+                Log.w(TAG, "Error checking entrant in Firestore", e);
+            }
+
+        });
+
     }
 
     private String getDeviceId(Context context) {

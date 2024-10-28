@@ -1,6 +1,5 @@
 package com.example.lotteryapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -11,27 +10,17 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-import android.util.Log;
-
-import java.util.HashMap;
-import java.util.Map;
-
 public class EntrantProfileEditActivity extends AppCompatActivity {
 
-    private static final String TAG = "EntrantProfileEditActivity"; // Tag for logging
+    private static final String TAG = "EntrantProfileEditActivity";
 
     private EditText editName, editEmail, editPhone;
     private Button updateProfilePicture, confirmChanges;
-    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrant_profile_edit);
-
-        // Initialize Firestore
-        db = FirebaseFirestore.getInstance();
 
         // Initialize EditText and Buttons
         editName = findViewById(R.id.edit_name);
@@ -57,37 +46,32 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         // Get the device ID
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        // Create an Entrant object with or without Phone
-        if(phone.isEmpty()){
-            Entrant entrant = new Entrant(deviceId, name, email);
-            // Save Entrant to Firestore
-            saveEntrantToFirestore(entrant);
+        // Create Entrant object
+        Entrant entrant;
+        if (phone.isEmpty()) {
+            entrant = new Entrant(deviceId, name, email);
         } else {
-            Entrant entrant = new Entrant(deviceId, name, email, phone);
-            // Save Entrant to Firestore
-            saveEntrantToFirestore(entrant);
+            entrant = new Entrant(deviceId, name, email, phone);
         }
 
+        // Save Entrant to Firestore
+        entrant.saveToFirestore(new SaveEntrantCallback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(EntrantProfileEditActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "DocumentSnapshot successfully written!");
 
+                // Navigate to EntrantEventsActivity after successful save
+                Intent intent = new Intent(EntrantProfileEditActivity.this, EntrantsEventsActivity.class);
+                intent.putExtra("entrant_data", entrant);
+                startActivity(intent);
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(EntrantProfileEditActivity.this, "Error saving profile", Toast.LENGTH_SHORT).show();
+                Log.w(TAG, "Error writing document", e);
+            }
+
+        });
     }
-
-    private void saveEntrantToFirestore(Entrant entrant) {
-
-        // Save the Entrant object to Firestore
-        db.collection("entrants").document(entrant.getId()) // Use device ID as document ID
-                .set(entrant)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-                    Log.d("EntrantProfileEdit", "DocumentSnapshot successfully written!");
-                    // Navigate to EntrantEventsActivity after successful save
-                    Intent intent = new Intent(EntrantProfileEditActivity.this, EntrantsEventsActivity.class);
-                    intent.putExtra("entrant_data", entrant);
-                    startActivity(intent);
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error saving profile", Toast.LENGTH_SHORT).show();
-                    Log.w("EntrantProfileEdit", "Error writing document", e);
-                });
-    }
-
 }

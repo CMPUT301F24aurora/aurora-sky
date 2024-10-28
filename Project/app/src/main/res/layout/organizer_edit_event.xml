@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Organizer">
+
+
+    <EditText
+        android:id="@+id/edit_event_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/ic_outline_box"
+        android:hint="Edit Title"
+        android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/edit_event_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Edit Event Description"
+        android:layout_marginTop="16dp"
+        android:minHeight="120dp"
+        android:background="@drawable/ic_outline_box"
+        android:padding="12dp"
+        android:gravity="top"
+        android:inputType="textMultiLine"
+        app:layout_constraintTop_toBottomOf="@id/edit_event_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+    <!-- Image Box for Poster -->
+
+
+    <ImageView
+        android:id="@+id/event_poster"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:background="@drawable/ic_outline_box"
+        android:contentDescription="Event Poster"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_qr_code_placeholder"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="391dp"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/upload_poster_button"
+        android:layout_width="236dp"
+        android:layout_height="42dp"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:text="Upload New Image/Change Image"
+        android:textColor="@android:color/white"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteY="605dp" />
+
+    <Switch
+        android:id="@+id/geo_toggle"
+        android:layout_width="148dp"
+        android:layout_height="43dp"
+        android:text="Enable / Disable Geolocation"
+        tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml"
+        tools:layout_editor_absoluteX="247dp"
+        tools:layout_editor_absoluteY="604dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

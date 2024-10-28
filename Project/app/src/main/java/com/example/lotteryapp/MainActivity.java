@@ -46,23 +46,23 @@ public class MainActivity extends AppCompatActivity {
         // Button for Organizer
         Button organizerButton = findViewById(R.id.organizerButton);
         organizerButton.setOnClickListener(v -> {
-            // Start the OrganizerRegistration when the organizer button is clicked
-            Intent intent = new Intent(MainActivity.this, OrganizerRegistration.class);
+            // Start the Organizer Main Page when the organizer button is clicked
+            Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
             startActivity(intent);
         });
 
-        Event event = new Event("Dance Class", new Date(), "posterImageURL", true);
-        event.saveToFirestore(new Event.SaveEventCallback() {
-            @Override
-            public void onSuccess() {
-                System.out.println("Event saved successfully!");
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                System.out.println("Failed to save event: " + e.getMessage());
-            }
-        });
+//        Event event = new Event("Dance Class", new Date(), "posterImageURL", true);
+//        event.saveToFirestore(new Event.SaveEventCallback() {
+//            @Override
+//            public void onSuccess() {
+//                System.out.println("Event saved successfully!");
+//            }
+//
+//            @Override
+//            public void onFailure(Exception e) {
+//                System.out.println("Failed to save event: " + e.getMessage());
+//            }
+//        });
     }
 
     private void checkEntrantExistsAndNavigate() {

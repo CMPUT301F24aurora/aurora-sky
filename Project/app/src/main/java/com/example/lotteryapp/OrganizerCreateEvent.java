@@ -37,7 +37,6 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         organizerCreateEvent.setOnClickListener(v -> {
             saveEventDetails();
         });
-
     }
 
     private void saveEventDetails() {
@@ -51,44 +50,34 @@ public class OrganizerCreateEvent extends AppCompatActivity {
             return;
         }
 
-        Event event = new Event(name, dateTime, numofPeople, description);
-        saveEventToFirestore(event);
+        // Add input validation
+        Integer numPeople;
+        try {
+            numPeople = Integer.parseInt(numofPeople);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid number of people", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Event event = new Event(name, dateTime, numPeople, description);
+
+        event.saveToFirestore(new SaveEventCallback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(OrganizerCreateEvent.this, "Event created successfully", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Event created successfully.");
+
+                // Navigate to another activity if necessary
+                Intent intent = new Intent(OrganizerCreateEvent.this, OrganizerMainPage.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(OrganizerCreateEvent.this, "Error saving event", Toast.LENGTH_SHORT).show();
+                Log.w(TAG, "Error writing document", e);
+            }
+        });
+
     }
-
-    private void saveEventToFirestore(Event event) {
-        // Save the Organizer object to Firestore
-        db.collection("event").add(event)
-                .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(this, "Event created successfully", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "DocumentSnapshot successfully written with ID: " + documentReference.getId());
-
-                    // Navigate to another activity if necessary
-                    Intent intent = new Intent(OrganizerCreateEvent.this, OrganizerMainPage.class);
-                    startActivity(intent);
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error saving event", Toast.LENGTH_SHORT).show();
-                    Log.w(TAG, "Error writing document", e);
-                });
-    }
-
 }
-//        // Save organizer to Firestore
-//        saveEventToFirestore(event);
-//    }
-//
-//    private void saveEventToFirestore(Event event) {
-//
-//        // Save the Organizer object to Firestore
-//        db.collection("event").add(event)
-//                .addOnSuccessListener(documentReference -> {
-//                    Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-//                    Log.d("EventAdded", "DocumentSnapshot successfully written with ID: " + documentReference.getId());
-//                })
-//                .addOnFailureListener(e -> {
-//                    Toast.makeText(this, "Error saving profile", Toast.LENGTH_SHORT).show();
-//                    Log.w("EventAdded", "Error writing document", e);
-//                });
-//
-//    }
-

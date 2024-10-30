@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,20 +24,17 @@ public class EntrantsEventsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrants_events_page);
 
-        // Initialize RecyclerView
+        // Initialize RecyclerView and TextView
         eventsRecyclerView = findViewById(R.id.events_recycler_view);
         noEventsText = findViewById(R.id.no_events_text);
-
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Temporary event list; replace with Firestore retrieval if needed
+        // Initialize event list and adapter
         eventList = new ArrayList<>();
-        eventList.add(new Event("Music Fest", "2024-10-30", 200, "Enjoy live music from top artists!"));
-        eventList.add(new Event("Food Carnival", "2024-11-05", 150, "Taste food from around the world!"));
-
-        // Set adapter
         eventAdapter = new EventAdapter(eventList);
         eventsRecyclerView.setAdapter(eventAdapter);
+
+        // Load events into RecyclerView
         loadEvents();
 
         // Initialize profile icon button
@@ -53,18 +49,32 @@ public class EntrantsEventsActivity extends AppCompatActivity {
     }
 
     private void loadEvents() {
-        // Simulate loading events, e.g., from Firestore or local list
-        // For demonstration, let's assume an empty list (you would replace this with real data loading logic)
-        eventList.clear();
+        // Call the Firestore retrieval method from Event class
+        Event.getEventsFromFirestore(new GetEventsCallback() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                eventList.clear();
+                eventList.addAll(events);
 
-        // Update RecyclerView and TextView visibility
-        if (eventList.isEmpty()) {
-            noEventsText.setVisibility(View.VISIBLE); // Show "No events available" message
-            eventsRecyclerView.setVisibility(View.GONE); // Hide RecyclerView
-        } else {
-            noEventsText.setVisibility(View.GONE); // Hide "No events available" message
-            eventsRecyclerView.setVisibility(View.VISIBLE); // Show RecyclerView with events
-            eventAdapter.notifyDataSetChanged(); // Notify adapter of data change
-        }
+                // Check if events were retrieved and update visibility of RecyclerView and noEventsText
+                if (eventList.isEmpty()) {
+                    noEventsText.setVisibility(View.VISIBLE); // Show "No events available" message
+                    eventsRecyclerView.setVisibility(View.GONE); // Hide RecyclerView
+                } else {
+                    noEventsText.setVisibility(View.GONE); // Hide "No events available" message
+                    eventsRecyclerView.setVisibility(View.VISIBLE); // Show RecyclerView with events
+                }
+                eventAdapter.notifyDataSetChanged(); // Notify adapter of data change
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // Handle the error (you can display a Toast or log the error)
+                noEventsText.setVisibility(View.VISIBLE);
+                eventsRecyclerView.setVisibility(View.GONE);
+                noEventsText.setText("Failed to load events. Please try again.");
+            }
+        });
     }
+
 }

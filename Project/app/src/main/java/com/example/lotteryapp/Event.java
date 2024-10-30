@@ -3,6 +3,9 @@ package com.example.lotteryapp;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Event implements Serializable {
@@ -77,7 +80,7 @@ public class Event implements Serializable {
         this.geolocationRequired = geolocationRequired;
     }
 
-    // Save Event object to Firestore
+    // Save Event object to Firebase
     public void saveToFirestore(SaveEventCallback callback) {
         // Use Firestore's automatic ID generation
         db.collection("events").add(this)
@@ -87,6 +90,25 @@ public class Event implements Serializable {
                 })
                 .addOnFailureListener(e -> {
                     callback.onFailure(e);
+                });
+    }
+
+    //get events from Firebase
+    public static void getEventsFromFirestore(GetEventsCallback callback) {
+        db.collection("events")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Event> events = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            // Convert each document to an Event object
+                            Event event = document.toObject(Event.class);
+                            events.add(event);
+                        }
+                        callback.onSuccess(events);
+                    } else {
+                        callback.onFailure(task.getException());
+                    }
                 });
     }
 

@@ -13,6 +13,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Date;
 
@@ -51,18 +52,32 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-//        Event event = new Event("Dance Class", new Date(), "posterImageURL", true);
-//        event.saveToFirestore(new Event.SaveEventCallback() {
-//            @Override
-//            public void onSuccess() {
-//                System.out.println("Event saved successfully!");
-//            }
-//
-//            @Override
-//            public void onFailure(Exception e) {
-//                System.out.println("Failed to save event: " + e.getMessage());
-//            }
-//        });
+        Event event = new Event("Dance Class", "21/10/2024", 40, "Dancey Dance");
+        event.saveToFirestore(new Event.SaveEventCallback() {
+
+            @Override
+            public void onSuccess(String documentId) {
+                // Call the function to generate a unique qr code using the unique event document ID
+                String QrHash = event.generateQRHash(documentId);
+                // Update the event with the newly generated QR hash
+                DocumentReference docRef = db.collection("events").document(documentId);
+                docRef.update("QR Hash", QrHash)
+                        .addOnSuccessListener(aVoid -> {
+                            System.out.println("QR Hash added successfully!");
+                        })
+                        .addOnFailureListener(e -> {
+                            System.out.println("Error updating document: " + e.getMessage());
+                        });
+                System.out.println("Event saved successfully with Document ID: " + documentId);
+                System.out.println("Event created successfully with QR Hash: " + QrHash);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                System.out.println("Failed to save event: " + e.getMessage());
+            }
+        });
+
     }
 
     private void checkEntrantExistsAndNavigate() {

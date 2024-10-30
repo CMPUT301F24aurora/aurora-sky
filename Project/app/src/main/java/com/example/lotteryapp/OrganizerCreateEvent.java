@@ -61,9 +61,10 @@ public class OrganizerCreateEvent extends AppCompatActivity {
 
         Event event = new Event(name, dateTime, numPeople, description);
 
-        event.saveToFirestore(new SaveEventCallback() {
+        event.saveToFirestore(new Event.SaveEventCallback() {
+
             @Override
-            public void onSuccess() {
+            public void onSuccess(String documentId) {
                 Toast.makeText(OrganizerCreateEvent.this, "Event created successfully", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Event created successfully.");
 

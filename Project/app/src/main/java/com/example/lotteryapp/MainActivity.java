@@ -1,44 +1,25 @@
 package com.example.lotteryapp;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity {
 
-    private GoogleMap myMap;
     private static final String TAG = "MainActivity";
     private FirebaseFirestore db;
-
-    private FusedLocationProviderClient fusedLocationClient;
-
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,20 +29,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
-
-        // Initialize FusedLocationProviderClient
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        // Check and request location permissions
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-            } else {
-                setupMap(); // Get location if permission is already granted
-            }
-        } else {
-            setupMap(); // Get location for older versions
-        }
 
         // Set up window insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -98,15 +65,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        });
     }
 
-    private void setupMap() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        } else {
-            Log.e(TAG, "Map fragment could not be found.");
-        }
-    }
-
     private void checkEntrantExistsAndNavigate() {
         // Get the device's unique ID
         String deviceId = getDeviceId(this);
@@ -140,36 +98,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private String getDeviceId(Context context) {
         // Get the unique device ID (ANDROID_ID)
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-    }
-
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
-        myMap = googleMap;
-
-        // Check if location permission is granted
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, location -> {
-                        if (location != null) {
-                            LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                            myMap.addMarker(new MarkerOptions().position(userLocation).title("Your Location"));
-                            myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 12)); // Adjust zoom level if needed
-                        }
-                    });
-        } else {
-            Log.w(TAG, "Location permission not granted.");
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                setupMap(); // Permission granted, setup the map again
-            } else {
-                Log.w(TAG, "Location permission denied.");
-            }
-        }
     }
 }

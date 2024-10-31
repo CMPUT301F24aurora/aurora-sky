@@ -23,13 +23,16 @@
         </activity>
 
         <activity android:name=".EntrantProfileEditActivity" android:exported="true"></activity>
-        <activity android:name=".OrganizerRegistration" android:exported="true"></activity>
         <activity android:name=".EntrantsEventsActivity" />
         <activity android:name=".EntrantProfileActivity" />
+        <activity android:name=".OrganizerMainPage" />
+        <activity android:name=".OrganizerCreateEvent" />
 
 
     </application>
 
     <!-- Add permissions if needed -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
 </manifest>

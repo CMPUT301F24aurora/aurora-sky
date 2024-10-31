@@ -142,14 +142,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="8dp"/>
-
-    <Button
-        android:id="@+id/map_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View Map"
-        app:layout_constraintBottom_toTopOf="@id/view_facility_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="8dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

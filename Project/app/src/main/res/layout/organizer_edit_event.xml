@@ -6,7 +6,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Organizer">
+ 
 
+    <TextView
+        android:id="@+id/edit_event"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Edit Title"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/edit_event_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints" />
 
     <EditText
         android:id="@+id/edit_event_title"
@@ -23,36 +37,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/edit_event_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Edit EVent Description"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/edit_event_description"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="DuplicateIds,MissingConstraints,NotSibling" />
+
+
     <EditText
         android:id="@+id/edit_event_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Edit Event Description"
-        android:layout_marginTop="16dp"
-        android:minHeight="120dp"
-        android:background="@drawable/ic_outline_box"
-        android:padding="12dp"
-        android:gravity="top"
-        android:inputType="textMultiLine"
-        app:layout_constraintTop_toBottomOf="@id/edit_event_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"/>
-    <!-- Image Box for Poster -->
-
-
-    <ImageView
-        android:id="@+id/event_poster"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_marginTop="52dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/ic_outline_box"
-        android:contentDescription="Event Poster"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_qr_code_placeholder"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="391dp"
-        tools:ignore="MissingConstraints" />
+        android:gravity="top"
+        android:hint="Edit Event Description"
+        android:inputType="textMultiLine"
+        android:minHeight="120dp"
+        android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_event_title"
+        tools:ignore="DuplicateIds" />
 
     <Button
         android:id="@+id/upload_poster_button"

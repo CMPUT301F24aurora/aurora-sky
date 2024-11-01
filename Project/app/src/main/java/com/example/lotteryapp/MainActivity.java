@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Event event = new Event("Dance Class", "21/10/2024", 40, "Dancey Dance");
-        event.saveToFirestore(new Event.SaveEventCallback() {
+        event.saveToFirestore(new SaveEventCallback() {
 
             @Override
             public void onSuccess(String documentId) {

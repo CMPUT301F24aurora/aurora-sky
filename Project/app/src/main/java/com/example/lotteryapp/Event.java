@@ -71,6 +71,7 @@ public class Event implements Serializable {
         }
 
         // Generate SHA-256 hash
+        // LOOK FOR BUILT-IN HASHING ALGORITHMS
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(qrData.toString().getBytes());
@@ -132,12 +133,6 @@ public class Event implements Serializable {
                 .addOnFailureListener(e -> {
                     callback.onFailure(e);
                 });
-    }
-
-    public interface SaveEventCallback {
-
-        void onSuccess(String documentId);
-        void onFailure(Exception e);
     }
 
     public void deleteEvent(String eventQRHash){

@@ -46,4 +46,7 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation("com.google.zxing:core:3.4.1")
     implementation("com.journeyapps:zxing-android-embedded:4.2.0")
+    testImplementation("org.mockito:mockito-core:3.11.2")
+    testImplementation("org.robolectric:robolectric:4.6.1")
+
 }

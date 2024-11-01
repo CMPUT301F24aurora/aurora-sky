@@ -25,7 +25,8 @@ public class Event implements Serializable {
     private Boolean geolocationRequired = Boolean.FALSE;
     private Integer numPeople;
     private String description;
-    private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    //private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseFirestore db;
 
     public Event(){
         //Empty constructor for Firebase
@@ -36,6 +37,7 @@ public class Event implements Serializable {
         this.eventDate = eventDate;
         this.numPeople = numPeople;
         this.description = description;
+        this.db = FirebaseFirestore.getInstance();
     }
 
     public String getName() {
@@ -128,7 +130,8 @@ public class Event implements Serializable {
         db.collection("events").add(this)
                 .addOnSuccessListener(documentReference -> {
                     // Optionally, you can pass the document ID back through the callback if needed
-                    callback.onSuccess(documentReference.getId());
+                    String documentId = documentReference.getId();
+                    callback.onSuccess(documentId);
                 })
                 .addOnFailureListener(e -> {
                     callback.onFailure(e);

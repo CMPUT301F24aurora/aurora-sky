@@ -4,7 +4,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,6 +29,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     Location currentLocation;
     FusedLocationProviderClient fusedLocationProviderClient;
     private static final int FINE_PERMISSION_CODE = 1;
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +37,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_map);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        getLastLocation();
+        // Check and request location permissions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERMISSION_CODE);
+            } else {
+                getLastLocation(); // Get location if permission is already granted
+            }
+        } else {
+            getLastLocation(); // Get location for older versions
+        }
+
 
     }
 
@@ -72,31 +85,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,15));
     }
 
-//    private void showCurrentLocation() {
-//        fusedLocationClient.getLastLocation()
-//                .addOnSuccessListener(this, location -> {
-//                    if (location != null) {
-//                        LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-//                        mMap.addMarker(new MarkerOptions().position(userLocation).title("Your Location"));
-//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
-//                    }
-//                });
-//    }
 
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == FINE_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation();
-            }
-            else{
-                Toast.makeText(this,"Location permission is denied, please allow the permission.", Toast.LENGTH_SHORT).show();
-
+                getLastLocation(); // Permission granted, setup the map again
+            } else {
+                Log.w(TAG, "Location permission denied.");
             }
         }
     }
-
-
 }

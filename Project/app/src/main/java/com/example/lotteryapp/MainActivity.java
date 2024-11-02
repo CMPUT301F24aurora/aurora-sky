@@ -1,44 +1,25 @@
 package com.example.lotteryapp;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-    private GoogleMap myMap;
     private static final String TAG = "MainActivity";
     private FirebaseFirestore db;
-
-    private FusedLocationProviderClient fusedLocationClient;
-
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +50,19 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
             startActivity(intent);
         });
+
+//        Event event = new Event("Dance Class", new Date(), "posterImageURL", true);
+//        event.saveToFirestore(new Event.SaveEventCallback() {
+//            @Override
+//            public void onSuccess() {
+//                System.out.println("Event saved successfully!");
+//            }
+//
+//            @Override
+//            public void onFailure(Exception e) {
+//                System.out.println("Failed to save event: " + e.getMessage());
+//            }
+//        });
     }
 
     private void checkEntrantExistsAndNavigate() {

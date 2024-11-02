@@ -38,8 +38,6 @@ dependencies {
     implementation ("androidx.drawerlayout:drawerlayout:1.1.1")
     implementation ("com.google.android.material:material:1.8.0")
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
-    implementation("com.google.android.gms:play-services-maps:18.1.0")
-    implementation("com.google.android.gms:play-services-location:21.3.0") // For location services
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

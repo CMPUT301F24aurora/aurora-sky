@@ -39,11 +39,11 @@ public class EntrantsEventsActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.nav_view);
         ImageButton menuButton = findViewById(R.id.menu_button);
 
-        //Set up the toggle for the navigation drawer
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+//        //Set up the toggle for the navigation drawer
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
+//        drawerLayout.addDrawerListener(toggle);
+//        toggle.syncState();
 
         // Open drawer when menu button is clicked
         menuButton.setOnClickListener(v -> drawerLayout.openDrawer(navigationView));

@@ -1,5 +1,6 @@
 package com.example.lotteryapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,10 +45,10 @@ public class OrganizerMainPage extends AppCompatActivity {
         });
 
         //Set up the toggle for the navigation drawer
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
+//        drawerLayout.addDrawerListener(toggle);
+//        toggle.syncState();
 
         // Open drawer when menu button is clicked
         menuButton.setOnClickListener(v -> drawerLayout.openDrawer(navigationView));
@@ -63,6 +64,9 @@ public class OrganizerMainPage extends AppCompatActivity {
                 } else if (id == R.id.organizer_nav) {
                     Toast.makeText(OrganizerMainPage.this, "You are on the organizer page", Toast.LENGTH_SHORT).show();
                     // Add your navigation logic here
+                } else if (id == R.id.map_nav) {
+                    Intent intent = new Intent(OrganizerMainPage.this, MapActivity.class);
+                    startActivity(intent);
                 }
                 drawerLayout.closeDrawers(); // Close drawer after selection
                 return true;

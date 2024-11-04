@@ -47,8 +47,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         } else {
             getLastLocation(); // Get location for older versions
         }
-
-
     }
 
     private void getLastLocation() {

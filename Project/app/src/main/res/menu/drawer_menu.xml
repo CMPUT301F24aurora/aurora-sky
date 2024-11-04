@@ -6,5 +6,8 @@
 <item
     android:id="@+id/entrant_nav"
     android:title="Entrant" />
+    <item
+    android:id="@+id/map_nav"
+    android:title="Map" />
 
 </menu>

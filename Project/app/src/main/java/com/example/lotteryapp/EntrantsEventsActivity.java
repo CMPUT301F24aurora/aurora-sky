@@ -20,7 +20,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntrantsEventsActivity extends AppCompatActivity {
+public class EntrantsEventsActivity extends AppCompatActivity implements EventAdapter.OnEventClickListener {
 
     private ImageButton profileIcon;
     private RecyclerView eventsRecyclerView;
@@ -39,30 +39,27 @@ public class EntrantsEventsActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.nav_view);
         ImageButton menuButton = findViewById(R.id.menu_button);
 
-//        //Set up the toggle for the navigation drawer
+        // Set up the toggle for the navigation drawer
 //        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
 //                this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
 //        drawerLayout.addDrawerListener(toggle);
 //        toggle.syncState();
 
-        // Open drawer when menu button is clicked
+         //Open drawer when menu button is clicked
         menuButton.setOnClickListener(v -> drawerLayout.openDrawer(navigationView));
 
         // Handle navigation item clicks
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.entrant_nav) {
-                    Toast.makeText(EntrantsEventsActivity.this, "You are on the entrant page", Toast.LENGTH_SHORT).show();
-                    // Add your navigation logic here
-                } else if (id == R.id.organizer_nav) {
-                    Intent intent = new Intent(EntrantsEventsActivity.this, OrganizerMainPage.class);
-                    startActivity(intent);
-                }
-                drawerLayout.closeDrawers(); // Close drawer after selection
-                return true;
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.entrant_nav) {
+                Toast.makeText(EntrantsEventsActivity.this, "You are on the entrant page", Toast.LENGTH_SHORT).show();
+                // Add your navigation logic here
+            } else if (id == R.id.organizer_nav) {
+                Intent intent = new Intent(EntrantsEventsActivity.this, OrganizerMainPage.class);
+                startActivity(intent);
             }
+            drawerLayout.closeDrawers(); // Close drawer after selection
+            return true;
         });
 
         // Initialize RecyclerView and TextView
@@ -70,9 +67,9 @@ public class EntrantsEventsActivity extends AppCompatActivity {
         noEventsText = findViewById(R.id.no_events_text);
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Initialize event list and adapter
+        // Initialize event list and adapter with click listener
         eventList = new ArrayList<>();
-        eventAdapter = new EventAdapter(eventList);
+        eventAdapter = new EventAdapter(eventList, this); // Pass `this` as the listener
         eventsRecyclerView.setAdapter(eventAdapter);
 
         // Load events into RecyclerView
@@ -118,4 +115,10 @@ public class EntrantsEventsActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onEventClick(Event event) {
+        Intent intent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
+        intent.putExtra("event_data", event); // Assuming Event implements Serializable
+        startActivity(intent);
+    }
 }

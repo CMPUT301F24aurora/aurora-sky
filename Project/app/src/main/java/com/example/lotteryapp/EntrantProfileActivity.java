@@ -5,11 +5,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class EntrantProfileActivity extends AppCompatActivity {
-    private static final String TAG = "EntrantProfileActivity"; // Tag for logging
+    private static final String TAG = "EntrantProfileActivity";
     private TextView entrantNameTextView;
     private TextView entrantEmailTextView;
     private TextView entrantPhoneTextView;
@@ -27,19 +28,29 @@ public class EntrantProfileActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Entrant entrant = (Entrant) intent.getSerializableExtra("entrant_data");
 
-        // Log to check if entrant is null
         if (entrant != null) {
             Log.d(TAG, "Entrant object is not null");
-            entrantNameTextView.setText(entrant.getName());
-            entrantEmailTextView.setText(entrant.getEmail());
-            entrantPhoneTextView.setText(entrant.getPhone());
-
-            // Log entrant's properties
-            Log.d(TAG, "Entrant Name: " + entrant.getName());
-            Log.d(TAG, "Entrant Email: " + entrant.getEmail());
-            Log.d(TAG, "Entrant Phone: " + entrant.getPhone());
+            updateUI(entrant);
         } else {
-            Log.d(TAG, "Entrant object is null");
+            Entrant.getEntrant(this, new GetEntrantCallback() {
+                @Override
+                public void onEntrantFound(Entrant fetchedEntrant) {
+                    Log.d(TAG, "Entrant fetched from Firestore.");
+                    updateUI(fetchedEntrant);
+                }
+
+                @Override
+                public void onEntrantNotFound(Exception e) {
+                    Log.w(TAG, "Entrant not found", e);
+                    Toast.makeText(EntrantProfileActivity.this, "Entrant not found", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Log.e(TAG, "Error fetching entrant", e);
+                    Toast.makeText(EntrantProfileActivity.this, "Error fetching entrant", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         Button editAccountButton = findViewById(R.id.edit_account_button);
@@ -48,5 +59,15 @@ public class EntrantProfileActivity extends AppCompatActivity {
             Intent editIntent = new Intent(EntrantProfileActivity.this, EntrantProfileEditActivity.class);
             startActivity(editIntent);
         });
+    }
+
+    private void updateUI(Entrant entrant) {
+        entrantNameTextView.setText(entrant.getName());
+        entrantEmailTextView.setText(entrant.getEmail());
+        entrantPhoneTextView.setText(entrant.getPhone());
+
+        Log.d(TAG, "Entrant Name: " + entrant.getName());
+        Log.d(TAG, "Entrant Email: " + entrant.getEmail());
+        Log.d(TAG, "Entrant Phone: " + entrant.getPhone());
     }
 }

@@ -1,8 +1,9 @@
 package com.example.lotteryapp;
 
 public class Organizer extends User {
-    public Organizer() {
-    }
+
+    // Default constructor
+    public Organizer() {}
 
     // Constructor with parameters
     public Organizer(String id, String name, String email, String phone) {
@@ -17,4 +18,8 @@ public class Organizer extends User {
         System.out.println("Organizer Phone: " + getPhone());
     }
 
+
+    public boolean hasOrganizerPermissions() {
+        return true;
+    }
 }

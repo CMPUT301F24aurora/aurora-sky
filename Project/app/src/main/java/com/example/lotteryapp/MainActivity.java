@@ -13,6 +13,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Date;
 
@@ -44,22 +45,36 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Button for Organizer
-        Button organizerButton = findViewById(R.id.login_button);
+        Button organizerButton = findViewById(R.id.organizerButton);
         organizerButton.setOnClickListener(v -> {
-            // Start the Organizer Main Page when the organizer button is clicked
-            Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
-            startActivity(intent);
-        });
-
-        // Button for signing up as an Organizer
-        Button organizerSignupButton = findViewById(R.id.signup_button);
-        organizerButton.setOnClickListener(v -> {
-            // Start the Organizer Main Page when the organizer button is clicked
-            Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
-            startActivity(intent);
+            checkOrganizerStatusAndNavigate();
         });
     }
 
+    private void checkOrganizerStatusAndNavigate() {
+        String deviceId = getDeviceId(this);
+
+        Entrant.checkEntrantExists(deviceId, new EntrantCheckCallback() {
+            @Override
+            public void onEntrantExists(Entrant entrant) {
+                // If the user is recognized as an entrant, proceed to OrganizerMainPage
+                Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onEntrantNotFound() {
+                // If the user is not recognized, go to OrganizerRegistrationActivity
+                Intent intent = new Intent(MainActivity.this, OrganizerRegistrationActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.w(TAG, "Error checking entrant in Firestore", e);
+            }
+        });
+    }
     private void checkEntrantExistsAndNavigate() {
         // Get the device's unique ID
         String deviceId = getDeviceId(this);

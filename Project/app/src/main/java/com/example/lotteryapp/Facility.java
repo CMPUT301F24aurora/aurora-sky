@@ -1,30 +1,29 @@
 package com.example.lotteryapp;
 
 import java.io.Serializable;
-import java.util.List;
-
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Facility implements Serializable {
 
-   
     private String id;
     private String name;
-    private String address;
-    private int capacity;  
-    private String type; 
-    private List<String> eventsHosted; 
-    public Facility() {
-    }
+    private String time;
+    private String location;
+    private String email;
+    private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-   
-    public Facility(String id, String name, String address, int capacity, String type) {
+
+    public Facility() {}
+
+
+    public Facility(String id, String name, String time, String location, String email) {
         this.id = id;
         this.name = name;
-        this.address = address;
-        this.capacity = capacity;
-        this.type = type;
+        this.time = time;
+        this.location = location;
+        this.email = email;
     }
+
 
     public String getId() {
         return id;
@@ -42,77 +41,72 @@ public class Facility implements Serializable {
         this.name = name;
     }
 
-    public String getAddress() {
-        return address;
+    public String getTime() {
+        return time;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setTime(String time) {
+        this.time = time;
     }
 
-    public int getCapacity() {
-        return capacity;
+    public String getLocation() {
+        return location;
     }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public String getType() {
-        return type;
+    public String getEmail() {
+        return email;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public List<String> getEventsHosted() {
-        return eventsHosted;
+
+    public void saveToFirestore(FacilityCallback callback) {
+        // Check if the id is null to determine if this is a new facility
+        if (id == null || id.isEmpty()) {
+            db.collection("facilities").add(this)
+                    .addOnSuccessListener(documentReference -> {
+                        this.id = documentReference.getId(); // Set ID for future reference
+                        callback.onSuccess("Facility created successfully with ID: " + id);
+                    })
+                    .addOnFailureListener(callback::onFailure);
+        } else {
+            updateInFirestore(callback);
+        }
     }
 
-    public void setEventsHosted(List<String> eventsHosted) {
-        this.eventsHosted = eventsHosted;
-    }
 
-    
-    public void saveToFirestore() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public void updateInFirestore(FacilityCallback callback) {
+        if (id == null || id.isEmpty()) {
+            callback.onFailure(new Exception("Facility ID is null or empty; cannot update"));
+            return;
+        }
         db.collection("facilities").document(this.id)
                 .set(this)
-                .addOnSuccessListener(aVoid -> {
-                    System.out.println("Facility saved successfully.");
-                })
-                .addOnFailureListener(e -> {
-                    System.out.println("Error saving facility: " + e.getMessage());
-                });
+                .addOnSuccessListener(aVoid -> callback.onSuccess("Facility updated successfully"))
+                .addOnFailureListener(callback::onFailure);
     }
 
-    
-    public static void getFacilityFromFirestore(String facilityId, FirestoreCallback callback) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("facilities").document(facilityId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Facility facility = documentSnapshot.toObject(Facility.class);
-                        callback.onCallback(facility);
-                    } else {
-                        System.out.println("No such facility found.");
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    System.out.println("Error retrieving facility: " + e.getMessage());
-                });
+
+    public void deleteFromFirestore(FacilityCallback callback) {
+        if (id == null || id.isEmpty()) {
+            callback.onFailure(new Exception("Facility ID is null or empty; cannot delete"));
+            return;
+        }
+        db.collection("facilities").document(this.id)
+                .delete()
+                .addOnSuccessListener(aVoid -> callback.onSuccess("Facility removed successfully"))
+                .addOnFailureListener(callback::onFailure);
     }
 
-    
-    public interface FirestoreCallback {
-        void onCallback(Facility facility);
-    }
 
-    
-    @Override
-    public String toString() {
-        return "Facility [id=" + id + ", name=" + name + ", address=" + address + ", capacity=" + capacity + ", type=" + type + "]";
+    public interface FacilityCallback {
+        void onSuccess(String message);
+        void onFailure(Exception e);
     }
 }

@@ -39,11 +39,6 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
         navigationView = findViewById(R.id.nav_view);
         ImageButton menuButton = findViewById(R.id.menu_button);
 
-        // Set up the toggle for the navigation drawer
-//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-//                this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
-//        drawerLayout.addDrawerListener(toggle);
-//        toggle.syncState();
 
          //Open drawer when menu button is clicked
         menuButton.setOnClickListener(v -> drawerLayout.openDrawer(navigationView));
@@ -56,6 +51,7 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
                 // Add your navigation logic here
             } else if (id == R.id.organizer_nav) {
                 Intent intent = new Intent(EntrantsEventsActivity.this, OrganizerMainPage.class);
+                Entrant entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
                 startActivity(intent);
             }
             drawerLayout.closeDrawers(); // Close drawer after selection
@@ -84,6 +80,13 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
             intent.putExtra("entrant_data", entrant);
             startActivity(intent);
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh the event list when the activity is resumed
+        loadEvents();
     }
 
     private void loadEvents() {

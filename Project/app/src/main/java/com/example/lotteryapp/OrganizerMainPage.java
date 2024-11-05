@@ -59,11 +59,30 @@ public class OrganizerMainPage extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.entrant_nav) {
-                    Intent intent = new Intent(OrganizerMainPage.this, EntrantsEventsActivity.class);
-                    startActivity(intent);
+                    // Get the Entrant object (assuming you have a Context available)
+                    Entrant.getEntrant(OrganizerMainPage.this, new GetEntrantCallback() {
+                        @Override
+                        public void onEntrantFound(Entrant entrant) {
+                            // Create the intent and add the entrant data
+                            Intent intent = new Intent(OrganizerMainPage.this, EntrantsEventsActivity.class);
+                            intent.putExtra("entrant_data", entrant);
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onEntrantNotFound(Exception e) {
+                            // Handle the case where the entrant is not found
+                            Toast.makeText(OrganizerMainPage.this, "Entrant not found", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            // Handle errors that occurred during the retrieval process
+                            Toast.makeText(OrganizerMainPage.this, "Error retrieving entrant data", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 } else if (id == R.id.organizer_nav) {
                     Toast.makeText(OrganizerMainPage.this, "You are on the organizer page", Toast.LENGTH_SHORT).show();
-                    // Add your navigation logic here
                 } else if (id == R.id.map_nav) {
                     Intent intent = new Intent(OrganizerMainPage.this, MapActivity.class);
                     startActivity(intent);

@@ -36,6 +36,7 @@ public class Entrant extends User implements Serializable {
                 .addOnFailureListener(e -> callback.onError(e));
     }
 
+
     // Save Entrant object to Firestore
     public void saveToFirestore(SaveEntrantCallback callback) {
         db.collection("entrants").document(this.getId())

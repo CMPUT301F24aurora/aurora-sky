@@ -118,7 +118,14 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
     @Override
     public void onEventClick(Event event) {
         Intent intent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
+
+        // Get the entrant data from the intent
+        Entrant entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
+
+        // Put the event and entrant data into the intent
         intent.putExtra("event_data", event); // Assuming Event implements Serializable
+        intent.putExtra("entrant_data", entrant); // Pass the entrant data
+
         startActivity(intent);
     }
 }

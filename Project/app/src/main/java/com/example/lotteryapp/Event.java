@@ -22,6 +22,7 @@ public class Event implements Serializable {
     private Integer numPeople;
     private String description;
     private ArrayList<Entrant> waitingList;
+    private String qr_code;
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public Event() {
@@ -34,6 +35,7 @@ public class Event implements Serializable {
         this.numPeople = numPeople;
         this.description = description;
         this.waitingList = new ArrayList<>();
+        this.qr_code = generateQRHash();
     }
 
     public String getName() {
@@ -67,6 +69,9 @@ public class Event implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+    public String getQR_code(){
+        return this.qr_code;
+    }
 
     public boolean getGeolocationRequirement() {
         return geolocationRequired;
@@ -82,11 +87,21 @@ public class Event implements Serializable {
     }
 
     // Method to add an entrant to the waiting list if the event is full
-    public boolean addEntrantToWaitingList(Entrant entrant) {
-        if (waitingList != null && waitingList.contains(entrant)) {
+    public boolean addEntrantToWaitingList(Entrant entrant, WaitingListCallback callback) {
+        if (waitingList.contains(entrant)) {
+            callback.onFailure(new Exception("Entrant is already in the waiting list."));
             return false; // Entrant is already in the waiting list
         }
-        return waitingList.add(entrant);
+
+        waitingList.add(entrant); // Add the entrant to the waiting list
+        String eventHash = this.getQR_code();
+        // Update Firestore to save the waiting list
+        db.collection("events").document(eventHash)
+                .update("waitingList", waitingList)
+                .addOnSuccessListener(aVoid -> callback.onSuccess("Entrant added to the waiting list."))
+                .addOnFailureListener(callback::onFailure);
+
+        return true;
     }
 
     // Method to remove an entrant from the waiting list
@@ -133,7 +148,7 @@ public class Event implements Serializable {
 
     // Save Event object to Firebase
     public void saveToFirestore(SaveEventCallback callback) {
-        String eventHash = generateQRHash(); // Unique hash including timestamp
+        String eventHash = this.getQR_code(); // Unique hash including timestamp
 
         db.collection("events").document(eventHash).set(this)
                 .addOnSuccessListener(aVoid -> callback.onSuccess(eventHash))

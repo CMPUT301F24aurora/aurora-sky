@@ -61,7 +61,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
 
         Event event = new Event(name, dateTime, numPeople, description);
 
-        event.saveToFirestore(new Event.SaveEventCallback() {
+        event.saveToFirestore(new SaveEventCallback() {
 
             @Override
             public void onSuccess(String documentId) {

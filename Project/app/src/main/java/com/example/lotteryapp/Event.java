@@ -134,11 +134,6 @@ public class Event implements Serializable {
                 });
     }
 
-    public interface SaveEventCallback {
-
-        void onSuccess(String documentId);
-        void onFailure(Exception e);
-    }
 
     public void deleteEvent(String eventQRHash){
 

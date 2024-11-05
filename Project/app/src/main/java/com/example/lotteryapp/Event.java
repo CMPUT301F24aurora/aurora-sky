@@ -3,6 +3,9 @@ package com.example.lotteryapp;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -46,23 +49,20 @@ public class Event implements Serializable {
         this.eventName = eventName;
     }
 
-    public String generateQRHash(String eventId) {
-        // To-do: Implement QR code generation and hashing logic
-        // Use eventQRHash as unique identifier
-        String firebaseUrl = "https://yourfirebaseproject.firebaseio.com/events/" + eventId;
+    public String generateQRHash() {
+        // Use event name, date, and current timestamp to create a unique identifier
+        String uniqueIdentifier = eventName + eventDate + System.currentTimeMillis();
+        String firebaseUrl = "https://yourfirebaseproject.firebaseio.com/events/" + uniqueIdentifier;
 
-        // Generate QR code bitmap
         QRCodeWriter writer = new QRCodeWriter();
         BitMatrix bitMatrix;
         try {
             bitMatrix = writer.encode(firebaseUrl, BarcodeFormat.QR_CODE, 200, 200);
-            //Display the QR code
         } catch (WriterException e) {
             e.printStackTrace();
             return null;
         }
 
-        // Convert BitMatrix to string (for simplicity)
         StringBuilder qrData = new StringBuilder();
         for (int y = 0; y < bitMatrix.getHeight(); y++) {
             for (int x = 0; x < bitMatrix.getWidth(); x++) {
@@ -70,7 +70,6 @@ public class Event implements Serializable {
             }
         }
 
-        // Generate SHA-256 hash
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(qrData.toString().getBytes());
@@ -81,13 +80,12 @@ public class Event implements Serializable {
                 hexString.append(hex);
             }
             return hexString.toString();
-
-        }
-        catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;
         }
     }
+
 
     public String getEventDate(){
         return this.eventDate;
@@ -121,16 +119,37 @@ public class Event implements Serializable {
         this.geolocationRequired = geolocationRequired;
     }
 
-    // Save Event object to Firestore
+    // Save Event object to Firebase
     public void saveToFirestore(SaveEventCallback callback) {
-        // Use Firestore's automatic ID generation
-        db.collection("events").add(this)
-                .addOnSuccessListener(documentReference -> {
-                    // Optionally, you can pass the document ID back through the callback if needed
-                    callback.onSuccess(documentReference.getId());
+        String eventHash = generateQRHash(); // Unique hash including timestamp
+
+        // Save the event in Firestore using eventHash as the document ID
+        db.collection("events").document(eventHash).set(this)
+                .addOnSuccessListener(aVoid -> {
+                    callback.onSuccess(eventHash);
                 })
                 .addOnFailureListener(e -> {
                     callback.onFailure(e);
+                });
+    }
+
+
+    //get events from Firebase
+    public static void getEventsFromFirestore(GetEventsCallback callback) {
+        db.collection("events")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Event> events = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            // Convert each document to an Event object
+                            Event event = document.toObject(Event.class);
+                            events.add(event);
+                        }
+                        callback.onSuccess(events);
+                    } else {
+                        callback.onFailure(task.getException());
+                    }
                 });
     }
 

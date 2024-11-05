@@ -45,7 +45,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Button for Organizer
-        Button organizerButton = findViewById(R.id.organizerButton);
+        Button organizerButton = findViewById(R.id.login_button);
+        organizerButton.setOnClickListener(v -> {
+            // Start the Organizer Main Page when the organizer button is clicked
+            Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
+            startActivity(intent);
+        });
+
+        // Button for signing up as an Organizer
+        Button organizerSignupButton = findViewById(R.id.signup_button);
         organizerButton.setOnClickListener(v -> {
             // Start the Organizer Main Page when the organizer button is clicked
             Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);

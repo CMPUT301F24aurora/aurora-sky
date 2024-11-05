@@ -52,7 +52,7 @@ public class EventTest {
             @Override
             public void onSuccess(String documentId) {
                 assertNotNull(documentId);
-                String QrHash = event.generateQRHash(documentId);
+                String QrHash = event.generateQRHash();
                 assertNotNull(QrHash);
 
                 System.out.println("Event saved successfully with Document ID: " + documentId);

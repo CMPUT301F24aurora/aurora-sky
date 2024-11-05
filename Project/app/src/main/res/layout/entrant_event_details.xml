@@ -7,56 +7,70 @@
     android:layout_height="match_parent"
     tools:context=".Entrant">
 
+    <!-- Event Title -->
     <TextView
         android:id="@+id/event_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="32dp"
         android:text="Event Title"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textAlignment="center" />
 
+    <!-- Event Date -->
+    <TextView
+        android:id="@+id/event_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Date: MM/DD/YYYY"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/event_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textAlignment="center" />
+
+    <!-- Event Description -->
     <TextView
         android:id="@+id/event_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:text="Event Description"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@id/event_date"
         app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteY="124dp" />
-    <!-- Event Description EditText -->
-    <EditText
-        android:id="@+id/event_details_edit"
-        android:layout_width="0dp"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Event Capacity -->
+    <TextView
+        android:id="@+id/event_capacity"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Enter Event Details"
-        android:inputType="textMultiLine"
-        android:minHeight="120dp"
-        android:gravity="top"
         android:layout_marginTop="16dp"
+        android:text="Capacity: 50"
+        android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/event_description"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
-
+    <!-- Register Button -->
     <Button
         android:id="@+id/register_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#6200EE"
         android:text="Register"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="#FFFFFF"
+        app:layout_constraintTop_toBottomOf="@id/event_capacity"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="654dp"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

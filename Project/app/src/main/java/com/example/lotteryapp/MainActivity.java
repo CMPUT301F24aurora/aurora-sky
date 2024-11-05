@@ -45,7 +45,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Button for Organizer
-        Button organizerButton = findViewById(R.id.organizerButton);
+        Button organizerButton = findViewById(R.id.login_button);
+        organizerButton.setOnClickListener(v -> {
+            // Start the Organizer Main Page when the organizer button is clicked
+            Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
+            startActivity(intent);
+        });
+
+        // Button for signing up as an Organizer
+        Button organizerSignupButton = findViewById(R.id.signup_button);
         organizerButton.setOnClickListener(v -> {
             // Start the Organizer Main Page when the organizer button is clicked
             Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
@@ -53,30 +61,30 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Event event = new Event("Dance Class", "21/10/2024", 40, "Dancey Dance");
-        event.saveToFirestore(new SaveEventCallback() {
-
-            @Override
-            public void onSuccess(String documentId) {
-                // Call the function to generate a unique qr code using the unique event document ID
-                String QrHash = event.generateQRHash(documentId);
-                // Update the event with the newly generated QR hash
-                DocumentReference docRef = db.collection("events").document(documentId);
-                docRef.update("QR Hash", QrHash)
-                        .addOnSuccessListener(aVoid -> {
-                            System.out.println("QR Hash added successfully!");
-                        })
-                        .addOnFailureListener(e -> {
-                            System.out.println("Error updating document: " + e.getMessage());
-                        });
-                System.out.println("Event saved successfully with Document ID: " + documentId);
-                System.out.println("Event created successfully with QR Hash: " + QrHash);
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                System.out.println("Failed to save event: " + e.getMessage());
-            }
-        });
+//        event.saveToFirestore(new Event.SaveEventCallback() {
+//
+//            @Override
+//            public void onSuccess(String documentId) {
+//                // Call the function to generate a unique qr code using the unique event document ID
+//                String QrHash = event.generateQRHash(documentId);
+//                // Update the event with the newly generated QR hash
+//                DocumentReference docRef = db.collection("events").document(documentId);
+//                docRef.update("QR Hash", QrHash)
+//                        .addOnSuccessListener(aVoid -> {
+//                            System.out.println("QR Hash added successfully!");
+//                        })
+//                        .addOnFailureListener(e -> {
+//                            System.out.println("Error updating document: " + e.getMessage());
+//                        });
+//                System.out.println("Event saved successfully with Document ID: " + documentId);
+//                System.out.println("Event created successfully with QR Hash: " + QrHash);
+//            }
+//
+//            @Override
+//            public void onFailure(Exception e) {
+//                System.out.println("Failed to save event: " + e.getMessage());
+//            }
+//        });
 
     }
 

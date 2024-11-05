@@ -1,6 +1,6 @@
 package com.example.lotteryapp;
 
 public interface SaveEventCallback {
-    void onSuccess();
+    void onSuccess(String documentId);
     void onFailure(Exception e);
 }

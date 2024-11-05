@@ -7,6 +7,12 @@ import java.util.List;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class Event implements Serializable {
     //Donna did the XML file
@@ -17,7 +23,7 @@ public class Event implements Serializable {
     //for now event date is a string
     private String eventDate;
     private ArrayList<Entrant> attendees;
-//    String eventQRHash;
+//    private String eventQRHash;
     private ArrayList<Entrant> waitingList;
     private Boolean geolocationRequired = Boolean.FALSE;
     private Integer numPeople;
@@ -43,10 +49,43 @@ public class Event implements Serializable {
         this.eventName = eventName;
     }
 
-    private String generateQRHash() {
-        // To-do: Implement QR code generation and hashing logic
-        return "temp";
+    public String generateQRHash() {
+        // Use event name, date, and current timestamp to create a unique identifier
+        String uniqueIdentifier = eventName + eventDate + System.currentTimeMillis();
+        String firebaseUrl = "https://yourfirebaseproject.firebaseio.com/events/" + uniqueIdentifier;
+
+        QRCodeWriter writer = new QRCodeWriter();
+        BitMatrix bitMatrix;
+        try {
+            bitMatrix = writer.encode(firebaseUrl, BarcodeFormat.QR_CODE, 200, 200);
+        } catch (WriterException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        StringBuilder qrData = new StringBuilder();
+        for (int y = 0; y < bitMatrix.getHeight(); y++) {
+            for (int x = 0; x < bitMatrix.getWidth(); x++) {
+                qrData.append(bitMatrix.get(x, y) ? "1" : "0");
+            }
+        }
+
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(qrData.toString().getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
+
 
     public String getEventDate(){
         return this.eventDate;
@@ -82,16 +121,18 @@ public class Event implements Serializable {
 
     // Save Event object to Firebase
     public void saveToFirestore(SaveEventCallback callback) {
-        // Use Firestore's automatic ID generation
-        db.collection("events").add(this)
-                .addOnSuccessListener(documentReference -> {
-                    // Optionally, you can pass the document ID back through the callback if needed
-                    callback.onSuccess();
+        String eventHash = generateQRHash(); // Unique hash including timestamp
+
+        // Save the event in Firestore using eventHash as the document ID
+        db.collection("events").document(eventHash).set(this)
+                .addOnSuccessListener(aVoid -> {
+                    callback.onSuccess(eventHash);
                 })
                 .addOnFailureListener(e -> {
                     callback.onFailure(e);
                 });
     }
+
 
     //get events from Firebase
     public static void getEventsFromFirestore(GetEventsCallback callback) {
@@ -111,6 +152,7 @@ public class Event implements Serializable {
                     }
                 });
     }
+
 
     public void deleteEvent(String eventQRHash){
 

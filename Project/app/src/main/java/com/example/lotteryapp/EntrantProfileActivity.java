@@ -3,6 +3,7 @@ package com.example.lotteryapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +13,7 @@ public class EntrantProfileActivity extends AppCompatActivity {
     private TextView entrantNameTextView;
     private TextView entrantEmailTextView;
     private TextView entrantPhoneTextView;
+    private Entrant entrant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,5 +41,12 @@ public class EntrantProfileActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "Entrant object is null");
         }
+
+        Button editAccountButton = findViewById(R.id.edit_account_button);
+        editAccountButton.setOnClickListener(v -> {
+            // Start the Organizer Main Page when the organizer button is clicked
+            Intent editIntent = new Intent(EntrantProfileActivity.this, EntrantProfileEditActivity.class);
+            startActivity(editIntent);
+        });
     }
 }

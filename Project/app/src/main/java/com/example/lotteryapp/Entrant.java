@@ -6,6 +6,7 @@ import java.io.Serializable;
 public class Entrant extends User implements Serializable {
 
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private String profileImageUrl;
 
     // Default constructor required for Firestore
     public Entrant() {
@@ -19,6 +20,14 @@ public class Entrant extends User implements Serializable {
     // Constructor with parameters
     public Entrant(String id, String name, String email, String phone) {
         super(id, name, email, phone);
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
     // Method to check if an entrant exists in Firestore

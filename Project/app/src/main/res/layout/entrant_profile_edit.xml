@@ -8,18 +8,47 @@
     android:layout_height="match_parent"
     tools:context=".EntrantProfileEditActivity">
 
+    <!-- FrameLayout for profile picture with + button overlay -->
+    <FrameLayout
+        android:id="@+id/profile_picture_frame"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="24dp">
+
+        <!-- Profile Picture ImageView -->
+        <ImageView
+            android:id="@+id/profile_photo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_profile_photo"/>
+
+        <!-- Small + Button Overlay -->
+        <ImageButton
+            android:id="@+id/add_profile_picture_button"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="bottom|end"
+            android:background="@null"
+            android:src="@drawable/ic_add_button"
+            app:tint="@android:color/darker_gray"
+            android:layout_margin="4dp" />
+    </FrameLayout>
+
     <EditText
         android:id="@+id/edit_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
         android:hint="Name"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/edit_email"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintVertical_bias="0.3"
-        android:layout_marginHorizontal="32dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_picture_frame"
+        app:layout_constraintVertical_bias="0.3" />
 
     <EditText
         android:id="@+id/edit_email"
@@ -38,17 +67,17 @@
         android:layout_height="wrap_content"
         android:hint="Phone Number (Optional)"
         app:layout_constraintTop_toBottomOf="@id/edit_email"
-        app:layout_constraintBottom_toTopOf="@+id/update_profile_picture"
+        app:layout_constraintBottom_toTopOf="@+id/remove_profile_picture"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginHorizontal="32dp"/>
 
     <Button
-        android:id="@+id/update_profile_picture"
+        android:id="@+id/remove_profile_picture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="#000000"
-        android:text="Update/Remove Your Profile Picture"
+        android:text="Remove Your Profile Picture"
         app:layout_constraintTop_toBottomOf="@id/edit_phone"
         app:layout_constraintBottom_toTopOf="@id/confirm_changes"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +90,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="#000000"
         android:text="Confirm Changes"
-        app:layout_constraintTop_toBottomOf="@id/update_profile_picture"
+        app:layout_constraintTop_toBottomOf="@id/remove_profile_picture"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

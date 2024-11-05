@@ -11,9 +11,15 @@ import java.util.List;
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
     private final List<Event> eventList;
+    private final OnEventClickListener eventClickListener; // Add this
 
-    public EventAdapter(List<Event> eventList) {
+    public interface OnEventClickListener {
+        void onEventClick(Event event);
+    }
+
+    public EventAdapter(List<Event> eventList, OnEventClickListener listener) {
         this.eventList = eventList;
+        this.eventClickListener = listener; // Initialize the listener
     }
 
     @NonNull
@@ -29,6 +35,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         holder.eventName.setText(event.getName());
         holder.eventDate.setText(event.getEventDate());
         holder.eventDescription.setText(event.getDescription());
+
+        // Set click listener on the item view
+        holder.itemView.setOnClickListener(v -> eventClickListener.onEventClick(event));
     }
 
     @Override

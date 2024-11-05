@@ -2,6 +2,9 @@ package com.example.lotteryapp;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.Serializable;
+import android.content.Context;
+import android.provider.Settings;
+import java.util.Objects;
 
 public class Entrant extends User implements Serializable {
 
@@ -21,6 +24,11 @@ public class Entrant extends User implements Serializable {
         super(id, name, email, phone);
     }
 
+    // Method to retrieve the device ID
+    private static String getDeviceId(Context context) {
+        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
     // Method to check if an entrant exists in Firestore
     public static void checkEntrantExists(String deviceId, EntrantCheckCallback callback) {
         db.collection("entrants").document(deviceId)
@@ -31,6 +39,22 @@ public class Entrant extends User implements Serializable {
                         callback.onEntrantExists(entrant);
                     } else {
                         callback.onEntrantNotFound();
+                    }
+                })
+                .addOnFailureListener(e -> callback.onError(e));
+    }
+
+    public static void getEntrant(Context context, GetEntrantCallback callback) {
+        String deviceId = getDeviceId(context); // Get device ID
+
+        db.collection("entrants").document(deviceId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Entrant entrant = documentSnapshot.toObject(Entrant.class);
+                        callback.onEntrantFound(entrant);
+                    } else {
+                        callback.onEntrantNotFound(new Exception("Entrant not found"));
                     }
                 })
                 .addOnFailureListener(e -> callback.onError(e));
@@ -53,5 +77,20 @@ public class Entrant extends User implements Serializable {
         System.out.println("Entrant ID: " + getId());
         System.out.println("Entrant Name: " + getName());
         System.out.println("Entrant Email: " + getEmail());
+    }
+
+    // Override equals to check equality based on ID
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Entrant)) return false;
+        Entrant entrant = (Entrant) o;
+        return Objects.equals(getId(), entrant.getId());
+    }
+
+    // Override hashCode based on ID
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

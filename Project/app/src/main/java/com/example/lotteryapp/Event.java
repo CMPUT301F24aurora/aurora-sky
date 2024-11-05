@@ -1,8 +1,9 @@
 package com.example.lotteryapp;
 
 import java.io.Serializable;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -11,27 +12,21 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class Event implements Serializable {
-    //Donna did the XML file
 
     private String posterImage;
     private String eventName;
-
-    //for now event date is a string
     private String eventDate;
-    private ArrayList<Entrant> attendees;
-//    private String eventQRHash;
-    private ArrayList<Entrant> waitingList;
     private Boolean geolocationRequired = Boolean.FALSE;
     private Integer numPeople;
     private String description;
+    private ArrayList<Entrant> waitingList;
+    private String qr_code;
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public Event(){
-        //Empty constructor for Firebase
+    public Event() {
+        // Empty constructor for Firebase
     }
 
     public Event(String eventName, String eventDate, Integer numPeople, String description) {
@@ -39,18 +34,83 @@ public class Event implements Serializable {
         this.eventDate = eventDate;
         this.numPeople = numPeople;
         this.description = description;
+        this.waitingList = new ArrayList<>();
+        this.qr_code = generateQRHash();
     }
 
     public String getName() {
         return eventName;
     }
 
-    public void setName(String eventName){
+    public void setName(String eventName) {
         this.eventName = eventName;
     }
 
+    public String getEventDate() {
+        return this.eventDate;
+    }
+
+    public void setEventDate(String eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public int getNumPeople() {
+        return this.numPeople;
+    }
+
+    public void setNumPeople(int numPeople) {
+        this.numPeople = numPeople;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    public String getQR_code(){
+        return this.qr_code;
+    }
+
+    public boolean getGeolocationRequirement() {
+        return geolocationRequired;
+    }
+
+    public void setGeolocationRequired(Boolean geolocationRequired) {
+        this.geolocationRequired = geolocationRequired;
+    }
+
+
+    public ArrayList<Entrant> getWaitingList() {
+        return waitingList;
+    }
+
+    // Method to add an entrant to the waiting list if the event is full
+    public boolean addEntrantToWaitingList(Entrant entrant, WaitingListCallback callback) {
+        if (waitingList.contains(entrant)) {
+            callback.onFailure(new Exception("Entrant is already in the waiting list."));
+            return false; // Entrant is already in the waiting list
+        }
+
+        waitingList.add(entrant); // Add the entrant to the waiting list
+        String eventHash = this.getQR_code();
+        // Update Firestore to save the waiting list
+        db.collection("events").document(eventHash)
+                .update("waitingList", waitingList)
+                .addOnSuccessListener(aVoid -> callback.onSuccess("Entrant added to the waiting list."))
+                .addOnFailureListener(callback::onFailure);
+
+        return true;
+    }
+
+    // Method to remove an entrant from the waiting list
+    public boolean removeEntrantFromWaitingList(Entrant entrant) {
+        return waitingList.remove(entrant);
+    }
+
+    // Method to generate a QR code hash for the event
     public String generateQRHash() {
-        // Use event name, date, and current timestamp to create a unique identifier
         String uniqueIdentifier = eventName + eventDate + System.currentTimeMillis();
         String firebaseUrl = "https://yourfirebaseproject.firebaseio.com/events/" + uniqueIdentifier;
 
@@ -86,55 +146,16 @@ public class Event implements Serializable {
         }
     }
 
-
-    public String getEventDate(){
-        return this.eventDate;
-    }
-
-    public void setEventDate(String eventDate){
-        this.eventDate = eventDate;
-    }
-
-    public int getNumPeople(){
-        return this.numPeople;
-    }
-
-    public void setNumPeople(int numPeople){
-        this.numPeople = numPeople;
-    }
-
-    public String getDescription(){
-        return this.description;
-    }
-
-    public void setDescription(String description){
-        this.description = description;
-    }
-
-    public boolean getGeolocationRequirement(){
-        return geolocationRequired;
-    }
-
-    public void setGeolocationRequired(Boolean geolocationRequired){
-        this.geolocationRequired = geolocationRequired;
-    }
-
     // Save Event object to Firebase
     public void saveToFirestore(SaveEventCallback callback) {
-        String eventHash = generateQRHash(); // Unique hash including timestamp
+        String eventHash = this.getQR_code(); // Unique hash including timestamp
 
-        // Save the event in Firestore using eventHash as the document ID
         db.collection("events").document(eventHash).set(this)
-                .addOnSuccessListener(aVoid -> {
-                    callback.onSuccess(eventHash);
-                })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e);
-                });
+                .addOnSuccessListener(aVoid -> callback.onSuccess(eventHash))
+                .addOnFailureListener(e -> callback.onFailure(e));
     }
 
-
-    //get events from Firebase
+    // Get events from Firebase
     public static void getEventsFromFirestore(GetEventsCallback callback) {
         db.collection("events")
                 .get()
@@ -142,7 +163,6 @@ public class Event implements Serializable {
                     if (task.isSuccessful()) {
                         List<Event> events = new ArrayList<>();
                         for (DocumentSnapshot document : task.getResult()) {
-                            // Convert each document to an Event object
                             Event event = document.toObject(Event.class);
                             events.add(event);
                         }
@@ -153,13 +173,4 @@ public class Event implements Serializable {
                 });
     }
 
-
-    public void deleteEvent(String eventQRHash){
-
-    }
-
-//    public void displayEventInfo() {
-//        System.out.println("Event Identifier: " + getEventQRHash());
-//        System.out.println("Event title: " + getName());
-//    }
 }

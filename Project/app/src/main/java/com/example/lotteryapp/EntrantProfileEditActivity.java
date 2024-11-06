@@ -45,6 +45,9 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         storageRef = FirebaseStorage.getInstance().getReference("profile_pictures");
 
         // Initialize EditText and Buttons
+        Intent intent = getIntent();
+        Entrant entrant = (Entrant) intent.getSerializableExtra("entrant_data");
+
         editName = findViewById(R.id.edit_name);
         editEmail = findViewById(R.id.edit_email);
         editPhone = findViewById(R.id.edit_phone);
@@ -52,6 +55,12 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         addProfilePictureButton = findViewById(R.id.add_profile_picture_button);
         currentProfilePicture = findViewById(R.id.profile_photo);
         confirmChanges = findViewById(R.id.confirm_changes);
+
+        if(entrant != null){
+            editName.setText(entrant.getName());
+            editEmail.setText(entrant.getEmail());
+            editPhone.setText(entrant.getPhone());
+        }
 
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),

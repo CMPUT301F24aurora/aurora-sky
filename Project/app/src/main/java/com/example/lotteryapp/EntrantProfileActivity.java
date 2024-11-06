@@ -3,6 +3,8 @@ package com.example.lotteryapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +54,20 @@ public class EntrantProfileActivity extends AppCompatActivity {
                 }
             });
         }
+
+        Button editFacilityButton = findViewById(R.id.edit_account_button);
+        editFacilityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start the EntrantProfileEditActivity
+                Intent intent = new Intent(EntrantProfileActivity.this, EntrantProfileEditActivity.class);
+
+                // Assuming you have the Entrant object available as 'entrant'
+                intent.putExtra("entrant_data", entrant);
+
+                startActivity(intent);
+            }
+        });
 
         Button editAccountButton = findViewById(R.id.edit_account_button);
         editAccountButton.setOnClickListener(v -> {

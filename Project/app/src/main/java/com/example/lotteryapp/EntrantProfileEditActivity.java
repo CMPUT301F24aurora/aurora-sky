@@ -23,11 +23,20 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         setContentView(R.layout.entrant_profile_edit);
 
         // Initialize EditText and Buttons
+        Intent intent = getIntent();
+        Entrant entrant = (Entrant) intent.getSerializableExtra("entrant_data");
+
         editName = findViewById(R.id.edit_name);
         editEmail = findViewById(R.id.edit_email);
         editPhone = findViewById(R.id.edit_phone);
         updateProfilePicture = findViewById(R.id.update_profile_picture);
         confirmChanges = findViewById(R.id.confirm_changes);
+
+        if(entrant != null){
+            editName.setText(entrant.getName());
+            editEmail.setText(entrant.getEmail());
+            editPhone.setText(entrant.getPhone());
+        }
 
         // OnClickListener for Confirm Changes Button
         confirmChanges.setOnClickListener(v -> saveEntrantDetails());

@@ -28,6 +28,7 @@
         <activity android:name=".EntrantsEventsActivity" />
         <activity android:name=".EntrantEventDetailsActivity" />
         <activity android:name=".EntrantProfileActivity" />
+        <activity android:name=".EntrantWaitingListActivity"/>
         <activity android:name=".OrganizerMainPage" />
         <activity android:name=".OrganizerCreateEvent" />
         <activity android:name=".MapActivity" />

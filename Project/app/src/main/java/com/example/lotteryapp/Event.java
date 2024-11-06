@@ -104,6 +104,22 @@ public class Event implements Serializable {
         return true;
     }
 
+    public void removeEntrantFromWaitingList(Entrant entrant, WaitingListCallback callback) {
+        if (!waitingList.contains(entrant)) {
+            callback.onFailure(new Exception("Entrant is not in the waiting list."));
+            return; // Entrant is not in the waiting list
+        }
+
+        waitingList.remove(entrant); // Remove the entrant from the waiting list
+        String eventHash = this.getQR_code();
+
+        // Update Firestore to save the updated waiting list
+        db.collection("events").document(eventHash)
+                .update("waitingList", waitingList)
+                .addOnSuccessListener(aVoid -> callback.onSuccess("Entrant removed from the waiting list."))
+                .addOnFailureListener(callback::onFailure);
+    }
+
     // Method to remove an entrant from the waiting list
     public boolean removeEntrantFromWaitingList(Entrant entrant) {
         return waitingList.remove(entrant);

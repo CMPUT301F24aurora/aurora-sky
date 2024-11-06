@@ -22,11 +22,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class  MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private FirebaseFirestore db;
@@ -58,6 +57,10 @@ public class  MainActivity extends AppCompatActivity {
         organizerButton.setOnClickListener(v -> {
             checkOrganizerStatusAndNavigate();
         });
+
+        // Call the method to check admin status after setting up the UI
+        String deviceId = getDeviceId(this);
+        checkAdminAndDisplayPage(deviceId);
     }
 
     private void checkOrganizerStatusAndNavigate() {
@@ -107,6 +110,7 @@ public class  MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "Error checking organizers", Toast.LENGTH_SHORT).show();
                         });
             }
+
             @Override
             public void onEntrantNotFound() {
                 // If the user is not recognized, go to OrganizerRegistrationActivity
@@ -120,43 +124,10 @@ public class  MainActivity extends AppCompatActivity {
             }
         });
 
-
-
-        //Print it for our reference to add to the admin list
+        // Print it for our reference to add to the admin list
         Log.i("Device ID", deviceId);
-
-        // Button for signing in as Admin
-        Button adminSignInButton = findViewById(R.id.admin_link);
-        adminSignInButton.setVisibility(View.GONE);
-        checkAdminAndDisplayPage(deviceId);
-
-        Event event = new Event("Dance Class", "21/10/2024", 40, "Dancey Dance");
-//        event.saveToFirestore(new Event.SaveEventCallback() {
-//
-//            @Override
-//            public void onSuccess(String documentId) {
-//                // Call the function to generate a unique qr code using the unique event document ID
-//                String QrHash = event.generateQRHash(documentId);
-//                // Update the event with the newly generated QR hash
-//                DocumentReference docRef = db.collection("events").document(documentId);
-//                docRef.update("QR Hash", QrHash)
-//                        .addOnSuccessListener(aVoid -> {
-//                            System.out.println("QR Hash added successfully!");
-//                        })
-//                        .addOnFailureListener(e -> {
-//                            System.out.println("Error updating document: " + e.getMessage());
-//                        });
-//                System.out.println("Event saved successfully with Document ID: " + documentId);
-//                System.out.println("Event created successfully with QR Hash: " + QrHash);
-//            }
-//
-//            @Override
-//            public void onFailure(Exception e) {
-//                System.out.println("Failed to save event: " + e.getMessage());
-//            }
-//        });
-
     }
+
     private void checkEntrantExistsAndNavigate() {
         // Get the device's unique ID
         String deviceId = getDeviceId(this);
@@ -182,9 +153,7 @@ public class  MainActivity extends AppCompatActivity {
             public void onError(Exception e) {
                 Log.w(TAG, "Error checking entrant in Firestore", e);
             }
-
         });
-
     }
 
     private void checkAdminAndDisplayPage(String deviceId) {
@@ -195,20 +164,16 @@ public class  MainActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        Button adminSignInButton = findViewById(R.id.admin_link);
+
                         if (task.isSuccessful() && !task.getResult().isEmpty()) {
                             // Device ID is registered as an admin, show the admin login button
-                            Button adminSignInButton = findViewById(R.id.admin_link);
                             adminSignInButton.setVisibility(View.VISIBLE);
                             // Set onClickListener to navigate to admin homepage
-                            adminSignInButton.setOnClickListener(new View.OnClickListener() {
-                                @Override public void onClick(View v) {
-                                    navigateToAdminHomepage();
-                                }
-                            });
-                        }
-                        else {
-                            // Device ID is not registered as an admin
-                            //Toast.makeText(MainActivity.this, "Access Denied, not an Admin!", Toast.LENGTH_SHORT).show();
+                            adminSignInButton.setOnClickListener(v -> navigateToAdminHomepage());
+                        } else {
+                            // Device ID is not registered as an admin, ensure the button is hidden
+                            adminSignInButton.setVisibility(View.GONE);
                         }
                     }
                 });

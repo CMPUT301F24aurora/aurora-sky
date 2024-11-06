@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditText
+        android:id="@+id/editText3"
+        android:layout_width="363dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="16dp"
+        android:hint="example@123.com"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.562"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView7e" />
+
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="337dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="12dp"
+        android:hint="Example Address"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.364"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView6e" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="134dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="16dp"
+        android:hint="0:00 to 0:00"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.097"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5e" />
+
+    <TextView
+        android:id="@+id/textView7e"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:textColor="#575656"
+        android:textSize="20sp"
+        tools:layout_editor_absoluteX="27dp"
+        tools:layout_editor_absoluteY="421dp" />
+
+    <EditText
+        android:id="@+id/admin_fac_e_name"
+        android:layout_width="337dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="8dp"
+        android:hint="Example Name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.364"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView3e" />
+
+    <TextView
+        android:id="@+id/admin_fac_profile_txt_e"
+        android:layout_width="262dp"
+        android:layout_height="44dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Facility Profile"
+        android:textSize="34sp"
+        tools:layout_editor_absoluteX="27dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <TextView
+        android:id="@+id/textView3e"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:textColor="#575656"
+        android:textSize="20sp"
+        tools:layout_editor_absoluteX="27dp"
+        tools:layout_editor_absoluteY="104dp" />
+
+    <TextView
+        android:id="@+id/textView5e"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time"
+        android:textColor="#575656"
+        android:textSize="20sp"
+        tools:layout_editor_absoluteX="27dp"
+        tools:layout_editor_absoluteY="201dp" />
+
+    <TextView
+        android:id="@+id/textView6e"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Location"
+        android:textColor="#575656"
+        android:textSize="20sp"
+        tools:layout_editor_absoluteX="27dp"
+        tools:layout_editor_absoluteY="304dp" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="218dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="68dp"
+        android:backgroundTint="#0B0B0B"
+        android:text="Confirm"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText3"
+        app:layout_constraintVertical_bias="0.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

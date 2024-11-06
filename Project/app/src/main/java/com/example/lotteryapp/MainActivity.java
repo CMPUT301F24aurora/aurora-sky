@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         else {
                             // Device ID is not registered as an admin
-                            Toast.makeText(MainActivity.this, "Access Denied, not an Admin!", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(MainActivity.this, "Access Denied, not an Admin!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

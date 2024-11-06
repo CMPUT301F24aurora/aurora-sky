@@ -120,6 +120,8 @@ public class  MainActivity extends AppCompatActivity {
             }
         });
 
+
+
         //Print it for our reference to add to the admin list
         Log.i("Device ID", deviceId);
 

@@ -144,12 +144,12 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
                 intent.putExtra("entrant_data", entrant);
                 startActivity(intent);
             }
-
             @Override
             public void onFailure(Exception e) {
                 Toast.makeText(EntrantProfileEditActivity.this, "Error saving profile", Toast.LENGTH_SHORT).show();
                 Log.w(TAG, "Error writing document", e);
             }
+
         });
     }
 

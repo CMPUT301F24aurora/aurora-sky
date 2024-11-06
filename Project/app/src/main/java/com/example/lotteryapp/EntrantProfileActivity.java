@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,13 +66,6 @@ public class EntrantProfileActivity extends AppCompatActivity {
 
                 startActivity(intent);
             }
-        });
-
-        Button editAccountButton = findViewById(R.id.edit_account_button);
-        editAccountButton.setOnClickListener(v -> {
-            // Start the Organizer Main Page when the organizer button is clicked
-            Intent editIntent = new Intent(EntrantProfileActivity.this, EntrantProfileEditActivity.class);
-            startActivity(editIntent);
         });
     }
 

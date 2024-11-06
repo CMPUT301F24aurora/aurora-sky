@@ -9,7 +9,6 @@ import java.util.Objects;
 public class Entrant extends User implements Serializable {
 
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private String profileImageUrl;
 
     // Default constructor required for Firestore
     public Entrant() {
@@ -25,18 +24,9 @@ public class Entrant extends User implements Serializable {
         super(id, name, email, phone);
     }
 
-<<<<<<< HEAD
-    public String getProfileImageUrl() {
-        return profileImageUrl;
-    }
-
-    public void setProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
-=======
     // Method to retrieve the device ID
     private static String getDeviceId(Context context) {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
->>>>>>> bf866d956f1390b39920cdbbffbc66a51ed46e63
     }
 
     // Method to check if an entrant exists in Firestore
@@ -102,5 +92,8 @@ public class Entrant extends User implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(getId());
+    }
+
+    public void setProfileImageUrl(String imageUrl) {
     }
 }

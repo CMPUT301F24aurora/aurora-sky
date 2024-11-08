@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Objects;
+
 public class EntrantProfileEditActivity extends AppCompatActivity {
 
     private static final String TAG = "EntrantProfileEditActivity";
@@ -19,6 +21,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
     private EditText editName, editEmail, editPhone;
     private Button confirmChanges;
     private FirebaseFirestore db;
+    private String currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +32,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Entrant entrant = (Entrant) intent.getSerializableExtra("entrant_data");
+        currentUser = intent.getStringExtra("userType");
 
         editName = findViewById(R.id.edit_name);
         editEmail = findViewById(R.id.edit_email);
@@ -44,6 +48,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             editPhone.setText(entrant.getPhone());
         } else {
             Log.d(TAG, "Entrant is null");
+            Log.d(TAG, currentUser);
         }
 
         confirmChanges.setOnClickListener(v -> saveEntrantDetails());
@@ -111,7 +116,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
 
                 // Navigate to the appropriate activity based on userRole
                 Intent intent;
-                if ("organizer".equals(userRole)) {
+                if (Objects.equals(currentUser, "organizer")) {
                     intent = new Intent(EntrantProfileEditActivity.this, OrganizerMainPage.class);
                 } else { // Default to EntrantEventsActivity if no role or "entrant"
                     intent = new Intent(EntrantProfileEditActivity.this, EntrantsEventsActivity.class);

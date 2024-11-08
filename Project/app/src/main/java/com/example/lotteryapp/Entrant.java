@@ -1,10 +1,11 @@
 package com.example.lotteryapp;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-import java.io.Serializable;
 import android.content.Context;
 import android.provider.Settings;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.io.Serializable;
 import java.util.Objects;
 
 public class Entrant extends User implements Serializable {
@@ -12,6 +13,7 @@ public class Entrant extends User implements Serializable {
     private static FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String profileImageUrl;
 
+    public Entrant(){}
     // Default constructor required for Firestore
     public Entrant(String e123, String johnDoe, String mail) {}
 

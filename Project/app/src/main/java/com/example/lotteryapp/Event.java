@@ -1,5 +1,8 @@
 package com.example.lotteryapp;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
+
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -104,6 +107,22 @@ public class Event implements Serializable {
         return true;
     }
 
+    public void removeEntrantFromWaitingList(Entrant entrant, WaitingListCallback callback) {
+        if (!waitingList.contains(entrant)) {
+            callback.onFailure(new Exception("Entrant is not in the waiting list."));
+            return; // Entrant is not in the waiting list
+        }
+
+        waitingList.remove(entrant); // Remove the entrant from the waiting list
+        String eventHash = this.getQR_code();
+
+        // Update Firestore to save the updated waiting list
+        db.collection("events").document(eventHash)
+                .update("waitingList", waitingList)
+                .addOnSuccessListener(aVoid -> callback.onSuccess("Entrant removed from the waiting list."))
+                .addOnFailureListener(callback::onFailure);
+    }
+
     // Method to remove an entrant from the waiting list
     public boolean removeEntrantFromWaitingList(Entrant entrant) {
         return waitingList.remove(entrant);
@@ -141,6 +160,26 @@ public class Event implements Serializable {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Bitmap generateQRCodeBitmap() {
+        QRCodeWriter writer = new QRCodeWriter();
+        try {
+            BitMatrix bitMatrix = writer.encode(qr_code, BarcodeFormat.QR_CODE, 200, 200);
+            int width = bitMatrix.getWidth();
+            int height = bitMatrix.getHeight();
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    bitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                }
+            }
+            return bitmap;
+        } catch (WriterException e) {
             e.printStackTrace();
             return null;
         }

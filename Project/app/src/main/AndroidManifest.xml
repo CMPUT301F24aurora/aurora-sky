@@ -29,6 +29,7 @@
         <activity android:name=".OrganizerRegistrationActivity" />
         <activity android:name=".EntrantEventDetailsActivity" />
         <activity android:name=".EntrantProfileActivity" />
+        <activity android:name=".EntrantWaitingListActivity"/>
         <activity android:name=".OrganizerMainPage" />
         <activity android:name=".OrganizerCreateEvent" />
         <activity android:name=".OrganizerFacilityActivity"/>
@@ -36,6 +37,8 @@
         <activity android:name=".MapActivity" />
         <activity android:name=".AdminViewEditEventsActivity" />
         <activity android:name=".AdminViewEventsContent" />
+        <activity android:name=".qr_code"/>
+        <activity android:name=".QRScannerActivity"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -49,7 +52,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
 </manifest>

@@ -8,25 +8,22 @@ import java.util.Objects;
 
 public class Entrant extends User implements Serializable {
 
-    private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private static FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String profileImageUrl;
 
     // Default constructor required for Firestore
-    public Entrant() {
-    }
+    public Entrant() {}
 
-    // Constructor with parameters
+    // Constructor with three parameters, calls main constructor with a default phone value
     public Entrant(String id, String name, String email, String profileImageUrl) {
-        super(id, name, email);
-        this.profileImageUrl = profileImageUrl;
+        this(id, name, email, null, profileImageUrl);
     }
 
-    // Constructor with parameters
+    // Main constructor with four parameters
     public Entrant(String id, String name, String email, String phone, String profileImageUrl) {
         super(id, name, email, phone);
         this.profileImageUrl = profileImageUrl;
     }
-
 
     public String getProfileImageUrl() {
         return profileImageUrl;
@@ -41,6 +38,11 @@ public class Entrant extends User implements Serializable {
         this.profileImageUrl = null;
     }
 
+    // Method to inject Firestore instance for testing or alternative setups
+    public static void setDatabase(FirebaseFirestore firestore) {
+        db = firestore;
+    }
+
     // Method to retrieve the device ID
     private static String getDeviceId(Context context) {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -48,6 +50,8 @@ public class Entrant extends User implements Serializable {
 
     // Method to check if an entrant exists in Firestore
     public static void checkEntrantExists(String deviceId, EntrantCheckCallback callback) {
+        if (callback == null) return;
+
         db.collection("entrants").document(deviceId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -58,10 +62,13 @@ public class Entrant extends User implements Serializable {
                         callback.onEntrantNotFound();
                     }
                 })
-                .addOnFailureListener(e -> callback.onError(e));
+                .addOnFailureListener(callback::onError);
     }
 
+    // Retrieve Entrant by device ID from Firestore
     public static void getEntrant(Context context, GetEntrantCallback callback) {
+        if (callback == null) return;
+
         String deviceId = getDeviceId(context); // Get device ID
 
         db.collection("entrants").document(deviceId)
@@ -74,19 +81,17 @@ public class Entrant extends User implements Serializable {
                         callback.onEntrantNotFound(new Exception("Entrant not found"));
                     }
                 })
-                .addOnFailureListener(e -> callback.onError(e));
+                .addOnFailureListener(callback::onError);
     }
 
     // Save Entrant object to Firestore
     public void saveToFirestore(SaveEntrantCallback callback) {
+        if (callback == null) return;
+
         db.collection("entrants").document(this.getId())
                 .set(this)
-                .addOnSuccessListener(aVoid -> {
-                    callback.onSuccess();
-                })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e);
-                });
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(callback::onFailure);
     }
 
     @Override

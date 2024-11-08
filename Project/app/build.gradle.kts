@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
-
 }
 
 android {
@@ -51,8 +50,7 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation("com.google.zxing:core:3.4.1")
-    implementation("com.journeyapps:zxing-android-embedded:4.2.0")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     testImplementation("org.mockito:mockito-core:3.11.2")
     testImplementation("org.robolectric:robolectric:4.6.1")
-
 }

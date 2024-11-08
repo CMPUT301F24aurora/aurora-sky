@@ -31,6 +31,8 @@
         <activity android:name=".OrganizerMainPage" />
         <activity android:name=".OrganizerCreateEvent" />
         <activity android:name=".MapActivity" />
+        <activity android:name=".AdminViewEditEventsActivity" />
+        <activity android:name=".AdminViewEventsContent" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

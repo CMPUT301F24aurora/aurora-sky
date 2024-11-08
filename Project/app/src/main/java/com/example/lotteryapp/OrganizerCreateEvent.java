@@ -67,6 +67,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
             public void onSuccess(String documentId) {
                 Toast.makeText(OrganizerCreateEvent.this, "Event created successfully", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Event created successfully.");
+                //event.setEventId(documentId); // Set Event ID
 
                 // Navigate to another activity if necessary
                 Intent intent = new Intent(OrganizerCreateEvent.this, OrganizerMainPage.class);

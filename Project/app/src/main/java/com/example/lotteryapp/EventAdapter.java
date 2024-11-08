@@ -6,14 +6,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
     private final List<Event> eventList;
-    private List<Event> filteredEventList;
     private final OnEventClickListener eventClickListener; // Add this
 
     public interface OnEventClickListener {
@@ -22,7 +19,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     public EventAdapter(List<Event> eventList, OnEventClickListener listener) {
         this.eventList = eventList;
-        this.filteredEventList = new ArrayList<>(eventList);
         this.eventClickListener = listener; // Initialize the listener
     }
 
@@ -46,22 +42,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     @Override
     public int getItemCount() {
-        return filteredEventList.size();
-    }
-
-    public void filter(String query) {
-        filteredEventList.clear();
-        if (query.isEmpty()) {
-            filteredEventList.addAll(eventList);
-        }
-        else {
-            for (Event event : eventList) {
-                if (event.getName().toLowerCase().contains(query.toLowerCase())) {
-                    filteredEventList.add(event);
-                }
-            }
-        }
-        notifyDataSetChanged();
+        return eventList.size();
     }
 
     public class EventViewHolder extends RecyclerView.ViewHolder {

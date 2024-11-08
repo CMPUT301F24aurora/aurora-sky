@@ -45,17 +45,5 @@
 
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/admin_fac_remove"
-        android:layout_width="132dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="56dp"
-        android:backgroundTint="#000000"
-        android:text="Remove"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

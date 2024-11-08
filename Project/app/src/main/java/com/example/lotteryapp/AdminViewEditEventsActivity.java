@@ -27,11 +27,11 @@ import android.widget.SearchView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdminViewEditEventsActivity extends AppCompatActivity implements EventAdapter.OnEventClickListener{
+public class AdminViewEditEventsActivity extends AppCompatActivity implements AdminEventAdapter.OnEventClickListener{
 
     private RecyclerView adminEvList;
     private List<Event> eventList;
-    private EventAdapter adapter;
+    private AdminEventAdapter adapter;
     private FirebaseFirestore db;
 
     @Override
@@ -41,7 +41,7 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ev
 
         adminEvList = findViewById(R.id.admin_ev_list);
         eventList = new ArrayList<>();
-        adapter = new EventAdapter(eventList, this);
+        adapter = new AdminEventAdapter(eventList, this);
 
         adminEvList.setLayoutManager(new LinearLayoutManager(this));
         adminEvList.setAdapter(adapter);

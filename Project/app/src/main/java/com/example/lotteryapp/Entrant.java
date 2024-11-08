@@ -9,19 +9,36 @@ import java.util.Objects;
 public class Entrant extends User implements Serializable {
 
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private String profileImageUrl;
 
     // Default constructor required for Firestore
     public Entrant() {
     }
 
     // Constructor with parameters
-    public Entrant(String id, String name, String email) {
+    public Entrant(String id, String name, String email, String profileImageUrl) {
         super(id, name, email);
+        this.profileImageUrl = profileImageUrl;
     }
 
     // Constructor with parameters
-    public Entrant(String id, String name, String email, String phone) {
+    public Entrant(String id, String name, String email, String phone, String profileImageUrl) {
         super(id, name, email, phone);
+        this.profileImageUrl = profileImageUrl;
+    }
+
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    // Method to remove profile picture
+    public void removeProfileImage() {
+        this.profileImageUrl = null;
     }
 
     // Method to retrieve the device ID

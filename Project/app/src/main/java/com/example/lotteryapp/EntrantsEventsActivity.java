@@ -88,6 +88,10 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
                 Intent organizerIntent = new Intent(EntrantsEventsActivity.this, OrganizerMainPage.class);
                 startActivity(organizerIntent);
             }
+            else if (id == R.id.map_nav) {
+                Intent organizerIntent = new Intent(EntrantsEventsActivity.this, MapActivity.class);
+                startActivity(organizerIntent);
+            }
             drawerLayout.closeDrawers(); // Close drawer after selection
             return true;
         });

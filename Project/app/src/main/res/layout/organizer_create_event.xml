@@ -47,8 +47,9 @@
                 android:id="@+id/editTextDateTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter date and time"
-                android:inputType="datetime"
+                android:hint="Select date and time"
+                android:focusable="false"
+                android:inputType="none"
                 android:padding="12dp"
                 android:layout_marginBottom="16dp"/>
 
@@ -58,6 +59,7 @@
                 android:text="Number of Members (NL-No Limit)"
                 android:textColor="@color/black"
                 android:layout_marginBottom="4dp" />
+
             <EditText
                 android:id="@+id/editNumberOfMembers"
                 android:layout_width="match_parent"
@@ -73,6 +75,7 @@
                 android:text="Event Description"
                 android:textColor="@color/black"
                 android:layout_marginBottom="4dp" />
+
             <EditText
                 android:id="@+id/editTextEventDescription"
                 android:layout_width="match_parent"

@@ -1,74 +1,97 @@
 package com.example.lotteryapp;
 
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentSnapshot;
 import java.io.Serializable;
 
 public class Facility implements Serializable {
 
-    private String id;
+    private String organizerId;
     private String name;
-    private String time;
+    private String startTime;
+    private String endTime;
     private String location;
     private String email;
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public Facility() {}
 
-    public Facility(String name, String time, String location, String email) {
+    public Facility(String organizerId, String name, String startTime, String endTime, String location, String email) {
+        this.organizerId = organizerId;
         this.name = name;
-        this.time = time;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.location = location;
         this.email = email;
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getOrganizerId() { return organizerId; }
+    public void setOrganizerId(String organizerId) { this.organizerId = organizerId; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-    public String getTime() { return time; }
-    public void setTime(String time) { this.time = time; }
+    public String getStartTime() { return startTime; }
+    public void setStartTime(String startTime) { this.startTime = startTime; }
+    public String getEndTime() { return endTime; }
+    public void setEndTime(String endTime) { this.endTime = endTime; }
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
     public void saveToFirestore(FacilityCallback callback) {
-        if (id == null || id.isEmpty()) {
+        if (organizerId == null || organizerId.isEmpty()) {
             // Create a new document with an auto-generated ID
             db.collection("facilities")
                     .add(this)
                     .addOnSuccessListener(documentReference -> {
-                        String documentId = documentReference.getId();
-                        this.setId(documentId);// Save generated ID back to the object
-                        callback.onSuccess(documentId);
+                        this.organizerId = documentReference.getId();
+                        callback.onSuccess();
                     })
                     .addOnFailureListener(callback::onFailure);
         } else {
             // Update an existing document with the provided ID
-            db.collection("facilities").document(this.id)
+            db.collection("facilities").document(this.organizerId)
                     .set(this)
-                    .addOnSuccessListener(aVoid -> callback.onSuccess(this.id))
+                    .addOnSuccessListener(aVoid -> callback.onSuccess())
                     .addOnFailureListener(callback::onFailure);
         }
     }
 
     public void updateInFirestore(FacilityCallback callback) {
-        db.collection("facilities").document(this.id)
+        db.collection("facilities").document(this.organizerId)
                 .set(this)
-                .addOnSuccessListener(aVoid -> callback.onSuccess(this.id))
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
                 .addOnFailureListener(callback::onFailure);
     }
 
     public void deleteFromFirestore(FacilityCallback callback) {
-        db.collection("facilities").document(this.id)
+        db.collection("facilities").document(this.organizerId)
                 .delete()
-                .addOnSuccessListener(aVoid -> callback.onSuccess(this.id))
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public static void getFacilityById(String facilityId, GetFacilityCallback callback) {
+        db.collection("facilities").document(facilityId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    Facility facility = documentSnapshot.toObject(Facility.class);
+                    if (facility != null) {
+                        facility.setOrganizerId(documentSnapshot.getId());
+                        callback.onSuccess(facility);
+                    } else {
+                        callback.onFailure(new Exception("Facility not found"));
+                    }
+                })
                 .addOnFailureListener(callback::onFailure);
     }
 
     public interface FacilityCallback {
-        void onSuccess(String documentId);
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    public interface GetFacilityCallback {
+        void onSuccess(Facility facility);
         void onFailure(Exception e);
     }
 }

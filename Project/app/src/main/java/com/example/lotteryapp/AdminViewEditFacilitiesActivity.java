@@ -33,6 +33,7 @@ public class AdminViewEditFacilitiesActivity extends AppCompatActivity implement
         setContentView(R.layout.admin_facilities_page);
 
         //Add mock facility:
+        /*
         Facility facility = new Facility("test", "12:50", "Edmonton", "testing@gmail.com");
         facility.saveToFirestore(new Facility.FacilityCallback() {
             @Override
@@ -46,6 +47,7 @@ public class AdminViewEditFacilitiesActivity extends AppCompatActivity implement
                 Log.w("AddMockFaculty", "Error creating Faculty!");
             }
         });
+         */
 
         adminFacList = findViewById(R.id.admin_fac_list);
         db = FirebaseFirestore.getInstance();

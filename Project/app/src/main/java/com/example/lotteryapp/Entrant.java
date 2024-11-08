@@ -4,6 +4,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.Serializable;
 import android.content.Context;
 import android.provider.Settings;
+import android.util.Patterns;
+
 import java.util.Objects;
 
 public class Entrant extends User implements Serializable {
@@ -93,6 +95,7 @@ public class Entrant extends User implements Serializable {
                 .addOnSuccessListener(aVoid -> callback.onSuccess())
                 .addOnFailureListener(callback::onFailure);
     }
+
 
     @Override
     public void displayUserInfo() {

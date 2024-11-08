@@ -32,6 +32,8 @@
         <activity android:name=".EntrantWaitingListActivity"/>
         <activity android:name=".OrganizerMainPage" />
         <activity android:name=".OrganizerCreateEvent" />
+        <activity android:name=".OrganizerFacilityActivity"/>
+        <activity android:name=".OrganizerFacilityListActivity"/>
         <activity android:name=".MapActivity" />
 
         <meta-data

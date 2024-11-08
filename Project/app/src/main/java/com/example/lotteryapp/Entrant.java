@@ -8,11 +8,10 @@ import java.util.Objects;
 
 public class Entrant extends User implements Serializable {
 
-    private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private static FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // Default constructor required for Firestore
-    public Entrant() {
-    }
+    public Entrant() {}
 
     // Constructor with parameters
     public Entrant(String id, String name, String email) {
@@ -22,6 +21,11 @@ public class Entrant extends User implements Serializable {
     // Constructor with parameters
     public Entrant(String id, String name, String email, String phone) {
         super(id, name, email, phone);
+    }
+
+    // Method to inject Firestore instance for testing or alternative setups
+    public static void setDatabase(FirebaseFirestore firestore) {
+        db = firestore;
     }
 
     // Method to retrieve the device ID
@@ -41,7 +45,7 @@ public class Entrant extends User implements Serializable {
                         callback.onEntrantNotFound();
                     }
                 })
-                .addOnFailureListener(e -> callback.onError(e));
+                .addOnFailureListener(callback::onError);
     }
 
     public static void getEntrant(Context context, GetEntrantCallback callback) {
@@ -57,19 +61,15 @@ public class Entrant extends User implements Serializable {
                         callback.onEntrantNotFound(new Exception("Entrant not found"));
                     }
                 })
-                .addOnFailureListener(e -> callback.onError(e));
+                .addOnFailureListener(callback::onError);
     }
 
     // Save Entrant object to Firestore
     public void saveToFirestore(SaveEntrantCallback callback) {
         db.collection("entrants").document(this.getId())
                 .set(this)
-                .addOnSuccessListener(aVoid -> {
-                    callback.onSuccess();
-                })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e);
-                });
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(callback::onFailure);
     }
 
     @Override

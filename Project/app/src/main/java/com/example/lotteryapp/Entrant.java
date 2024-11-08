@@ -4,6 +4,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.Serializable;
 import android.content.Context;
 import android.provider.Settings;
+import android.util.Patterns;
+
 import java.util.Objects;
 
 public class Entrant extends User implements Serializable {
@@ -92,6 +94,17 @@ public class Entrant extends User implements Serializable {
                 .set(this)
                 .addOnSuccessListener(aVoid -> callback.onSuccess())
                 .addOnFailureListener(callback::onFailure);
+    }
+
+    // Validation method for email
+    public static boolean isValidEmail(String email) {
+        return email != null && Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    // Validation method for phone number
+    public static boolean isValidPhone(String phone) {
+        String phoneRegex = "^[0-9]{10,15}$"; // Allows numbers between 10 and 15 digits
+        return phone != null && phone.matches(phoneRegex);
     }
 
     @Override

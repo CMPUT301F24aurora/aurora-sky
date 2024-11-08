@@ -24,7 +24,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity {
+public class  MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private FirebaseFirestore db;

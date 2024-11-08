@@ -37,6 +37,10 @@
         <activity android:name=".MapActivity" />
         <activity android:name=".AdminViewEditEventsActivity" />
         <activity android:name=".AdminViewEventsContent" />
+        <activity android:name=".AdminViewEditFacilitiesActivity" />
+        <activity android:name=".AdminViewFacilitiesContent" />
+        <activity android:name=".AdminViewEditProfilesActivity" />
+        <activity android:name=".AdminViewProfilesContent" />
         <activity android:name=".qr_code"/>
         <activity android:name=".QRScannerActivity"/>
 

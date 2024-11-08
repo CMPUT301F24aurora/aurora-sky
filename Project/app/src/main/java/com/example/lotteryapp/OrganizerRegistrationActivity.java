@@ -86,8 +86,31 @@ public class OrganizerRegistrationActivity extends AppCompatActivity {
                     if (documentSnapshot.exists()) {
                         // Device ID found in organizers collection, proceed to OrganizerMainPage
                         Log.d(TAG, "Device ID found in organizers collection.");
-                        navigateToOrganizerMainPage();  // Proceed to OrganizerMainPage
-                    } else {
+
+                        // Create Entrant object to add to entrants collection
+                        String name = documentSnapshot.getString("name");
+                        String email = documentSnapshot.getString("email");
+                        String phone = documentSnapshot.getString("phone");
+
+                        Entrant entrant = new Entrant(deviceId, name, email, phone);
+
+                        // Save Entrant to Firestore
+                        entrant.saveToFirestore(new SaveEntrantCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d(TAG, "Organizer successfully added as an entrant.");
+
+                                // Navigate to OrganizerMainPage
+                                navigateToOrganizerMainPage();
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                Log.e(TAG, "Error adding organizer as entrant", e);
+                                Toast.makeText(getApplicationContext(), "Error saving organizer as entrant", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }else {
                         // Device ID not found in either, show registration form
                         Log.d(TAG, "Device ID not found in either entrants or organizers, showing registration form.");
                         initializeRegistration();
@@ -110,14 +133,14 @@ public class OrganizerRegistrationActivity extends AppCompatActivity {
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
-            profileImageUri = data.getData();
-            profileImageView.setImageURI(profileImageUri);
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+//            profileImageUri = data.getData();
+//            profileImageView.setImageURI(profileImageUri);
+//        }
+//    }
 
     private void registerOrganizer() {
         String name = nameEditText.getText().toString().trim();

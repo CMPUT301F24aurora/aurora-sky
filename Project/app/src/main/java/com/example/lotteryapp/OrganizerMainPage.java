@@ -3,6 +3,7 @@ package com.example.lotteryapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -15,8 +16,7 @@ import com.google.android.material.navigation.NavigationView;
 public class OrganizerMainPage extends AppCompatActivity {
 
     private Button createEventButton;
-    private Button createFacilityButton;
-    private Button manageFacilitiesButton;
+    private Button facilityButton; // Ensure this is declared
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private Organizer currentOrganizer;
@@ -31,17 +31,15 @@ public class OrganizerMainPage extends AppCompatActivity {
         ImageButton menuButton = findViewById(R.id.menu_button);
 
         createEventButton = findViewById(R.id.create_event_button);
-        createFacilityButton = findViewById(R.id.create_facility_button);
-        manageFacilitiesButton = findViewById(R.id.manage_facilities_button);
+        facilityButton = findViewById(R.id.create_facility_button); // Ensure this ID matches your XML
 
         // Fetch the current organizer based on device ID
         String deviceId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
-        // Assume getDeviceId() returns the device ID
         Organizer.getOrganizerByDeviceId(deviceId, new GetOrganizerCallback() {
             @Override
             public void onOrganizerFound(Organizer organizer) {
                 currentOrganizer = organizer;
-                //Toast.makeText(OrganizerMainPage.this, "Organizer found: " + organizer.getName(), Toast.LENGTH_SHORT).show();
+                setupFacilityButton(); // Call to setup the facility button here
             }
 
             @Override
@@ -79,19 +77,43 @@ public class OrganizerMainPage extends AppCompatActivity {
 
         createEventButton.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerMainPage.this, OrganizerCreateEvent.class);
-            intent.putExtra("organizer", currentOrganizer); // Pass the organizer data if needed
-            startActivity(intent);
-        });
-
-        createFacilityButton.setOnClickListener(v -> {
-            Intent intent = new Intent(OrganizerMainPage.this, OrganizerFacilityActivity.class);
-            startActivity(intent);
-        });
-
-        manageFacilitiesButton.setOnClickListener(v -> {
-            Intent intent = new Intent(OrganizerMainPage.this, OrganizerFacilityListActivity.class);
+            intent.putExtra("organizer", currentOrganizer);
             startActivity(intent);
         });
     }
 
+    private void setupFacilityButton() {
+        if (currentOrganizer != null) { // Check if currentOrganizer is initialized
+            Log.w("Yes", currentOrganizer.getName());
+
+            if (currentOrganizer.getFacility_id() == null || currentOrganizer.getFacility_id().isEmpty()) {
+                // Organizer does not have a facility, show "Create Facility"
+                facilityButton.setText("Create Facility");
+                facilityButton.setOnClickListener(v -> {
+                    Intent intent = new Intent(OrganizerMainPage.this, OrganizerFacilityActivity.class);
+                    intent.putExtra("organizer", currentOrganizer);
+                    startActivity(intent);
+                });
+            } else {
+                // Organizer has a facility, show "Manage Facility"
+                facilityButton.setText("Manage Facility");
+                facilityButton.setOnClickListener(v -> {
+                    Intent intent = new Intent(OrganizerMainPage.this, OrganizerFacilityActivity.class);
+                    intent.putExtra("organizer", currentOrganizer);
+                    intent.putExtra("facility_id", currentOrganizer.getFacility_id());
+                    startActivity(intent);
+                });
+            }
+        } else {
+            Log.e("Error", "Current organizer is null");
+        }
+    }
+
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        if (currentOrganizer != null) {
+//            fetchCurrentOrganizer(); // Refresh organizer data
+//        }
+//    }
 }

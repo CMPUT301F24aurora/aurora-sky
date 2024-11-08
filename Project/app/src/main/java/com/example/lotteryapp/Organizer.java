@@ -2,24 +2,16 @@ package com.example.lotteryapp;
 
 public class Organizer extends User {
 
-    // Default constructor
-    public Organizer() {}
-
-    // Constructor with parameters
-    public Organizer(String id, String name, String email, String phone) {
-        super(id, name, email, phone);
+    public Organizer(String name, String email, String password) {
+        super(name, email, password, "organizer"); // Assuming "organizer" is the role
     }
 
     @Override
     public void displayUserInfo() {
-        System.out.println("Organizer ID: " + getId());
-        System.out.println("Organizer Name: " + getName());
-        System.out.println("Organizer Email: " + getEmail());
-        System.out.println("Organizer Phone: " + getPhone());
+        System.out.println("Organizer Info: " + getName());
     }
 
-
     public boolean hasOrganizerPermissions() {
-        return true;
+        return "organizer".equals(getRole());
     }
 }

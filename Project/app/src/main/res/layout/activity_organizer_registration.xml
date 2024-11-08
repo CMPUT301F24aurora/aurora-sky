@@ -6,50 +6,44 @@
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/name_field"
+        android:id="@+id/organizer_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Facility Name"
+        android:hint="Name"
         android:minHeight="48dp"
-        android:padding="8dp" />
+        android:padding="12dp" />
 
     <EditText
-        android:id="@+id/time_field"
+        android:id="@+id/organizer_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Operating Hours"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
         android:minHeight="48dp"
-        android:padding="8dp" />
+        android:padding="12dp" />
 
     <EditText
-        android:id="@+id/location_field"
+        android:id="@+id/organizer_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Location"
+        android:hint="Password"
+        android:inputType="textPassword"
         android:minHeight="48dp"
-        android:padding="8dp" />
+        android:padding="12dp" />
 
     <EditText
-        android:id="@+id/email_field"
+        android:id="@+id/organizer_phone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Contact Email"
+        android:hint="Phone"
+        android:inputType="phone"
         android:minHeight="48dp"
-        android:padding="8dp" />
+        android:padding="12dp" />
 
     <Button
-        android:id="@+id/save_button"
+        android:id="@+id/register_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Save Facility" />
-
-    <Button
-        android:id="@+id/remove_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Remove Facility"
-        android:visibility="gone" />
-
+        android:text="Register"
+        android:minHeight="48dp" />
 </LinearLayout>

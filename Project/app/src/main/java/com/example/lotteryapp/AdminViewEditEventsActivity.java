@@ -22,6 +22,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import android.widget.SearchView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +49,19 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ev
         db = FirebaseFirestore.getInstance();
 
         loadEvents();
+
+        // Set up SearchView
+        SearchView searchView = findViewById(R.id.admin_search_ev);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.filter(query); return false;
+            }
+            @Override public boolean onQueryTextChange(String newText) {
+                adapter.filter(newText);
+                return false;
+            }
+        });
     }
 
     private void loadEvents() {
@@ -75,6 +90,7 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ev
         intent.putExtra("eventDate", event.getEventDate());
         intent.putExtra("eventDescription", event.getDescription());
         intent.putExtra("eventId", event.getQR_code());
+        intent.putExtra("eventHash", event.getQR_code());
         startActivity(intent);
     }
 }

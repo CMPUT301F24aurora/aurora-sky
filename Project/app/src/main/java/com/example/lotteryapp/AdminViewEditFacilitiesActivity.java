@@ -20,6 +20,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.widget.SearchView;
+
 public class AdminViewEditFacilitiesActivity extends AppCompatActivity implements FacilityAdapter.FacilityClickListener {
 
     private RecyclerView adminFacList;
@@ -58,6 +60,20 @@ public class AdminViewEditFacilitiesActivity extends AppCompatActivity implement
         adminFacList.setAdapter(facilityAdapter);
 
         loadFacilities();
+
+        // Set up SearchView
+        SearchView searchView = findViewById(R.id.fsearchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String query) {
+            facilityAdapter.filter(query); return false;
+        }
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            facilityAdapter.filter(newText);
+            return false;
+        }
+        });
     }
 
     private void loadFacilities() {
@@ -86,9 +102,9 @@ public class AdminViewEditFacilitiesActivity extends AppCompatActivity implement
         // Pass necessary data to the new activity if needed
         intent.putExtra("facilityName", facility.getName());
         intent.putExtra("facilityLocation", facility.getLocation());
-        intent.putExtra("facilityTime", facility.getTime());
+        intent.putExtra("facilityTime", facility.getStartTime());
         intent.putExtra("facilityEmail", facility.getEmail());
-        intent.putExtra("facilityId", facility.getId());
+        intent.putExtra("facilityId", facility.getOrganizerId());
         startActivity(intent);
     }
 }

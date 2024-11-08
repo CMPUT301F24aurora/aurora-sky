@@ -2,6 +2,7 @@ package com.example.lotteryapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AdminViewFacilitiesContent extends AppCompatActivity {
@@ -67,6 +69,9 @@ public class AdminViewFacilitiesContent extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
+                    db.collection("organizers").document(facilityId) .update("facility_id", FieldValue.delete())
+                            .addOnSuccessListener(aVoid -> Log.d("OrganizerFacilityDeletion", "facility_id field deleted successfully"))
+                            .addOnFailureListener(e -> Log.e("OrganizerFacilityDeletion", "Error deleting facility_id field", e));
                     Toast.makeText(AdminViewFacilitiesContent.this, "Facility deleted successfully", Toast.LENGTH_SHORT).show();
                     // Navigate back to AdminViewEditFacilitiesActivity
                     Intent intent = new Intent(AdminViewFacilitiesContent.this, AdminViewEditFacilitiesActivity.class);

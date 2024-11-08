@@ -59,7 +59,6 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
     // Declare the ActivityResultLauncher
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
-    LinearProgressIndicator progressIndicator;
     Uri image;
     Button uploadImage;
     ImageButton selectImage;
@@ -178,12 +177,6 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(EntrantProfileEditActivity.this, "Failed!" + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
-                progressIndicator.setMax(Math.toIntExact(taskSnapshot.getTotalByteCount()));
-                progressIndicator.setProgress(Math.toIntExact(taskSnapshot.getBytesTransferred()));
             }
         });
     }

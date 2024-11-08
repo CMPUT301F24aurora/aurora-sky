@@ -22,9 +22,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-public class  MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private FirebaseFirestore db;
@@ -52,58 +53,92 @@ public class  MainActivity extends AppCompatActivity {
         });
 
         // Button for Organizer
-        Button organizerButton = findViewById(R.id.login_button);
+        Button organizerButton = findViewById(R.id.organizerButton);
         organizerButton.setOnClickListener(v -> {
-            // Start the Organizer Main Page when the organizer button is clicked
-            Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
-            startActivity(intent);
+            checkOrganizerStatusAndNavigate();
         });
 
-        // Button for signing up as an Organizer
-        Button organizerSignupButton = findViewById(R.id.signup_button);
-        organizerButton.setOnClickListener(v -> {
-            // Start the Organizer Main Page when the organizer button is clicked
-            Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
-            startActivity(intent);
-        });
-
-        // Get the device ID
+        // Call the method to check admin status after setting up the UI
         String deviceId = getDeviceId(this);
-
-        //Print it for our reference to add to the admin list
-        Log.i("Device ID", deviceId);
-
-        // Button for signing in as Admin
-        Button adminSignInButton = findViewById(R.id.admin_link);
-        adminSignInButton.setVisibility(View.GONE);
         checkAdminAndDisplayPage(deviceId);
+    }
 
-        Event event = new Event("Dance Class", "21/10/2024", 40, "Dancey Dance");
-//        event.saveToFirestore(new Event.SaveEventCallback() {
-//
-//            @Override
-//            public void onSuccess(String documentId) {
-//                // Call the function to generate a unique qr code using the unique event document ID
-//                String QrHash = event.generateQRHash(documentId);
-//                // Update the event with the newly generated QR hash
-//                DocumentReference docRef = db.collection("events").document(documentId);
-//                docRef.update("QR Hash", QrHash)
-//                        .addOnSuccessListener(aVoid -> {
-//                            System.out.println("QR Hash added successfully!");
-//                        })
-//                        .addOnFailureListener(e -> {
-//                            System.out.println("Error updating document: " + e.getMessage());
-//                        });
-//                System.out.println("Event saved successfully with Document ID: " + documentId);
-//                System.out.println("Event created successfully with QR Hash: " + QrHash);
-//            }
-//
-//            @Override
-//            public void onFailure(Exception e) {
-//                System.out.println("Failed to save event: " + e.getMessage());
-//            }
-//        });
+    private void checkOrganizerStatusAndNavigate() {
+        String deviceId = getDeviceId(this);
+        Log.d(TAG, "Checking in organizers collection for device ID: " + deviceId);
 
+        Entrant.checkEntrantExists(deviceId, new EntrantCheckCallback() {
+            @Override
+            public void onEntrantExists(Entrant entrant) {
+                // If the user is recognized as an entrant, proceed to OrganizerMainPage
+                Log.d(TAG, "User recognized as an entrant.");
+
+                // Now check if they exist in the 'organizers' collection
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("organizers").document(deviceId).get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (!documentSnapshot.exists()) {
+                                // If the user is not an organizer, add them to the 'organizers' collection
+                                Log.d(TAG, "User is not in organizers collection. Adding them.");
+                                Map<String, Object> organizerData = new HashMap<>();
+                                organizerData.put("name", entrant.getName());
+                                organizerData.put("email", entrant.getEmail());
+                                organizerData.put("phone", entrant.getPhone());
+
+                                db.collection("organizers")
+                                        .document(deviceId) // Use deviceId as the document ID
+                                        .set(organizerData)
+                                        .addOnSuccessListener(aVoid -> {
+                                            Log.d(TAG, "User successfully added to organizers collection.");
+
+                                            // Add the user to the 'entrants' collection as well
+                                            db.collection("entrants")
+                                                    .document(deviceId) // Use deviceId as the document ID
+                                                    .set(organizerData)
+                                                    .addOnSuccessListener(aVoid1 -> {
+                                                        Log.d(TAG, "User successfully added to entrants collection.");
+                                                        // Proceed to OrganizerMainPage
+                                                        Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
+                                                        startActivity(intent);
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        Log.e(TAG, "Error adding user to entrants collection", e);
+                                                        Toast.makeText(MainActivity.this, "Error adding user to entrants collection", Toast.LENGTH_SHORT).show();
+                                                    });
+
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.e(TAG, "Error adding user to organizers collection", e);
+                                            Toast.makeText(MainActivity.this, "Error registering as organizer", Toast.LENGTH_SHORT).show();
+                                        });
+                            } else {
+                                // User is already an organizer, proceed to OrganizerMainPage
+                                Log.d(TAG, "User is already an organizer.");
+                                Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
+                                startActivity(intent);
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.w(TAG, "Error checking organizers collection", e);
+                            Toast.makeText(MainActivity.this, "Error checking organizers", Toast.LENGTH_SHORT).show();
+                        });
+            }
+
+            @Override
+            public void onEntrantNotFound() {
+                // If the user is not recognized, go to OrganizerRegistrationActivity
+                Intent intent = new Intent(MainActivity.this, OrganizerRegistrationActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.w(TAG, "Error checking entrant in Firestore", e);
+            }
+        });
+
+        // Print it for our reference to add to the admin list
+        Log.i("Device ID", deviceId);
     }
 
     private void checkEntrantExistsAndNavigate() {
@@ -131,9 +166,7 @@ public class  MainActivity extends AppCompatActivity {
             public void onError(Exception e) {
                 Log.w(TAG, "Error checking entrant in Firestore", e);
             }
-
         });
-
     }
 
     private void checkAdminAndDisplayPage(String deviceId) {
@@ -144,20 +177,16 @@ public class  MainActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        Button adminSignInButton = findViewById(R.id.admin_link);
+
                         if (task.isSuccessful() && !task.getResult().isEmpty()) {
                             // Device ID is registered as an admin, show the admin login button
-                            Button adminSignInButton = findViewById(R.id.admin_link);
                             adminSignInButton.setVisibility(View.VISIBLE);
                             // Set onClickListener to navigate to admin homepage
-                            adminSignInButton.setOnClickListener(new View.OnClickListener() {
-                                @Override public void onClick(View v) {
-                                    navigateToAdminHomepage();
-                                }
-                            });
-                        }
-                        else {
-                            // Device ID is not registered as an admin
-                            //Toast.makeText(MainActivity.this, "Access Denied, not an Admin!", Toast.LENGTH_SHORT).show();
+                            adminSignInButton.setOnClickListener(v -> navigateToAdminHomepage());
+                        } else {
+                            // Device ID is not registered as an admin, ensure the button is hidden
+                            adminSignInButton.setVisibility(View.GONE);
                         }
                     }
                 });

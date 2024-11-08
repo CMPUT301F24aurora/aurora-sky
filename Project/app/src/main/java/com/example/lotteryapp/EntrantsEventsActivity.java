@@ -2,6 +2,7 @@ package com.example.lotteryapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -50,9 +51,9 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
                 Toast.makeText(EntrantsEventsActivity.this, "You are on the entrant page", Toast.LENGTH_SHORT).show();
                 // Add your navigation logic here
             } else if (id == R.id.organizer_nav) {
-                Intent intent = new Intent(EntrantsEventsActivity.this, OrganizerMainPage.class);
+                Intent organizerIntent = new Intent(EntrantsEventsActivity.this, OrganizerMainPage.class);
                 Entrant entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
-                startActivity(intent);
+                startActivity(organizerIntent);
             }
             drawerLayout.closeDrawers(); // Close drawer after selection
             return true;
@@ -74,11 +75,17 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
         // Initialize profile icon button
         profileIcon = findViewById(R.id.profile_icon);
         profileIcon.setOnClickListener(v -> {
+            Log.d("EntrantsEvents", "Profile icon clicked");
             Intent oldIntent = getIntent();
             Entrant entrant = (Entrant) oldIntent.getSerializableExtra("entrant_data");
-            Intent intent = new Intent(EntrantsEventsActivity.this, EntrantProfileActivity.class);
-            intent.putExtra("entrant_data", entrant);
-            startActivity(intent);
+            if (entrant != null) {
+                Intent intent = new Intent(EntrantsEventsActivity.this, EntrantProfileActivity.class);
+                intent.putExtra("entrant_data", entrant);
+                startActivity(intent);
+            } else {
+                Log.e("EntrantsEvents", "Entrant data is null");
+                // Optionally, navigate to a default activity or show an error message
+            }
         });
     }
 
@@ -120,15 +127,15 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
 
     @Override
     public void onEventClick(Event event) {
-        Intent intent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
+        Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
 
         // Get the entrant data from the intent
         Entrant entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
 
         // Put the event and entrant data into the intent
-        intent.putExtra("event_data", event); // Assuming Event implements Serializable
-        intent.putExtra("entrant_data", entrant); // Pass the entrant data
+        eventDetailsIntent.putExtra("event_data", event); // Assuming Event implements Serializable
+        eventDetailsIntent.putExtra("entrant_data", entrant); // Pass the entrant data
 
-        startActivity(intent);
+        startActivity(eventDetailsIntent);
     }
 }

@@ -48,6 +48,10 @@ public class OrganizerMainPage extends AppCompatActivity {
                 Intent organizerIntent = new Intent(OrganizerMainPage.this, MapActivity.class);
                 startActivity(organizerIntent);
             }
+            else if (id == R.id.qr_code_nav) {
+                Intent organizerIntent = new Intent(OrganizerMainPage.this, QRScannerActivity.class);
+                startActivity(organizerIntent);
+            }
             drawerLayout.closeDrawers(); // Close drawer after selection
             return true;
         });

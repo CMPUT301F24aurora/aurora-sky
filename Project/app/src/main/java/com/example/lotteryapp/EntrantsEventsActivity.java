@@ -92,6 +92,10 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
                 Intent organizerIntent = new Intent(EntrantsEventsActivity.this, MapActivity.class);
                 startActivity(organizerIntent);
             }
+            else if (id == R.id.qr_code_nav) {
+                Intent organizerIntent = new Intent(EntrantsEventsActivity.this, QRScannerActivity.class);
+                startActivity(organizerIntent);
+            }
             drawerLayout.closeDrawers(); // Close drawer after selection
             return true;
         });
@@ -213,7 +217,7 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
     @Override
     public void onEventClick(Event event) {
 //        Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
-      //Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, qr_code.class);
+//      Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, qr_code.class);
         Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, QRScannerActivity.class);
 
 

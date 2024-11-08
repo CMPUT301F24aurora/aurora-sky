@@ -13,7 +13,7 @@ public class Entrant extends User implements Serializable {
     private String profileImageUrl;
 
     // Default constructor required for Firestore
-    public Entrant(String e123, String johnDoe, String mail) {}
+    public Entrant(String id, String name, String email) {}
 
     // Constructor with three parameters, calls main constructor with a default phone value
     public Entrant(String id, String name, String email, String profileImageUrl) {

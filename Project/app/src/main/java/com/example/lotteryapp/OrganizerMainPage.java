@@ -21,6 +21,8 @@ public class OrganizerMainPage extends AppCompatActivity {
         manageFacilitiesButton = findViewById(R.id.manage_facilities_button);
 
         createEventButton.setOnClickListener(v -> {
+            Intent intent = new Intent(OrganizerMainPage.this, OrganizerCreateEvent.class);
+            startActivity(intent);
         });
 
         createFacilityButton.setOnClickListener(v -> {

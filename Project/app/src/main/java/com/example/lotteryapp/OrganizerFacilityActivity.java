@@ -1,5 +1,6 @@
 package com.example.lotteryapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,7 +14,6 @@ public class OrganizerFacilityActivity extends AppCompatActivity {
     private EditText nameField, timeField, locationField, emailField;
     private Button saveButton, removeButton;
     private Facility facility;
-    private Organizer organizer;
     private boolean isEditing;
 
     @Override
@@ -60,7 +60,8 @@ public class OrganizerFacilityActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess() {
                     Toast.makeText(OrganizerFacilityActivity.this, isEditing ? "Facility updated" : "Facility created", Toast.LENGTH_SHORT).show();
-                    finish();
+                    Intent intent = new Intent(OrganizerFacilityActivity.this, OrganizerMainPage.class);
+                    startActivity(intent);
                 }
 
                 @Override
@@ -68,12 +69,7 @@ public class OrganizerFacilityActivity extends AppCompatActivity {
                     Toast.makeText(OrganizerFacilityActivity.this, "Operation failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             };
-
-            if (isEditing) {
-                facility.updateInFirestore(callback);
-            } else {
-                facility.saveToFirestore(callback);
-            }
+            facility.saveToFirestore(callback);
         });
     }
 
@@ -94,4 +90,3 @@ public class OrganizerFacilityActivity extends AppCompatActivity {
         });
     }
 }
-

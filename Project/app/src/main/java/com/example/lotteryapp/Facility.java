@@ -1,5 +1,6 @@
 package com.example.lotteryapp;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.Serializable;
 
@@ -34,10 +35,22 @@ public class Facility implements Serializable {
     public void setEmail(String email) { this.email = email; }
 
     public void saveToFirestore(FacilityCallback callback) {
-        db.collection("facilities").document(this.id)
-                .set(this)
-                .addOnSuccessListener(aVoid -> callback.onSuccess())
-                .addOnFailureListener(callback::onFailure);
+        if (id == null || id.isEmpty()) {
+            // Create a new document with an auto-generated ID
+            db.collection("facilities")
+                    .add(this)
+                    .addOnSuccessListener(documentReference -> {
+                        this.id = documentReference.getId(); // Save generated ID back to the object
+                        callback.onSuccess();
+                    })
+                    .addOnFailureListener(callback::onFailure);
+        } else {
+            // Update an existing document with the provided ID
+            db.collection("facilities").document(this.id)
+                    .set(this)
+                    .addOnSuccessListener(aVoid -> callback.onSuccess())
+                    .addOnFailureListener(callback::onFailure);
+        }
     }
 
     public void updateInFirestore(FacilityCallback callback) {
@@ -47,14 +60,12 @@ public class Facility implements Serializable {
                 .addOnFailureListener(callback::onFailure);
     }
 
-
     public void deleteFromFirestore(FacilityCallback callback) {
         db.collection("facilities").document(this.id)
                 .delete()
                 .addOnSuccessListener(aVoid -> callback.onSuccess())
                 .addOnFailureListener(callback::onFailure);
     }
-
 
     public interface FacilityCallback {
         void onSuccess();

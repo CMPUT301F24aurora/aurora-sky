@@ -40,6 +40,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.UUID;
 
+import java.util.Objects;
+
 public class EntrantProfileEditActivity extends AppCompatActivity {
 
     private static final String TAG = "EntrantProfileEditActivity";
@@ -50,6 +52,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
     private ImageButton addProfilePictureButton;
     private static final int PICK_IMAGE_REQUEST = 1;
     private FirebaseFirestore db;
+    private String currentUser;
     private StorageReference storageRef;
     private Uri profileImageUri;
 
@@ -88,6 +91,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         // Initialize EditText and Buttons
         Intent intent = getIntent();
         Entrant entrant = (Entrant) intent.getSerializableExtra("entrant_data");
+        currentUser = intent.getStringExtra("userType");
 
         editName = findViewById(R.id.edit_name);
         editEmail = findViewById(R.id.edit_email);
@@ -97,7 +101,10 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         currentProfilePicture = findViewById(R.id.profile_photo);
         confirmChanges = findViewById(R.id.confirm_changes);
 
-        if(entrant != null){
+        if (entrant != null) {
+            Log.d(TAG, "Entrant Name: " + entrant.getName());
+            Log.d(TAG, "Entrant Email: " + entrant.getEmail());
+            Log.d(TAG, "Entrant Phone: " + entrant.getPhone());
             editName.setText(entrant.getName());
             editEmail.setText(entrant.getEmail());
             editPhone.setText(entrant.getPhone());
@@ -154,9 +161,9 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             }
 
             // Remove the image URL from the Entrant object in Firestore
-            if (entrant != null) {
-                saveEntrantToFirestore(entrant, null); // Set profile image URL to null
-            }
+//            if (entrant != null) {
+//                saveEntrantToFirestore(entrant, null); // Set profile image URL to null
+//            }
         });
     }
 
@@ -256,13 +263,39 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             return;
         }
 
-        // Get the device ID
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Invalid email address", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!phone.isEmpty() && !phone.matches("\\d{10}")) {
+            Toast.makeText(this, "Invalid phone number. Please enter a 10-digit number.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        // Create Entrant object
+        // Create or update Organizer object
+        Organizer organizer = new Organizer(deviceId, name, email, phone);
+        organizer.saveToFirestore(new SaveOrganizerCallback() {
+            @Override
+            public void onSuccess() {
+                // Organizer saved successfully, now create/update Entrant
+                createOrUpdateEntrant(deviceId, name, email, phone);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(EntrantProfileEditActivity.this, "Error saving organizer", Toast.LENGTH_SHORT).show();
+                Log.w(TAG, "Error writing organizer document", e);
+            }
+        });
+    }
+
+    private void createOrUpdateEntrant(String deviceId, String name, String email, String phone) {
         Entrant entrant;
         if (phone.isEmpty()) {
-            entrant = new Entrant(deviceId, name, email, ""); // Use empty string for profile picture if none
+            entrant = new Entrant(deviceId, name, email, "");
         } else {
             entrant = new Entrant(deviceId, name, email, phone, "");
         }
@@ -288,8 +321,16 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
                 Toast.makeText(EntrantProfileEditActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "DocumentSnapshot successfully written!");
 
-                // Navigate to EntrantEventsActivity after successful save
-                Intent intent = new Intent(EntrantProfileEditActivity.this, EntrantsEventsActivity.class);
+                // Get the userRole from the Intent
+                String userRole = getIntent().getStringExtra("userRole");
+
+                // Navigate to the appropriate activity based on userRole
+                Intent intent;
+                if (Objects.equals(currentUser, "organizer")) {
+                    intent = new Intent(EntrantProfileEditActivity.this, OrganizerMainPage.class);
+                } else { // Default to EntrantEventsActivity if no role or "entrant"
+                    intent = new Intent(EntrantProfileEditActivity.this, EntrantsEventsActivity.class);
+                }
                 intent.putExtra("entrant_data", entrant);
                 startActivity(intent);
             }
@@ -301,5 +342,4 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             }
         });
     }
-
 }

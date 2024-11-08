@@ -7,8 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -38,6 +36,7 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
     private TextView noEventsText;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+    private ImageButton profileButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,9 +86,11 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
             } else if (id == R.id.organizer_nav) {
                 Intent organizerIntent = new Intent(EntrantsEventsActivity.this, OrganizerMainPage.class);
                 startActivity(organizerIntent);
-            }
-            else if (id == R.id.map_nav) {
+            } else if (id == R.id.map_nav) {
                 Intent organizerIntent = new Intent(EntrantsEventsActivity.this, MapActivity.class);
+                startActivity(organizerIntent);
+            } else if (id == R.id.qr_code_nav) {
+                Intent organizerIntent = new Intent(EntrantsEventsActivity.this, QRScannerActivity.class);
                 startActivity(organizerIntent);
             }
             drawerLayout.closeDrawers(); // Close drawer after selection
@@ -103,7 +104,7 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
 
         // Initialize event list and adapter with click listener
         eventList = new ArrayList<>();
-        eventAdapter = new EventAdapter(eventList, this); // Pass this as the listener
+        eventAdapter = new EventAdapter(eventList, this); // Pass `this` as the listener
         eventsRecyclerView.setAdapter(eventAdapter);
 
         // Load events into RecyclerView
@@ -212,15 +213,36 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
 
     @Override
     public void onEventClick(Event event) {
+        // Navigate to the event details page
         Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
+//        Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, qr_code.class);
 
-        // Get the entrant data from the intent
-        Entrant entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
+        // Fetch the entrant data from Firestore
+        Entrant.getEntrant(this, new GetEntrantCallback() {
+            @Override
+            public void onEntrantFound(Entrant fetchedEntrant) {
+                // Successfully retrieved entrant, put the event and entrant data into the intent
+                eventDetailsIntent.putExtra("event_data", event); // Assuming Event implements Serializable
+                eventDetailsIntent.putExtra("entrant_data", fetchedEntrant); // Pass the fetched entrant data
 
-        // Put the event and entrant data into the intent
-        eventDetailsIntent.putExtra("event_data", event); // Assuming Event implements Serializable
-        eventDetailsIntent.putExtra("entrant_data", entrant); // Pass the entrant data
+                // Start the event details activity
+                startActivity(eventDetailsIntent);
+            }
 
-        startActivity(eventDetailsIntent);
+            @Override
+            public void onEntrantNotFound(Exception e) {
+                // Handle case when entrant data is not found
+                //Log.w(TAG, "Entrant not found", e);
+                Toast.makeText(EntrantsEventsActivity.this, "Entrant not found", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                // Handle error while fetching entrant data
+                //Log.e(TAG, "Error fetching entrant", e);
+                Toast.makeText(EntrantsEventsActivity.this, "Error fetching entrant", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
 }

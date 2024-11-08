@@ -1,7 +1,13 @@
 package com.example.lotteryapp;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -16,7 +22,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.squareup.picasso.Picasso;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +48,32 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
         navigationView = findViewById(R.id.nav_view);
         ImageButton menuButton = findViewById(R.id.menu_button);
 
+        // Set up profile icon
+        profileIcon = findViewById(R.id.profile_icon);
+
+        // Retrieve Entrant data
+        Intent oldIntent = getIntent();
+        Entrant entrant = (Entrant) oldIntent.getSerializableExtra("entrant_data");
+
+        if (entrant != null) {
+            // Check if the entrant has a profile image URL
+            if (entrant.getProfileImageUrl() == null || entrant.getProfileImageUrl().isEmpty()) {
+                // Set the generated initial as the icon if no profile image is available
+                profileIcon.setImageBitmap(generateTextDrawable(entrant.getName()));
+            } else {
+                // Load the profile image if available
+                Picasso.get().load(entrant.getProfileImageUrl()).into(profileIcon);
+            }
+        }
+
+        // Handle profile icon click
+        profileIcon.setOnClickListener(v -> {
+            if (entrant != null) {
+                Intent intent = new Intent(EntrantsEventsActivity.this, EntrantProfileActivity.class);
+                intent.putExtra("entrant_data", entrant);
+                startActivity(intent);
+            }
+        });
 
          //Open drawer when menu button is clicked
         menuButton.setOnClickListener(v -> drawerLayout.openDrawer(navigationView));
@@ -50,9 +85,8 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
                 Toast.makeText(EntrantsEventsActivity.this, "You are on the entrant page", Toast.LENGTH_SHORT).show();
                 // Add your navigation logic here
             } else if (id == R.id.organizer_nav) {
-                Intent intent = new Intent(EntrantsEventsActivity.this, OrganizerMainPage.class);
-                Entrant entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
-                startActivity(intent);
+                Intent organizerIntent = new Intent(EntrantsEventsActivity.this, OrganizerMainPage.class);
+                startActivity(organizerIntent);
             }
             drawerLayout.closeDrawers(); // Close drawer after selection
             return true;
@@ -71,16 +105,70 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
         // Load events into RecyclerView
         loadEvents();
 
-        // Initialize profile icon button
-        profileIcon = findViewById(R.id.profile_icon);
-        profileIcon.setOnClickListener(v -> {
-            Intent oldIntent = getIntent();
-            Entrant entrant = (Entrant) oldIntent.getSerializableExtra("entrant_data");
-            Intent intent = new Intent(EntrantsEventsActivity.this, EntrantProfileActivity.class);
-            intent.putExtra("entrant_data", entrant);
-            startActivity(intent);
-        });
     }
+
+    public static class AvatarUtils {
+        public static int getColorFromHash(String name) {
+            String hash = hash(name);
+            if (hash == null || hash.isEmpty()) return Color.GRAY;
+            return Color.parseColor("#" + hash.substring(0, 6));
+        }
+
+        private static String hash(String input) {
+            try {
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                byte[] hashBytes = digest.digest(input.getBytes());
+                StringBuilder hexString = new StringBuilder();
+                for (byte b : hashBytes) {
+                    String hex = Integer.toHexString(0xFF & b);
+                    if (hex.length() == 1) {
+                        hexString.append('0');
+                    }
+                    hexString.append(hex);
+                }
+                return hexString.toString();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+
+    private Bitmap generateTextDrawable(String name) {
+        String initial = name != null && !name.isEmpty() ? String.valueOf(name.charAt(0)).toUpperCase() : "?";
+        int size = 100; // Define icon size
+        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+
+        // Use the getColorFromHash method to generate a consistent background color
+        int color = AvatarUtils.getColorFromHash(name);
+
+        Paint paint = new Paint();
+        paint.setColor(color); // Set the generated background color
+        paint.setStyle(Paint.Style.FILL);
+        canvas.drawRect(0, 0, size, size, paint);
+
+        paint.setColor(Color.WHITE); // Set text color
+        paint.setTextSize(40); // Set text size
+        paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        paint.setTextAlign(Paint.Align.CENTER);
+
+        // Draw the initial in the center of the bitmap
+        canvas.drawText(initial, size / 2, size / 2 - ((paint.descent() + paint.ascent()) / 2), paint);
+
+        return bitmap;
+    }
+
+
+    private int generateBackgroundColor(String name) {
+        int hash = name.hashCode();
+        int r = (hash & 0xFF0000) >> 16;
+        int g = (hash & 0x00FF00) >> 8;
+        int b = (hash & 0x0000FF);
+        return Color.rgb(r, g, b);
+    }
+
 
     @Override
     protected void onResume() {
@@ -120,15 +208,15 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
 
     @Override
     public void onEventClick(Event event) {
-        Intent intent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
+        Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
 
         // Get the entrant data from the intent
         Entrant entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
 
         // Put the event and entrant data into the intent
-        intent.putExtra("event_data", event); // Assuming Event implements Serializable
-        intent.putExtra("entrant_data", entrant); // Pass the entrant data
+        eventDetailsIntent.putExtra("event_data", event); // Assuming Event implements Serializable
+        eventDetailsIntent.putExtra("entrant_data", entrant); // Pass the entrant data
 
-        startActivity(intent);
+        startActivity(eventDetailsIntent);
     }
 }

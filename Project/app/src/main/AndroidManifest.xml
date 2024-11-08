@@ -26,11 +26,16 @@
         <activity android:name=".AdminHomepageActivity" />
         <activity android:name=".EntrantProfileEditActivity" android:exported="true"></activity>
         <activity android:name=".EntrantsEventsActivity" />
+        <activity android:name=".OrganizerRegistrationActivity" />
         <activity android:name=".EntrantEventDetailsActivity" />
         <activity android:name=".EntrantProfileActivity" />
         <activity android:name=".OrganizerMainPage" />
         <activity android:name=".OrganizerCreateEvent" />
+        <activity android:name=".OrganizerFacilityActivity"/>
+        <activity android:name=".OrganizerFacilityListActivity"/>
         <activity android:name=".MapActivity" />
+        <activity android:name=".AdminViewEditEventsActivity" />
+        <activity android:name=".AdminViewEventsContent" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -43,6 +48,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
 </manifest>

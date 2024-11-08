@@ -35,15 +35,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fsearchView">
 
-        <ListView
-            android:id="@+id/admin_fac_list"
-            android:layout_width="match_parent"
-            android:layout_height="460dp"
-            android:layout_weight="1"
-            android:overScrollMode="never" />
-
 
     </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/admin_fac_list"
+        android:layout_width="match_parent"
+        android:layout_height="460dp"
+        android:layout_weight="1"
+        android:overScrollMode="never"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fsearchView"></androidx.recyclerview.widget.RecyclerView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

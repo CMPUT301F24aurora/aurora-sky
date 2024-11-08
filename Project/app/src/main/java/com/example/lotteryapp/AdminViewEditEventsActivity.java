@@ -31,7 +31,6 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ev
     private List<Event> eventList;
     private EventAdapter adapter;
     private FirebaseFirestore db;
-    private Event selectedEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +69,6 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ev
 
     @Override
     public void onEventClick(Event event) {
-        selectedEvent = event;
 
         Intent intent = new Intent(this, AdminViewEventsContent.class);
         intent.putExtra("eventName", event.getName());

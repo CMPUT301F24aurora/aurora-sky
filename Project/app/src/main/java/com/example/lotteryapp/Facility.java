@@ -15,8 +15,7 @@ public class Facility implements Serializable {
 
     public Facility() {}
 
-    public Facility(String id, String name, String time, String location, String email) {
-        this.id = id;
+    public Facility(String name, String time, String location, String email) {
         this.name = name;
         this.time = time;
         this.location = location;
@@ -40,15 +39,16 @@ public class Facility implements Serializable {
             db.collection("facilities")
                     .add(this)
                     .addOnSuccessListener(documentReference -> {
-                        this.id = documentReference.getId(); // Save generated ID back to the object
-                        callback.onSuccess();
+                        String documentId = documentReference.getId();
+                        this.setId(documentId);// Save generated ID back to the object
+                        callback.onSuccess(documentId);
                     })
                     .addOnFailureListener(callback::onFailure);
         } else {
             // Update an existing document with the provided ID
             db.collection("facilities").document(this.id)
                     .set(this)
-                    .addOnSuccessListener(aVoid -> callback.onSuccess())
+                    .addOnSuccessListener(aVoid -> callback.onSuccess(this.id))
                     .addOnFailureListener(callback::onFailure);
         }
     }
@@ -56,19 +56,19 @@ public class Facility implements Serializable {
     public void updateInFirestore(FacilityCallback callback) {
         db.collection("facilities").document(this.id)
                 .set(this)
-                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnSuccessListener(aVoid -> callback.onSuccess(this.id))
                 .addOnFailureListener(callback::onFailure);
     }
 
     public void deleteFromFirestore(FacilityCallback callback) {
         db.collection("facilities").document(this.id)
                 .delete()
-                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnSuccessListener(aVoid -> callback.onSuccess(this.id))
                 .addOnFailureListener(callback::onFailure);
     }
 
     public interface FacilityCallback {
-        void onSuccess();
+        void onSuccess(String documentId);
         void onFailure(Exception e);
     }
 }

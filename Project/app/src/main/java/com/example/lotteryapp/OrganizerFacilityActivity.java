@@ -58,7 +58,8 @@ public class OrganizerFacilityActivity extends AppCompatActivity {
 
             Facility.FacilityCallback callback = new Facility.FacilityCallback() {
                 @Override
-                public void onSuccess() {
+                public void onSuccess(String documentId) {
+                    facility.setId(documentId);
                     Toast.makeText(OrganizerFacilityActivity.this, isEditing ? "Facility updated" : "Facility created", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(OrganizerFacilityActivity.this, OrganizerMainPage.class);
                     startActivity(intent);
@@ -77,7 +78,7 @@ public class OrganizerFacilityActivity extends AppCompatActivity {
         removeButton.setOnClickListener(v -> {
             facility.deleteFromFirestore(new Facility.FacilityCallback() {
                 @Override
-                public void onSuccess() {
+                public void onSuccess(String documentId) {
                     Toast.makeText(OrganizerFacilityActivity.this, "Facility removed", Toast.LENGTH_SHORT).show();
                     finish();
                 }

@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -100,26 +101,6 @@ public class EntrantProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void updateUI(Entrant entrant) {
-        entrantNameTextView.setText(entrant.getName());
-        entrantEmailTextView.setText(entrant.getEmail());
-        entrantPhoneTextView.setText(entrant.getPhone());
-        String profileImageUrl = entrant.getProfileImageUrl();
-        if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
-            // Load the profile image if the URL is not empty or null
-            Picasso.get().load(profileImageUrl).into(profileImageView);
-        } else {
-            // Load a default image or generate an identicon
-            Bitmap identicon = generateIdenticon(entrant.getName());
-            profileImageView.setImageBitmap(identicon);
-        }
-
-        Log.d(TAG, "Entrant Name: " + entrant.getName());
-        Log.d(TAG, "Entrant Email: " + entrant.getEmail());
-        Log.d(TAG, "Entrant Phone: " + entrant.getPhone());
-        Log.d(TAG, "Entrant Profile Picture: " + entrant.getProfileImageUrl());
-    }
-
     private void openFileChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -167,9 +148,9 @@ public class EntrantProfileActivity extends AppCompatActivity {
         entrant.saveToFirestore(new SaveEntrantCallback() {
             @Override
             public void onSuccess() {
-                // Revert to default identicon
-                Bitmap identicon = generateIdenticon(entrant.getName());
-                profileImageView.setImageBitmap(identicon);
+                // Revert to avatar with the first letter of the entrant's name
+                Bitmap avatar = generateAvatarWithInitial(entrant.getName());
+                profileImageView.setImageBitmap(avatar);
                 Toast.makeText(EntrantProfileActivity.this, "Profile image removed", Toast.LENGTH_SHORT).show();
             }
 
@@ -180,63 +161,77 @@ public class EntrantProfileActivity extends AppCompatActivity {
         });
     }
 
-    public Bitmap generateIdenticon(String name) {
-        // Hash the name using SHA-256
-        String hash = hash(name);
+    private void updateUI(Entrant entrant) {
+        entrantNameTextView.setText(entrant.getName());
+        entrantEmailTextView.setText(entrant.getEmail());
+        entrantPhoneTextView.setText(entrant.getPhone());
+        String profileImageUrl = entrant.getProfileImageUrl();
+        if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
+            // Load the profile image if the URL is not empty or null
+            Picasso.get().load(profileImageUrl).into(profileImageView);
+        } else {
+            // Generate an avatar with the first letter of the entrant's name
+            Bitmap avatar = generateAvatarWithInitial(entrant.getName());
+            profileImageView.setImageBitmap(avatar);
+        }
 
-        // Convert hash to color values
-        List<Integer> colors = hashToColors(hash);  // Use Integer for color representation
+        Log.d(TAG, "Entrant Name: " + entrant.getName());
+        Log.d(TAG, "Entrant Email: " + entrant.getEmail());
+        Log.d(TAG, "Entrant Phone: " + entrant.getPhone());
+        Log.d(TAG, "Entrant Profile Picture: " + entrant.getProfileImageUrl());
+    }
 
-        // Create a blank image
-        Bitmap identicon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(identicon);
+    private Bitmap generateAvatarWithInitial(String name) {
+        String initial = name != null && !name.isEmpty() ? String.valueOf(name.charAt(0)).toUpperCase() : "?";
+        int size = 100; // Define icon size
+        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
 
-        // Draw the identicon using the colors
+        // Use the getColorFromHash method to generate a consistent background color
+        int color = AvatarUtils.getColorFromHash(name);
+
         Paint paint = new Paint();
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                paint.setColor(colors.get((i * 10 + j) % colors.size()));  // Set color using an integer value
-                canvas.drawRect(i * 10, j * 10, (i + 1) * 10, (j + 1) * 10, paint);
-            }
-        }
+        paint.setColor(color); // Set the generated background color
+        paint.setStyle(Paint.Style.FILL);
+        canvas.drawRect(0, 0, size, size, paint);
 
-        return identicon;
+        paint.setColor(Color.WHITE); // Set text color
+        paint.setTextSize(40); // Set text size
+        paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        paint.setTextAlign(Paint.Align.CENTER);
+
+        // Draw the initial in the center of the bitmap
+        canvas.drawText(initial, size / 2, size / 2 - ((paint.descent() + paint.ascent()) / 2), paint);
+
+        return bitmap;
     }
 
-    private String hash(String input) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = digest.digest(input.getBytes());
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                String hex = Integer.toHexString(0xFF & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
+
+    public static class AvatarUtils {
+        public static int getColorFromHash(String name) {
+            String hash = hash(name);
+            if (hash == null || hash.isEmpty()) return Color.GRAY;
+            return Color.parseColor("#" + hash.substring(0, 6));
+        }
+
+        private static String hash(String input) {
+            try {
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                byte[] hashBytes = digest.digest(input.getBytes());
+                StringBuilder hexString = new StringBuilder();
+                for (byte b : hashBytes) {
+                    String hex = Integer.toHexString(0xFF & b);
+                    if (hex.length() == 1) {
+                        hexString.append('0');
+                    }
+                    hexString.append(hex);
                 }
-                hexString.append(hex);
+                return hexString.toString();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+                return null;
             }
-            return hexString.toString(); // Returns the SHA-256 hash as a hex string
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
         }
     }
-
-    private List<Integer> hashToColors(String hash) {
-        // Define a grayscale color palette (white, gray, black)
-        List<Integer> colorPalette = new ArrayList<>();
-        colorPalette.add(Color.rgb(255, 255, 255));  // White
-        colorPalette.add(Color.rgb(169, 169, 169)); // Gray
-        colorPalette.add(Color.rgb(0, 0, 0));       // Black
-
-        List<Integer> colors = new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-            // Use the hash string to determine the index into the grayscale palette
-            int index = Integer.parseInt(hash.substring(i * 2, i * 2 + 2), 16) % colorPalette.size();
-            colors.add(colorPalette.get(index));  // Add the color to the list
-        }
-        return colors;
-    }
-
 
 }

@@ -63,84 +63,6 @@ public class MainActivity extends AppCompatActivity {
         checkAdminAndDisplayPage(deviceId);
     }
 
-    private void checkOrganizerStatusAndNavigate() {
-        String deviceId = getDeviceId(this);
-        Log.d(TAG, "Checking in organizers collection for device ID: " + deviceId);
-
-        Entrant.checkEntrantExists(deviceId, new EntrantCheckCallback() {
-            @Override
-            public void onEntrantExists(Entrant entrant) {
-                // If the user is recognized as an entrant, proceed to OrganizerMainPage
-                Log.d(TAG, "User recognized as an entrant.");
-
-                // Now check if they exist in the 'organizers' collection
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("organizers").document(deviceId).get()
-                        .addOnSuccessListener(documentSnapshot -> {
-                            if (!documentSnapshot.exists()) {
-                                // If the user is not an organizer, add them to the 'organizers' collection
-                                Log.d(TAG, "User is not in organizers collection. Adding them.");
-                                Map<String, Object> organizerData = new HashMap<>();
-                                organizerData.put("name", entrant.getName());
-                                organizerData.put("email", entrant.getEmail());
-                                organizerData.put("phone", entrant.getPhone());
-
-                                db.collection("organizers")
-                                        .document(deviceId) // Use deviceId as the document ID
-                                        .set(organizerData)
-                                        .addOnSuccessListener(aVoid -> {
-                                            Log.d(TAG, "User successfully added to organizers collection.");
-
-                                            // Add the user to the 'entrants' collection as well
-                                            db.collection("entrants")
-                                                    .document(deviceId) // Use deviceId as the document ID
-                                                    .set(organizerData)
-                                                    .addOnSuccessListener(aVoid1 -> {
-                                                        Log.d(TAG, "User successfully added to entrants collection.");
-                                                        // Proceed to OrganizerMainPage
-                                                        Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
-                                                        startActivity(intent);
-                                                    })
-                                                    .addOnFailureListener(e -> {
-                                                        Log.e(TAG, "Error adding user to entrants collection", e);
-                                                        Toast.makeText(MainActivity.this, "Error adding user to entrants collection", Toast.LENGTH_SHORT).show();
-                                                    });
-
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Log.e(TAG, "Error adding user to organizers collection", e);
-                                            Toast.makeText(MainActivity.this, "Error registering as organizer", Toast.LENGTH_SHORT).show();
-                                        });
-                            } else {
-                                // User is already an organizer, proceed to OrganizerMainPage
-                                Log.d(TAG, "User is already an organizer.");
-                                Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
-                                startActivity(intent);
-                            }
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.w(TAG, "Error checking organizers collection", e);
-                            Toast.makeText(MainActivity.this, "Error checking organizers", Toast.LENGTH_SHORT).show();
-                        });
-            }
-
-            @Override
-            public void onEntrantNotFound() {
-                // If the user is not recognized, go to OrganizerRegistrationActivity
-                Intent intent = new Intent(MainActivity.this, OrganizerRegistrationActivity.class);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Log.w(TAG, "Error checking entrant in Firestore", e);
-            }
-        });
-
-        // Print it for our reference to add to the admin list
-        Log.i("Device ID", deviceId);
-    }
-
     private void checkEntrantExistsAndNavigate() {
         // Get the device's unique ID
         String deviceId = getDeviceId(this);
@@ -148,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
         Entrant.checkEntrantExists(deviceId, new EntrantCheckCallback() {
             @Override
             public void onEntrantExists(Entrant entrant) {
+                // If recognized as an entrant, ensure they are also in the organizers collection
+                ensureUserInOrganizers(entrant, deviceId);
+
                 // Pass the entrant object to the next activity
                 Intent intent = new Intent(MainActivity.this, EntrantsEventsActivity.class);
                 intent.putExtra("entrant_data", entrant);  // Pass the entrant object
@@ -168,6 +93,80 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void checkOrganizerStatusAndNavigate() {
+        String deviceId = getDeviceId(this);
+        Log.d(TAG, "Checking in organizers collection for device ID: " + deviceId);
+
+        Entrant.checkEntrantExists(deviceId, new EntrantCheckCallback() {
+            @Override
+            public void onEntrantExists(Entrant entrant) {
+                // If recognized as an entrant, proceed to check or add them to organizers collection
+                ensureUserInOrganizers(entrant, deviceId);
+
+                // Proceed to OrganizerMainPage
+                Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onEntrantNotFound() {
+                // If the user is not recognized, go to OrganizerRegistrationActivity
+                Intent intent = new Intent(MainActivity.this, OrganizerRegistrationActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.w(TAG, "Error checking entrant in Firestore", e);
+            }
+        });
+
+        Log.i("Device ID", deviceId);
+    }
+
+    // Method to ensure the user is in the organizers collection if they are an entrant
+    private void ensureUserInOrganizers(Entrant entrant, String deviceId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("organizers").document(deviceId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (!documentSnapshot.exists()) {
+                        // Add the user to organizers if they are not there already
+                        Log.d(TAG, "User is not in organizers collection. Adding them.");
+
+                        Map<String, Object> userData = new HashMap<>();
+                        userData.put("name", entrant.getName());
+                        userData.put("email", entrant.getEmail());
+                        userData.put("phone", entrant.getPhone());
+
+                        db.collection("organizers").document(deviceId).set(userData)
+                                .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully added to organizers collection."))
+                                .addOnFailureListener(e -> Log.e(TAG, "Error adding user to organizers collection", e));
+                    }
+                });
+    }
+
+
+    private void ensureUserInEntrants(Organizer organizer, String deviceId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("entrants").document(deviceId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (!documentSnapshot.exists()) {
+                        // Add the user to entrants if they are not there already
+                        Log.d(TAG, "User is not in entrants collection. Adding them.");
+
+                        Map<String, Object> userData = new HashMap<>();
+                        userData.put("name", organizer.getName());
+                        userData.put("email", organizer.getEmail());
+                        userData.put("phone", organizer.getPhone());
+
+                        db.collection("entrants").document(deviceId).set(userData)
+                                .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully added to entrants collection."))
+                                .addOnFailureListener(e -> Log.e(TAG, "Error adding user to entrants collection", e));
+                    }
+                });
+    }
+
 
     private void checkAdminAndDisplayPage(String deviceId) {
         // Get the device's unique ID

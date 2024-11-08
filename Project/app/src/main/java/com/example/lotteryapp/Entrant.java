@@ -96,16 +96,6 @@ public class Entrant extends User implements Serializable {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    // Validation method for email
-    public static boolean isValidEmail(String email) {
-        return email != null && Patterns.EMAIL_ADDRESS.matcher(email).matches();
-    }
-
-    // Validation method for phone number
-    public static boolean isValidPhone(String phone) {
-        String phoneRegex = "^[0-9]{10,15}$"; // Allows numbers between 10 and 15 digits
-        return phone != null && phone.matches(phoneRegex);
-    }
 
     @Override
     public void displayUserInfo() {

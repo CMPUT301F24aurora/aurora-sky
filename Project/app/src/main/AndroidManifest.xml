@@ -34,6 +34,8 @@
         <activity android:name=".OrganizerFacilityActivity"/>
         <activity android:name=".OrganizerFacilityListActivity"/>
         <activity android:name=".MapActivity" />
+        <activity android:name=".AdminViewEditEventsActivity" />
+        <activity android:name=".AdminViewEventsContent" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

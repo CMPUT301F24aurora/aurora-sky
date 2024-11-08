@@ -12,8 +12,8 @@ public class Entrant extends User implements Serializable {
     private static FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String profileImageUrl;
 
-    // Default constructor required for Firestore
-    public Entrant(String e123, String johnDoe, String mail) {}
+    // No-argument constructor required for Firestore
+    public Entrant() { super(); }
 
     // Constructor with three parameters, calls main constructor with a default phone value
     public Entrant(String id, String name, String email, String profileImageUrl) {

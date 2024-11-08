@@ -4,7 +4,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.Serializable;
 import android.content.Context;
 import android.provider.Settings;
-import android.util.Patterns;
 
 import java.util.Objects;
 
@@ -14,7 +13,7 @@ public class Entrant extends User implements Serializable {
     private String profileImageUrl;
 
     // Default constructor required for Firestore
-    public Entrant() {}
+    public Entrant(String e123, String johnDoe, String mail) {}
 
     // Constructor with three parameters, calls main constructor with a default phone value
     public Entrant(String id, String name, String email, String profileImageUrl) {

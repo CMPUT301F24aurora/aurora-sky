@@ -11,20 +11,34 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.firebase.Firebase;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
+
+import java.util.UUID;
 
 public class EntrantProfileEditActivity extends AppCompatActivity {
 
@@ -42,12 +56,33 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
     // Declare the ActivityResultLauncher
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
+    LinearProgressIndicator progressIndicator;
+    Uri image;
+    Button uploadImage;
+    ImageButton selectImage;
+    ImageView imageView;
+    private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if (result.getResultCode() == RESULT_OK) {
+                if (result.getData() != null) {
+                    uploadImage.setEnabled(true);
+                    image = result.getData().getData();
+                    Glide.with(getApplicationContext()).load(image).into(imageView);
+                }
+            } else {
+                Toast.makeText(EntrantProfileEditActivity.this, "Please select an image", Toast.LENGTH_SHORT).show();
+            }
+        }
+    });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrant_profile_edit);
 
         db = FirebaseFirestore.getInstance();
+        FirebaseApp.initializeApp(EntrantProfileEditActivity.this);
         storageRef = FirebaseStorage.getInstance().getReference("profile_pictures");
 
         // Initialize EditText and Buttons
@@ -66,6 +101,30 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             editName.setText(entrant.getName());
             editEmail.setText(entrant.getEmail());
             editPhone.setText(entrant.getPhone());
+
+            // Check if profileImageUrl is null or empty
+            if (entrant.getProfileImageUrl() == null || entrant.getProfileImageUrl().isEmpty()) {
+                // Generate avatar with initial if no profile image URL
+                Bitmap avatar = AvatarUtils.generateAvatarWithInitial(entrant.getName());
+                currentProfilePicture.setImageBitmap(avatar);
+            }
+
+            addProfilePictureButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_PICK);
+                    intent.setType("image/*");
+                    activityResultLauncher.launch(intent);
+                }
+            });
+
+            confirmChanges.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    uploadImage(image);
+                }
+            });
+
         }
 
         imagePickerLauncher = registerForActivityResult(
@@ -97,6 +156,27 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             // Remove the image URL from the Entrant object in Firestore
             if (entrant != null) {
                 saveEntrantToFirestore(entrant, null); // Set profile image URL to null
+            }
+        });
+    }
+
+    private void uploadImage(Uri file) {
+        StorageReference ref = storageRef.child("images/" + UUID.randomUUID().toString());
+        ref.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(EntrantProfileEditActivity.this, "Image Uploaded!!", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(EntrantProfileEditActivity.this, "Failed!" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
+                progressIndicator.setMax(Math.toIntExact(taskSnapshot.getTotalByteCount()));
+                progressIndicator.setProgress(Math.toIntExact(taskSnapshot.getBytesTransferred()));
             }
         });
     }

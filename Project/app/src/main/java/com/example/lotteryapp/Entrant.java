@@ -9,18 +9,33 @@ import java.util.Objects;
 public class Entrant extends User implements Serializable {
 
     private static FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private String profileImageUrl;
 
     // Default constructor required for Firestore
     public Entrant() {}
 
-    // Constructor with parameters
-    public Entrant(String id, String name, String email) {
-        super(id, name, email);
+    // Constructor with three parameters, calls main constructor with a default phone value
+    public Entrant(String id, String name, String email, String profileImageUrl) {
+        this(id, name, email, null, profileImageUrl);
     }
 
-    // Constructor with parameters
-    public Entrant(String id, String name, String email, String phone) {
+    // Main constructor with four parameters
+    public Entrant(String id, String name, String email, String phone, String profileImageUrl) {
         super(id, name, email, phone);
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    // Method to remove profile picture
+    public void removeProfileImage() {
+        this.profileImageUrl = null;
     }
 
     // Method to inject Firestore instance for testing or alternative setups
@@ -35,6 +50,8 @@ public class Entrant extends User implements Serializable {
 
     // Method to check if an entrant exists in Firestore
     public static void checkEntrantExists(String deviceId, EntrantCheckCallback callback) {
+        if (callback == null) return;
+
         db.collection("entrants").document(deviceId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -48,7 +65,10 @@ public class Entrant extends User implements Serializable {
                 .addOnFailureListener(callback::onError);
     }
 
+    // Retrieve Entrant by device ID from Firestore
     public static void getEntrant(Context context, GetEntrantCallback callback) {
+        if (callback == null) return;
+
         String deviceId = getDeviceId(context); // Get device ID
 
         db.collection("entrants").document(deviceId)
@@ -66,6 +86,8 @@ public class Entrant extends User implements Serializable {
 
     // Save Entrant object to Firestore
     public void saveToFirestore(SaveEntrantCallback callback) {
+        if (callback == null) return;
+
         db.collection("entrants").document(this.getId())
                 .set(this)
                 .addOnSuccessListener(aVoid -> callback.onSuccess())

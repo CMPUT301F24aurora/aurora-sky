@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.zxing.qrcode.encoder.QRCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +121,8 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
     @Override
     public void onEventClick(Event event) {
         // Navigate to the event details page
-        Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
+        //Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
+        Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, qr_code.class);
 
         // Fetch the entrant data from Firestore
         Entrant.getEntrant(this, new GetEntrantCallback() {

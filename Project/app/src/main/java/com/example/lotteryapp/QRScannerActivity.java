@@ -1,8 +1,11 @@
 package com.example.lotteryapp;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -12,6 +15,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.journeyapps.barcodescanner.CaptureActivity;
+import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
@@ -20,21 +24,34 @@ public class QRScannerActivity extends AppCompatActivity {
     private static final String TAG = "QRScannerActivity";
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    private DecoratedBarcodeView barcodeScannerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrscanner);
-        scanQRCode();
+
+
+        Button scanEventButton = findViewById(R.id.scan_event_button);
+        barcodeScannerView = findViewById(R.id.zxing_barcode_scanner);
+
+        // Set up the button to start scanning
+        scanEventButton.setOnClickListener(view -> startQRCodeScanner());
+    }
+
+    private void startQRCodeScanner() {
+        barcodeScannerView.setVisibility(View.VISIBLE);
+        scanQRCode();  // Start scanning when the button is clicked
     }
 
     private void scanQRCode() {
         ScanOptions options = new ScanOptions();
         options.setPrompt("Scan a QR Code");
         options.setBeepEnabled(true);
-        options.setOrientationLocked(false);
-        options.setCaptureActivity(CaptureActivity.class);
         barcodeLauncher.launch(options);
     }
+
+
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher =
             registerForActivityResult(new ScanContract(), result -> {

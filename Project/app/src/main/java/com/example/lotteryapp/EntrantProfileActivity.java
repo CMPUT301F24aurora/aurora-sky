@@ -49,8 +49,6 @@ public class EntrantProfileActivity extends AppCompatActivity {
         entrantEmailTextView = findViewById(R.id.profile_email_value);
         entrantPhoneTextView = findViewById(R.id.profile_phone_value);
         profileImageView = findViewById(R.id.profile_picture);
-        uploadImageButton = findViewById(R.id.upload_image_button);
-        removeImageButton = findViewById(R.id.remove_image_button);
 
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReference();
@@ -83,9 +81,6 @@ public class EntrantProfileActivity extends AppCompatActivity {
             });
         }
 
-        uploadImageButton.setOnClickListener(v -> openFileChooser());
-        removeImageButton.setOnClickListener(v -> removeProfileImage());
-
         Button editFacilityButton = findViewById(R.id.edit_account_button);
         editFacilityButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,65 +96,6 @@ public class EntrantProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void openFileChooser() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri imageUri = data.getData();
-            uploadImageToFirebase(imageUri);
-        }
-    }
-
-    private void uploadImageToFirebase(Uri imageUri) {
-        if (imageUri != null) {
-            StorageReference fileReference = storageReference.child("profile_images/" + UUID.randomUUID().toString());
-
-            fileReference.putFile(imageUri).addOnSuccessListener(taskSnapshot -> fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                String imageUrl = uri.toString();
-                entrant.setProfileImageUrl(imageUrl);
-
-                // Save to Firestore with callback handling
-                entrant.saveToFirestore(new SaveEntrantCallback() {
-                    @Override
-                    public void onSuccess() {
-                        Picasso.get().load(imageUrl).into(profileImageView);
-                        Toast.makeText(EntrantProfileActivity.this, "Profile image updated", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(Exception e) {
-                        Toast.makeText(EntrantProfileActivity.this, "Failed to update profile image", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            })).addOnFailureListener(e -> Toast.makeText(EntrantProfileActivity.this, "Image upload failed", Toast.LENGTH_SHORT).show());
-        }
-    }
-
-
-    private void removeProfileImage() {
-        entrant.removeProfileImage();
-        entrant.saveToFirestore(new SaveEntrantCallback() {
-            @Override
-            public void onSuccess() {
-                // Revert to avatar with the first letter of the entrant's name
-                Bitmap avatar = generateAvatarWithInitial(entrant.getName());
-                profileImageView.setImageBitmap(avatar);
-                Toast.makeText(EntrantProfileActivity.this, "Profile image removed", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                Toast.makeText(EntrantProfileActivity.this, "Failed to remove profile image", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 
     private void updateUI(Entrant entrant) {
         entrantNameTextView.setText(entrant.getName());

@@ -104,6 +104,8 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         String name = editName.getText().toString().trim();
         String email = editEmail.getText().toString().trim();
         String phone = editPhone.getText().toString().trim();
+        String profilepicture = "";
+
 
         if (name.isEmpty() || email.isEmpty()) {
             Toast.makeText(this, "Name and Email are required", Toast.LENGTH_SHORT).show();
@@ -116,9 +118,9 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         // Create Entrant object
         Entrant entrant;
         if (phone.isEmpty()) {
-            entrant = new Entrant(deviceId, name, email);
+            entrant = new Entrant(deviceId, name, email, profilepicture); // Use empty string for profile picture if none
         } else {
-            entrant = new Entrant(deviceId, name, email, phone);
+            entrant = new Entrant(deviceId, name, email, phone, profilepicture);
         }
 
         // Check if a profile picture has been selected

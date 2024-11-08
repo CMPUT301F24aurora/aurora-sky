@@ -90,9 +90,22 @@ public class MainActivity extends AppCompatActivity {
                                         .set(organizerData)
                                         .addOnSuccessListener(aVoid -> {
                                             Log.d(TAG, "User successfully added to organizers collection.");
-                                            // Proceed to OrganizerMainPage
-                                            Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
-                                            startActivity(intent);
+
+                                            // Add the user to the 'entrants' collection as well
+                                            db.collection("entrants")
+                                                    .document(deviceId) // Use deviceId as the document ID
+                                                    .set(organizerData)
+                                                    .addOnSuccessListener(aVoid1 -> {
+                                                        Log.d(TAG, "User successfully added to entrants collection.");
+                                                        // Proceed to OrganizerMainPage
+                                                        Intent intent = new Intent(MainActivity.this, OrganizerMainPage.class);
+                                                        startActivity(intent);
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        Log.e(TAG, "Error adding user to entrants collection", e);
+                                                        Toast.makeText(MainActivity.this, "Error adding user to entrants collection", Toast.LENGTH_SHORT).show();
+                                                    });
+
                                         })
                                         .addOnFailureListener(e -> {
                                             Log.e(TAG, "Error adding user to organizers collection", e);

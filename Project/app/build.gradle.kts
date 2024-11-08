@@ -38,6 +38,7 @@ dependencies {
     implementation ("androidx.drawerlayout:drawerlayout:1.1.1")
     implementation ("com.google.android.material:material:1.8.0")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
+    implementation ("com.squareup.picasso:picasso:2.71828")
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation(libs.appcompat)
     implementation(libs.material)

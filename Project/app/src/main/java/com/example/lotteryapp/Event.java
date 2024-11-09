@@ -3,18 +3,18 @@ package com.example.lotteryapp;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
-import java.io.Serializable;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+
+import java.io.Serializable;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Event implements Serializable {
 
@@ -126,6 +126,10 @@ public class Event implements Serializable {
     // Method to remove an entrant from the waiting list
     public boolean removeEntrantFromWaitingList(Entrant entrant) {
         return waitingList.remove(entrant);
+    }
+
+    public boolean isEntrantRegistered(Entrant entrant) {
+        return waitingList != null && waitingList.contains(entrant.getId());
     }
 
     // Method to generate a QR code hash for the event

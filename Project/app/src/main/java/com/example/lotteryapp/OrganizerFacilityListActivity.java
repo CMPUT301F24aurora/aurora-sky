@@ -15,6 +15,8 @@ public class OrganizerFacilityListActivity extends AppCompatActivity implements 
     private FacilityAdapter facilityAdapter;
     private List<Facility> facilityList = new ArrayList<>();
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

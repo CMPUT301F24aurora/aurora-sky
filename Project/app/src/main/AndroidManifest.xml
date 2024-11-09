@@ -37,6 +37,10 @@
         <activity android:name=".MapActivity" />
         <activity android:name=".AdminViewEditEventsActivity" />
         <activity android:name=".AdminViewEventsContent" />
+        <activity android:name=".AdminViewEditFacilitiesActivity" />
+        <activity android:name=".AdminViewFacilitiesContent" />
+        <activity android:name=".AdminViewEditProfilesActivity" />
+        <activity android:name=".AdminViewProfilesContent" />
         <activity android:name=".qr_code"/>
         <activity android:name=".QRScannerActivity"/>
 
@@ -51,8 +55,9 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="31"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
 </manifest>

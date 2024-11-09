@@ -6,11 +6,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.FacilityViewHolder> {
 
     private List<Facility> facilityList;
+    private List<Facility> filteredFacilityList;
     private FacilityClickListener clickListener;
 
     public interface FacilityClickListener {
@@ -19,6 +22,7 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.Facili
 
     public FacilityAdapter(List<Facility> facilityList, FacilityClickListener clickListener) {
         this.facilityList = facilityList;
+        this.filteredFacilityList = new ArrayList<>(facilityList);
         this.clickListener = clickListener;
     }
 
@@ -36,9 +40,23 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.Facili
         holder.itemView.setOnClickListener(v -> clickListener.onFacilityClick(facility));
     }
 
+    public void filter(String query) {
+        filteredFacilityList.clear();
+        if (query.isEmpty()) {
+            filteredFacilityList.addAll(facilityList);
+        }
+        else {
+            for (Facility facility : facilityList) {
+                if (facility.getName().toLowerCase().contains(query.toLowerCase())) {
+                    filteredFacilityList.add(facility);
+                }
+            }
+        } notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
-        return facilityList.size();
+        return filteredFacilityList.size();
     }
 
     public static class FacilityViewHolder extends RecyclerView.ViewHolder {

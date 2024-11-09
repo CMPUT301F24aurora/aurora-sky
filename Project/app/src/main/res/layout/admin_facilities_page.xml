@@ -23,7 +23,7 @@
         android:layout_height="47dp"
         android:tooltipText="Search Facilities"
         app:layout_constraintEnd_toEndOf="parent"
-        android:queryHint="Search Events"
+        android:queryHint="Search Facilities"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/admin_fac_txt" />
 
@@ -35,27 +35,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fsearchView">
 
-        <ListView
-            android:id="@+id/admin_fac_list"
-            android:layout_width="match_parent"
-            android:layout_height="460dp"
-            android:layout_weight="1"
-            android:overScrollMode="never" />
-
 
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/admin_fac_remove"
-        android:layout_width="132dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="56dp"
-        android:backgroundTint="#000000"
-        android:text="Remove"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/admin_fac_list"
+        android:layout_width="match_parent"
+        android:layout_height="460dp"
+        android:layout_weight="1"
+        android:overScrollMode="never"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fsearchView"></androidx.recyclerview.widget.RecyclerView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

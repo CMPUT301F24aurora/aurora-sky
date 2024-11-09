@@ -1,9 +1,11 @@
 package com.example.lotteryapp;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-import java.io.Serializable;
 import android.content.Context;
 import android.provider.Settings;
+
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.io.Serializable;
 import java.util.Objects;
 
 public class Entrant extends User implements Serializable {
@@ -11,8 +13,9 @@ public class Entrant extends User implements Serializable {
     private static FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String profileImageUrl;
 
+    public Entrant(){}
     // Default constructor required for Firestore
-    public Entrant() {}
+    public Entrant(String id, String name, String email) {}
 
     // Constructor with three parameters, calls main constructor with a default phone value
     public Entrant(String id, String name, String email, String profileImageUrl) {
@@ -93,6 +96,7 @@ public class Entrant extends User implements Serializable {
                 .addOnSuccessListener(aVoid -> callback.onSuccess())
                 .addOnFailureListener(callback::onFailure);
     }
+
 
     @Override
     public void displayUserInfo() {

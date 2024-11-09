@@ -11,20 +11,36 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.firebase.Firebase;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
+
+import java.util.UUID;
+
+import java.util.Objects;
 
 public class EntrantProfileEditActivity extends AppCompatActivity {
 
@@ -36,11 +52,31 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
     private ImageButton addProfilePictureButton;
     private static final int PICK_IMAGE_REQUEST = 1;
     private FirebaseFirestore db;
+    private String currentUser;
     private StorageReference storageRef;
     private Uri profileImageUri;
 
     // Declare the ActivityResultLauncher
     private ActivityResultLauncher<Intent> imagePickerLauncher;
+
+    Uri image;
+    Button uploadImage;
+    ImageButton selectImage;
+    ImageView imageView;
+    private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if (result.getResultCode() == RESULT_OK) {
+                if (result.getData() != null) {
+                    uploadImage.setEnabled(true);
+                    image = result.getData().getData();
+                    Glide.with(getApplicationContext()).load(image).into(imageView);
+                }
+            } else {
+                Toast.makeText(EntrantProfileEditActivity.this, "Please select an image", Toast.LENGTH_SHORT).show();
+            }
+        }
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +84,13 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         setContentView(R.layout.entrant_profile_edit);
 
         db = FirebaseFirestore.getInstance();
+        FirebaseApp.initializeApp(EntrantProfileEditActivity.this);
         storageRef = FirebaseStorage.getInstance().getReference("profile_pictures");
 
         // Initialize EditText and Buttons
         Intent intent = getIntent();
         Entrant entrant = (Entrant) intent.getSerializableExtra("entrant_data");
+        currentUser = intent.getStringExtra("userType");
 
         editName = findViewById(R.id.edit_name);
         editEmail = findViewById(R.id.edit_email);
@@ -62,10 +100,37 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         currentProfilePicture = findViewById(R.id.profile_photo);
         confirmChanges = findViewById(R.id.confirm_changes);
 
-        if(entrant != null){
+        if (entrant != null) {
+            Log.d(TAG, "Entrant Name: " + entrant.getName());
+            Log.d(TAG, "Entrant Email: " + entrant.getEmail());
+            Log.d(TAG, "Entrant Phone: " + entrant.getPhone());
             editName.setText(entrant.getName());
             editEmail.setText(entrant.getEmail());
             editPhone.setText(entrant.getPhone());
+
+            // Check if profileImageUrl is null or empty
+            if (entrant.getProfileImageUrl() == null || entrant.getProfileImageUrl().isEmpty()) {
+                // Generate avatar with initial if no profile image URL
+                Bitmap avatar = AvatarUtils.generateAvatarWithInitial(entrant.getName());
+                currentProfilePicture.setImageBitmap(avatar);
+            }
+
+            addProfilePictureButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_PICK);
+                    intent.setType("image/*");
+                    activityResultLauncher.launch(intent);
+                }
+            });
+
+            confirmChanges.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    uploadImage(image);
+                }
+            });
+
         }
 
         imagePickerLauncher = registerForActivityResult(
@@ -95,8 +160,23 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             }
 
             // Remove the image URL from the Entrant object in Firestore
-            if (entrant != null) {
-                saveEntrantToFirestore(entrant, null); // Set profile image URL to null
+//            if (entrant != null) {
+//                saveEntrantToFirestore(entrant, null); // Set profile image URL to null
+//            }
+        });
+    }
+
+    private void uploadImage(Uri file) {
+        StorageReference ref = storageRef.child("images/" + UUID.randomUUID().toString());
+        ref.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(EntrantProfileEditActivity.this, "Image Uploaded!!", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(EntrantProfileEditActivity.this, "Failed!" + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -176,13 +256,39 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             return;
         }
 
-        // Get the device ID
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Invalid email address", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!phone.isEmpty() && !phone.matches("\\d{10}")) {
+            Toast.makeText(this, "Invalid phone number. Please enter a 10-digit number.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        // Create Entrant object
+        // Create or update Organizer object
+        Organizer organizer = new Organizer(deviceId, name, email, phone);
+        organizer.saveToFirestore(new SaveOrganizerCallback() {
+            @Override
+            public void onSuccess() {
+                // Organizer saved successfully, now create/update Entrant
+                createOrUpdateEntrant(deviceId, name, email, phone);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(EntrantProfileEditActivity.this, "Error saving organizer", Toast.LENGTH_SHORT).show();
+                Log.w(TAG, "Error writing organizer document", e);
+            }
+        });
+    }
+
+    private void createOrUpdateEntrant(String deviceId, String name, String email, String phone) {
         Entrant entrant;
         if (phone.isEmpty()) {
-            entrant = new Entrant(deviceId, name, email, ""); // Use empty string for profile picture if none
+            entrant = new Entrant(deviceId, name, email, "");
         } else {
             entrant = new Entrant(deviceId, name, email, phone, "");
         }
@@ -208,8 +314,16 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
                 Toast.makeText(EntrantProfileEditActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "DocumentSnapshot successfully written!");
 
-                // Navigate to EntrantEventsActivity after successful save
-                Intent intent = new Intent(EntrantProfileEditActivity.this, EntrantsEventsActivity.class);
+                // Get the userRole from the Intent
+                String userRole = getIntent().getStringExtra("userRole");
+
+                // Navigate to the appropriate activity based on userRole
+                Intent intent;
+                if (Objects.equals(currentUser, "organizer")) {
+                    intent = new Intent(EntrantProfileEditActivity.this, OrganizerMainPage.class);
+                } else { // Default to EntrantEventsActivity if no role or "entrant"
+                    intent = new Intent(EntrantProfileEditActivity.this, EntrantsEventsActivity.class);
+                }
                 intent.putExtra("entrant_data", entrant);
                 startActivity(intent);
             }
@@ -221,5 +335,4 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             }
         });
     }
-
 }

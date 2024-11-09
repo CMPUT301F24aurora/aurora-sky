@@ -1,43 +1,106 @@
 package com.example.lotteryapp;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class EntrantTest {
 
-    private Entrant entrant1;
-    private Entrant entrant2;
+    private Entrant entrant;
 
     @Before
     public void setUp() {
-        // Initialize Entrant objects
-        entrant1 = new Entrant("1", "John Doe", "john@example.com");
-        entrant2 = new Entrant("2", "Jane Doe", "jane@example.com", "123-456-7890");
+        // Initialize an Entrant object before each test
+        entrant = new Entrant("E123", "John Doe", "johndoe@example.com", "http://example.com/image.jpg");
     }
 
     @Test
-    public void testEntrantInitialization() {
-        assertEquals("John Doe", entrant1.getName());
-        assertEquals("john@example.com", entrant1.getEmail());
+    public void testGetProfileImageUrl() {
+        // Test getter for profile image URL
+        assertEquals("http://example.com/image.jpg", entrant.getProfileImageUrl());
     }
 
     @Test
-    public void testEntrantEquality() {
-        Entrant entrant3 = new Entrant("1", "John Doe", "john@example.com");
-        assertEquals(entrant1, entrant3); // entrant1 and entrant3 have the same ID, so they should be equal
-        assertNotEquals(entrant1, entrant2); // Different IDs, so they should not be equal
+    public void testSetProfileImageUrl() {
+        // Test setter for profile image URL
+        entrant.setProfileImageUrl("http://example.com/new_image.jpg");
+        assertEquals("http://example.com/new_image.jpg", entrant.getProfileImageUrl());
     }
 
     @Test
-    public void testHashCode() {
-        Entrant entrant3 = new Entrant("1", "John Doe", "john@example.com");
-        assertEquals(entrant1.hashCode(), entrant3.hashCode());
-        assertNotEquals(entrant1.hashCode(), entrant2.hashCode());
+    public void testRemoveProfileImage() {
+        // Test removing the profile image
+        entrant.removeProfileImage();
+        assertNull(entrant.getProfileImageUrl());
     }
 
+    @Test
+    public void testEqualsAndHashCode() {
+        // Test equality and hashCode
+        Entrant sameEntrant = new Entrant("E123", "Jane Doe", "janedoe@example.com", null);
+        Entrant differentEntrant = new Entrant("E124", "John Smith", "johnsmith@example.com", null);
 
+        assertEquals(entrant, sameEntrant);
+        assertNotEquals(entrant, differentEntrant);
+        assertEquals(entrant.hashCode(), sameEntrant.hashCode());
+        assertNotEquals(entrant.hashCode(), differentEntrant.hashCode());
+    }
+
+    @Test
+    public void testSaveToFirestore() {
+        // Mock FirebaseFirestore instance
+        FirebaseFirestore mockFirestore = FirebaseFirestore.getInstance();
+        Entrant.setDatabase(mockFirestore);
+
+        // Create a callback and test success case
+        SaveEntrantCallback mockCallback = new SaveEntrantCallback() {
+            @Override
+            public void onSuccess() {
+                assertTrue(true); // Success case
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                fail("Save to Firestore should not fail.");
+            }
+        };
+
+        // Save entrant and trigger the callback
+        entrant.saveToFirestore(mockCallback);
+    }
+
+    @Test
+    public void testCheckEntrantExists() {
+        // Mock a Firestore instance
+        FirebaseFirestore mockFirestore = FirebaseFirestore.getInstance();
+        Entrant.setDatabase(mockFirestore);
+
+        // Create a callback for checking entrant existence
+        EntrantCheckCallback mockCallback = new EntrantCheckCallback() {
+            @Override
+            public void onEntrantExists(Entrant entrant) {
+                assertNotNull(entrant);
+            }
+
+            @Override
+            public void onEntrantNotFound() {
+                fail("Entrant should exist.");
+            }
+
+            @Override
+            public void onError(Exception e) {
+                fail("Error should not occur.");
+            }
+        };
+
+        // Check if the entrant exists
+        Entrant.checkEntrantExists("sampleDeviceId", mockCallback);
+    }
+
+    @Test
+    public void testDisplayUserInfo() {
+        // Test displaying user info
+        entrant.displayUserInfo(); // Check console output manually if required
+    }
 }

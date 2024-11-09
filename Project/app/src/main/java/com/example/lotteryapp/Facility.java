@@ -3,7 +3,17 @@ package com.example.lotteryapp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 import java.io.Serializable;
-
+/**
+ * The {@code Facility} class represents a facility managed by an organizer.
+ * It includes details such as the organizer ID, facility name, operating hours, location, and contact email.
+ * This class allows saving, updating, and deleting facility information in Firebase Firestore.
+ *
+ * @see FirebaseFirestore
+ * @see FacilityCallback
+ * @see GetFacilityCallback
+ * @version v1
+ * @author Team Aurora
+ */
 public class Facility implements Serializable {
 
     private String organizerId;
@@ -71,6 +81,14 @@ public class Facility implements Serializable {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    /**
+     * Retrieves a facility from Firebase Firestore by the specified facility ID.
+     *
+     * @param facilityId the ID of the facility to retrieve
+     * @param callback   the callback to handle success or failure
+     * @throws Exception if the facility is not found
+     * @see GetFacilityCallback
+     */
     public static void getFacilityById(String facilityId, GetFacilityCallback callback) {
         db.collection("facilities").document(facilityId).get()
                 .addOnSuccessListener(documentSnapshot -> {

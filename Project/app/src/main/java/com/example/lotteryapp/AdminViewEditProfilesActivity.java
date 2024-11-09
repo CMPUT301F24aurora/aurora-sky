@@ -21,12 +21,32 @@ import java.util.List;
 
 import android.widget.SearchView;
 
-public class AdminViewEditProfilesActivity extends AppCompatActivity implements EntrantAdapter.EntrantClickListener{
+/**
+ * The AdminViewEditProfilesActivity class allows admin users to view and edit entrant profiles.
+ * This activity displays a list of entrants and provides search functionality.
+ *
+ * @see AppCompatActivity
+ * @see EntrantAdapter
+ * @see Entrant
+ * @see FirebaseFirestore
+ * @version v1
+ *
+ * @author Team Aurora
+ */
+public class AdminViewEditProfilesActivity extends AppCompatActivity implements EntrantAdapter.EntrantClickListener {
+
     private RecyclerView recyclerViewEntrants;
     private EntrantAdapter entrantAdapter;
     private List<Entrant> entrantList;
     private FirebaseFirestore db;
 
+    /**
+     * Called when the activity is first created.
+     * This method sets up the layout, initializes the RecyclerView, and loads entrants from the database.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle). Note: Otherwise it is null.
+     * @see AppCompatActivity#onCreate(Bundle)
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,10 +65,24 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
         // Set up SearchView
         SearchView searchView = findViewById(R.id.entrants_search_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            /**
+             * Called when a query is submitted in the SearchView.
+             *
+             * @param query the search query
+             * @return false to indicate the query has been handled
+             */
             @Override
             public boolean onQueryTextSubmit(String query) {
-                entrantAdapter.filter(query); return false;
+                entrantAdapter.filter(query);
+                return false;
             }
+
+            /**
+             * Called when the query text is changed in the SearchView.
+             *
+             * @param newText the new text in the SearchView
+             * @return false to indicate the query text change has been handled
+             */
             @Override
             public boolean onQueryTextChange(String newText) {
                 entrantAdapter.filter(newText);
@@ -57,9 +91,20 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
         });
     }
 
+    /**
+     * Loads entrants from the database and updates the entrant list.
+     * Retrieves entrants from the "entrants" collection in Firestore and adds them to the entrant list.
+     *
+     * @see FirebaseFirestore#collection(String)
+     */
     private void loadEntrants() {
         CollectionReference entrantsRef = db.collection("entrants");
         entrantsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            /**
+             * Called when the task to retrieve entrants is complete.
+             *
+             * @param task the task to retrieve entrants
+             */
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -75,6 +120,13 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
         });
     }
 
+    /**
+     * Called when an entrant is clicked.
+     * Starts the AdminViewProfilesContent activity and passes the entrant details to it.
+     *
+     * @param entrant the clicked entrant
+     * @see AdminViewProfilesContent
+     */
     @Override
     public void onEntrantClick(Entrant entrant) {
         Intent intent = new Intent(this, AdminViewProfilesContent.class);
@@ -85,3 +137,4 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
         startActivity(intent);
     }
 }
+

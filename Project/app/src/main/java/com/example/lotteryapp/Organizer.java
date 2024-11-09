@@ -10,7 +10,18 @@ import com.google.firebase.firestore.Query;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * The {@code Organizer} class represents an organizer user type with unique permissions and functionalities
+ * for managing events. This class extends the {@code User} class and implements {@code Serializable}.
+ * It includes functionality for managing event hashes and saving organizer details to Firestore.
+ *
+ * @see User
+ * @see Serializable
+ * @see FirebaseFirestore
+ * @version v1
+ * @since v1
+ * @authored by Team Aurora
+ */
 public class Organizer extends User implements Serializable {
 
     private List<String> eventHashes;
@@ -53,6 +64,11 @@ public class Organizer extends User implements Serializable {
                 });
     }
 
+    /**
+     * Removes an event hash from the organizer's list of events.
+     *
+     * @param eventHash the hash of the event to be removed
+     */
     public void removeEventHash(String eventHash) {
         eventHashes.remove(eventHash);
     }
@@ -72,6 +88,14 @@ public class Organizer extends User implements Serializable {
     public void setFacility_id(String facility_id) {
         this.facility_id = facility_id;
     }
+
+    /**
+     * Retrieves an organizer by device ID from Firestore.
+     *
+     * @param deviceId the device ID to query
+     * @param callback callback to handle the result of the query
+     * @see GetOrganizerCallback
+     */
 
     public static void getOrganizerByDeviceId(String deviceId, GetOrganizerCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

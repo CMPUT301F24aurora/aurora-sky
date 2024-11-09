@@ -126,30 +126,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="16dp"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
-    <Button
-        android:id="@+id/upload_image_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Upload Profile Image"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="4dp"
-        android:backgroundTint="#000000"
-        app:layout_constraintTop_toBottomOf="@id/notification_switch"
-        app:layout_constraintBottom_toTopOf="@+id/remove_image_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Remove Profile Image Button -->
-    <Button
-        android:id="@+id/remove_image_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Remove Profile Image"
-        android:backgroundTint="#000000"
-        app:layout_constraintTop_toBottomOf="@id/upload_image_button"
-        app:layout_constraintBottom_toTopOf="@id/edit_account_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Edit Account Button -->
     <Button
@@ -158,7 +135,7 @@
         android:layout_height="wrap_content"
         android:text="Edit Account Details"
         android:backgroundTint="#000000"
-        app:layout_constraintTop_toBottomOf="@id/remove_image_button"
+        app:layout_constraintTop_toBottomOf="@id/notification_switch"
         app:layout_constraintBottom_toTopOf="@id/view_facility_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

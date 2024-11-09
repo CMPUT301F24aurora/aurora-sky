@@ -22,16 +22,17 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import android.widget.SearchView;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdminViewEditEventsActivity extends AppCompatActivity implements EventAdapter.OnEventClickListener{
+public class AdminViewEditEventsActivity extends AppCompatActivity implements AdminEventAdapter.OnEventClickListener{
 
     private RecyclerView adminEvList;
     private List<Event> eventList;
-    private EventAdapter adapter;
+    private AdminEventAdapter adapter;
     private FirebaseFirestore db;
-    private Event selectedEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +41,7 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ev
 
         adminEvList = findViewById(R.id.admin_ev_list);
         eventList = new ArrayList<>();
-        adapter = new EventAdapter(eventList, this);
+        adapter = new AdminEventAdapter(eventList, this);
 
         adminEvList.setLayoutManager(new LinearLayoutManager(this));
         adminEvList.setAdapter(adapter);
@@ -48,6 +49,19 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ev
         db = FirebaseFirestore.getInstance();
 
         loadEvents();
+
+        // Set up SearchView
+        SearchView searchView = findViewById(R.id.admin_search_ev);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.filter(query); return false;
+            }
+            @Override public boolean onQueryTextChange(String newText) {
+                adapter.filter(newText);
+                return false;
+            }
+        });
     }
 
     private void loadEvents() {
@@ -70,13 +84,13 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ev
 
     @Override
     public void onEventClick(Event event) {
-        selectedEvent = event;
 
         Intent intent = new Intent(this, AdminViewEventsContent.class);
         intent.putExtra("eventName", event.getName());
         intent.putExtra("eventDate", event.getEventDate());
         intent.putExtra("eventDescription", event.getDescription());
         intent.putExtra("eventId", event.getQR_code());
+        intent.putExtra("eventHash", event.getQR_code());
         startActivity(intent);
     }
 }

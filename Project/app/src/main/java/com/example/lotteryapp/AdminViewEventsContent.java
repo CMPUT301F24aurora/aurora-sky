@@ -19,12 +19,29 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * The AdminViewEventsContent class displays the details of a selected event and allows admin users to delete it.
+ *
+ * @see AppCompatActivity
+ * @see FirebaseFirestore
+ * @see AdminViewEditEventsActivity
+ * @version v1
+ *
+ * Author: Team Aurora
+ */
 public class AdminViewEventsContent extends AppCompatActivity {
 
     private TextView eventNameTextView;
     private Button adminEvRemove;
     private FirebaseFirestore db;
 
+    /**
+     * Called when the activity is first created.
+     * This method sets up the layout and initializes views and Firestore.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down, this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle). Otherwise, it is null.
+     * @see AppCompatActivity#onCreate(Bundle)
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,17 +56,23 @@ public class AdminViewEventsContent extends AppCompatActivity {
 
         eventNameTextView.setText(eventName);
 
-        adminEvRemove =findViewById(R.id.admin_ev_remove);
+        adminEvRemove = findViewById(R.id.admin_ev_remove);
 
         adminEvRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 deleteEvent();
-                }
+            }
         });
         db = FirebaseFirestore.getInstance();
     }
 
+    /**
+     * Deletes the event from the database and updates the UI.
+     * Retrieves the event ID and hash from the intent and deletes the event document from Firestore.
+     * If successful, navigates back to the event list and removes the event hash from the organizer.
+     *
+     */
     private void deleteEvent() {
         CollectionReference eventsRef = db.collection("events");
         String eventId = getIntent().getStringExtra("eventId");
@@ -73,6 +96,12 @@ public class AdminViewEventsContent extends AppCompatActivity {
         });
     }
 
+    /**
+     * Removes the event hash from the organizer's document in the database.
+     * Queries the "organizers" collection for documents containing the specified event hash and removes it.
+     *
+     * @param eventHash the hash of the event to be removed
+     */
     private void removeEventHashFromOrganizer(String eventHash) {
         db.collection("organizers")
                 .whereArrayContains("eventHashes", eventHash)
@@ -95,3 +124,4 @@ public class AdminViewEventsContent extends AppCompatActivity {
                 .addOnFailureListener(e -> Log.e("OrganizerEventHash", "Error querying organizers", e));
     }
 }
+

@@ -15,6 +15,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+/**
+ * The {@code Event} class represents an event with details such as the event name, date,
+ * geolocation requirement, number of attendees, description, waiting list, and a generated QR code.
+ * It supports saving to and retrieving from Firebase Firestore.
+ *
+ * @author Team Aurora
+ * @version v1
+ * @see FirebaseFirestore
+ */
 
 public class Event implements Serializable {
 
@@ -90,6 +99,15 @@ public class Event implements Serializable {
     }
 
     // Method to add an entrant to the waiting list if the event is full
+    /**
+     * Adds an entrant to the waiting list if the event is full.
+     *
+     * @param entrant   the entrant to be added
+     * @param callback  the callback to handle success or failure
+     * @return {@code true} if the entrant was added, {@code false} if already present
+     * @throws Exception if the entrant is already in the waiting list
+     * @see WaitingListCallback
+     */
     public boolean addEntrantToWaitingList(Entrant entrant, WaitingListCallback callback) {
         if (waitingList.contains(entrant)) {
             callback.onFailure(new Exception("Entrant is already in the waiting list."));
@@ -107,6 +125,13 @@ public class Event implements Serializable {
         return true;
     }
 
+    /**
+     * Removes an entrant from the waiting list.
+     *
+     * @param entrant   the entrant to be removed
+     * @param callback  the callback to handle success or failure
+     * @see WaitingListCallback
+     */
     public void removeEntrantFromWaitingList(Entrant entrant, WaitingListCallback callback) {
         if (!waitingList.contains(entrant)) {
             callback.onFailure(new Exception("Entrant is not in the waiting list."));
@@ -133,6 +158,12 @@ public class Event implements Serializable {
     }
 
     // Method to generate a QR code hash for the event
+    /**
+     * Generates a bitmap image of the QR code.
+     *
+     * @return the QR code bitmap
+     * @throws WriterException if there is an error encoding the QR code
+     */
     public String generateQRHash() {
         String uniqueIdentifier = eventName + eventDate + System.currentTimeMillis();
         String firebaseUrl = "https://yourfirebaseproject.firebaseio.com/events/" + uniqueIdentifier;
@@ -189,7 +220,12 @@ public class Event implements Serializable {
         }
     }
 
-    // Save Event object to Firebase
+    /**
+     * Saves the event object to Firebase Firestore.
+     *
+     * @param callback the callback to handle success or failure
+     * @see SaveEventCallback
+     */
     public void saveToFirestore(SaveEventCallback callback) {
         String eventHash = this.getQR_code(); // Unique hash including timestamp
 

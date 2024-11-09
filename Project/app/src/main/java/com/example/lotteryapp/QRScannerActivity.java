@@ -15,7 +15,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
-
+/**
+ * {@code QRScannerActivity} is an activity that allows the user to scan QR codes associated with events.
+ * Upon scanning a QR code, the event details are fetched from Firebase Firestore, and the user is presented with options
+ * to either sign up for the event or view event details.
+ *
+ * @version v1
+ * @since v1
+ * @author Team Aurora
+ * @see AppCompatActivity
+ * @see Entrant
+ * @see Event
+ * @see FirebaseFirestore
+ */
 public class QRScannerActivity extends AppCompatActivity {
 
     private static final String TAG = "QRScannerActivity";
@@ -47,11 +59,17 @@ public class QRScannerActivity extends AppCompatActivity {
         viewEventButton.setVisibility(View.GONE);
     }
 
+    /**
+     * Starts the QR code scanner by making the barcode scanner view visible and initiating a scan.
+     */
     private void startQRCodeScanner() {
         barcodeScannerView.setVisibility(View.VISIBLE);
         scanQRCode();
     }
 
+    /**
+     * Initiates the QR code scan with specified options.
+     */
     private void scanQRCode() {
         ScanOptions options = new ScanOptions();
         options.setPrompt("Scan a QR Code");
@@ -77,6 +95,11 @@ public class QRScannerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Fetches the event from Firestore using the event ID obtained from the QR code.
+     *
+     * @param eventId the ID of the event to retrieve from Firestore
+     */
     private void fetchEventFromFirestore(String eventId) {
         DocumentReference eventRef = db.collection("events").document(eventId);
         eventRef.get()
@@ -96,6 +119,11 @@ public class QRScannerActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Displays the sign-up and view event buttons once the event has been successfully fetched.
+     *
+     * @param event the event fetched from Firestore
+     */
     private void showOptions(Event event) {
         barcodeScannerView.setVisibility(View.GONE);
         signUpButton.setVisibility(View.VISIBLE);

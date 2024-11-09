@@ -22,7 +22,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-
+/**
+ * The {@code MapActivity} class is responsible for displaying the user's current location on a Google Map.
+ * It handles location permissions, retrieves the last known location, and places a marker on the map at
+ * the user's location.
+ *
+ * @see AppCompatActivity
+ * @see OnMapReadyCallback
+ * @see GoogleMap
+ * @see FusedLocationProviderClient
+ * @version v1
+ * @since v1
+ */
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -74,6 +85,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
     }
 
+    /**
+     * Called when the map is ready to be used. Places a marker at the user's current location and
+     * moves the camera to focus on that location.
+     *
+     * @param googleMap the GoogleMap object that is ready for manipulation
+     * @see GoogleMap
+     * @see LatLng
+     */
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
@@ -83,7 +102,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,15));
     }
 
-
+    /**
+     * Called when the user responds to a permission request. Checks the result of the location permission request
+     * and retrieves the location if permission is granted.
+     *
+     * @param requestCode  the request code passed in {@link #requestPermissions(String[], int)}
+     * @param permissions  the requested permissions
+     * @param grantResults the results for the requested permissions
+     * @see #getLastLocation()
+     */
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == FINE_PERMISSION_CODE) {

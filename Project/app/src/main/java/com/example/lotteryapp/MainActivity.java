@@ -17,7 +17,20 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-
+/**
+ * The {@code MainActivity} class represents the main entry point of the application.
+ * It handles user authentication and navigation to the appropriate user type pages.
+ * The activity also checks if the device belongs to an admin and displays the admin page link accordingly.
+ *
+ * @see AppCompatActivity
+ * @see FirebaseFirestore
+ * @see EntrantsEventsActivity
+ * @see OrganizerMainPage
+ * @see EntrantProfileEditActivity
+ * @see AdminHomepageActivity
+ * @version v1
+ * @since v1
+ */
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -52,6 +65,16 @@ public class MainActivity extends AppCompatActivity {
         checkAdminAndDisplayPage(deviceId);
     }
 
+    /**
+     * Checks if a user exists in the specified user type collection and navigates to the appropriate page.
+     * If the user does not exist, navigates to the profile edit page.
+     *
+     * @param userType the type of user, either "entrant" or "organizer"
+     * @see EntrantsEventsActivity
+     * @see OrganizerMainPage
+     * @see EntrantProfileEditActivity
+     */
+
     private void checkUserExistsAndNavigate(String userType) {
         String deviceId = getDeviceId(this);
 
@@ -74,6 +97,13 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Log.w(TAG, "Error checking user in Firestore", e));
     }
 
+    /**
+     * Checks if the device belongs to an admin and displays the admin sign-in button if true.
+     *
+     * @param deviceId the unique identifier of the device
+     * @see AdminHomepageActivity
+     */
+
     private void checkAdminAndDisplayPage(String deviceId) {
         db.collection("admin").whereEqualTo("id", deviceId)
                 .get()
@@ -91,11 +121,22 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Navigates to the admin homepage if the user is an admin.
+     *
+     * @see AdminHomepageActivity
+     */
     private void navigateToAdminHomepage() {
         Intent intent = new Intent(MainActivity.this, AdminHomepageActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * Retrieves the unique device ID for the current device.
+     *
+     * @param context the context of the current state of the application
+     * @return the unique device ID as a {@code String}
+     */
     private String getDeviceId(Context context) {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }

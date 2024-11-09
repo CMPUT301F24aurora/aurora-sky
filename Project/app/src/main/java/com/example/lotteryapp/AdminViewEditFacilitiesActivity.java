@@ -22,6 +22,18 @@ import java.util.List;
 
 import android.widget.SearchView;
 
+/**
+ * The AdminViewEditFacilitiesActivity class allows admin users to view and edit facilities.
+ * This activity displays a list of facilities and provides search functionality.
+ *
+ * @see AppCompatActivity
+ * @see FacilityAdapter
+ * @see Facility
+ * @see FirebaseFirestore
+ * @version v1
+ *
+ * @author Team Aurora
+ */
 public class AdminViewEditFacilitiesActivity extends AppCompatActivity implements FacilityAdapter.FacilityClickListener {
 
     private RecyclerView adminFacList;
@@ -29,6 +41,13 @@ public class AdminViewEditFacilitiesActivity extends AppCompatActivity implement
     private List<Facility> facilityList;
     private FirebaseFirestore db;
 
+    /**
+     * Called when the activity is first created.
+     * This method sets up the layout, initializes the RecyclerView, and loads facilities from the database.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle). Note: Otherwise it is null.
+     * @see AppCompatActivity#onCreate(Bundle)
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,21 +83,46 @@ public class AdminViewEditFacilitiesActivity extends AppCompatActivity implement
         // Set up SearchView
         SearchView searchView = findViewById(R.id.fsearchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-        @Override
-        public boolean onQueryTextSubmit(String query) {
-            facilityAdapter.filter(query); return false;
-        }
-        @Override
-        public boolean onQueryTextChange(String newText) {
-            facilityAdapter.filter(newText);
-            return false;
-        }
+            /**
+             * Called when a query is submitted in the SearchView.
+             *
+             * @param query the search query
+             * @return false to indicate the query has been handled
+             */
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                facilityAdapter.filter(query);
+                return false;
+            }
+
+            /**
+             * Called when the query text is changed in the SearchView.
+             *
+             * @param newText the new text in the SearchView
+             * @return false to indicate the query text change has been handled
+             */
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                facilityAdapter.filter(newText);
+                return false;
+            }
         });
     }
 
+    /**
+     * Loads facilities from the database and updates the facility list.
+     * Retrieves facilities from the "facilities" collection in Firestore and adds them to the facility list.
+     *
+     * @see FirebaseFirestore#collection(String)
+     */
     private void loadFacilities() {
         CollectionReference facilitiesRef = db.collection("facilities");
         facilitiesRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            /**
+             * Called when the task to retrieve facilities is complete.
+             *
+             * @param task the task to retrieve facilities
+             */
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -94,12 +138,19 @@ public class AdminViewEditFacilitiesActivity extends AppCompatActivity implement
         });
     }
 
+    /**
+     * Called when a facility is clicked.
+     * Starts the AdminViewFacilitiesContent activity and passes the facility details to it.
+     *
+     * @param facility the clicked facility
+     * @see AdminViewFacilitiesContent
+     */
     @Override
     public void onFacilityClick(Facility facility) {
         // Create an Intent to start the new activity
         Intent intent = new Intent(this, AdminViewFacilitiesContent.class);
 
-        // Pass necessary data to the new activity if needed
+        // Pass necessary data to the new activity
         intent.putExtra("facilityName", facility.getName());
         intent.putExtra("facilityLocation", facility.getLocation());
         intent.putExtra("facilityTime", facility.getStartTime());

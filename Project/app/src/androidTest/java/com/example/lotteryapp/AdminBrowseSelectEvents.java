@@ -26,7 +26,7 @@ import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
 public class AdminBrowseSelectEvents {
-
+/*
     private void sleep(){
         // Sleep for assurance (not recommended for production tests)
         try {
@@ -79,4 +79,6 @@ public class AdminBrowseSelectEvents {
 
         Intents.release();
     }
+
+ */
 }

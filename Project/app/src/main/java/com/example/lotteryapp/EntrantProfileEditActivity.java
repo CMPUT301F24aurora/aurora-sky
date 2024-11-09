@@ -56,27 +56,21 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
     private StorageReference storageRef;
     private Uri profileImageUri;
 
-    // Declare the ActivityResultLauncher
-    private ActivityResultLauncher<Intent> imagePickerLauncher;
-
     Uri image;
     Button uploadImage;
     ImageButton selectImage;
     ImageView imageView;
-    private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-        @Override
-        public void onActivityResult(ActivityResult result) {
-            if (result.getResultCode() == RESULT_OK) {
-                if (result.getData() != null) {
-                    uploadImage.setEnabled(true);
-                    image = result.getData().getData();
-                    Glide.with(getApplicationContext()).load(image).into(imageView);
+    private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    profileImageUri = result.getData().getData();
+                    currentProfilePicture.setImageURI(profileImageUri);
+                } else {
+                    Toast.makeText(EntrantProfileEditActivity.this, "Please select an image", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                Toast.makeText(EntrantProfileEditActivity.this, "Please select an image", Toast.LENGTH_SHORT).show();
-            }
-        }
-    });
+            });
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,34 +114,28 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     Intent intent = new Intent(Intent.ACTION_PICK);
                     intent.setType("image/*");
-                    activityResultLauncher.launch(intent);
+                    imagePickerLauncher.launch(intent);
                 }
             });
-
-            confirmChanges.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    uploadImage(image);
-                }
-            });
-
         }
 
-        imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK) {
-                        Intent data = result.getData();
-                        if (data != null && data.getData() != null) {
-                            profileImageUri = data.getData();
-                            currentProfilePicture.setImageURI(profileImageUri);
-                        }
-                    }
-                });
 
+        // Confirm Changes button logic to save details and upload image
+        confirmChanges.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Save the entrant details
+                saveEntrantDetails();
 
-        // OnClickListener for Confirm Changes Button
-        confirmChanges.setOnClickListener(v -> saveEntrantDetails());
+                // Check if there's a profile image to upload
+                if (profileImageUri != null) {
+                    uploadImage(entrant, profileImageUri);
+                } else {
+                    saveEntrantToFirestore(entrant, null); // Save without an image URL
+                }
+            }
+        });
+
         addProfilePictureButton.setOnClickListener(v -> openImageChooser());
         removeProfilePicture.setOnClickListener(v -> {
             // Clear the profile picture
@@ -159,27 +147,26 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
                 currentProfilePicture.setImageResource(R.drawable.ic_profile_photo); // Set default image if no entrant data
             }
 
-            // Remove the image URL from the Entrant object in Firestore
-//            if (entrant != null) {
-//                saveEntrantToFirestore(entrant, null); // Set profile image URL to null
-//            }
         });
     }
 
-    private void uploadImage(Uri file) {
-        StorageReference ref = storageRef.child("images/" + UUID.randomUUID().toString());
-        ref.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(EntrantProfileEditActivity.this, "Image Uploaded!!", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(EntrantProfileEditActivity.this, "Failed!" + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void uploadImage(Entrant entrant, Uri imageUri) {
+        StorageReference fileRef = storageRef.child("profile_pictures/" + entrant.getId() + ".jpg");
+
+        fileRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl()
+                        .addOnSuccessListener(uri -> {
+                            String imageUrl = uri.toString();
+                            saveEntrantToFirestore(entrant, imageUrl); // Pass the image URL to Firestore
+                        })
+                        .addOnFailureListener(e -> Log.e(TAG, "Failed to get download URL", e))
+                )
+                .addOnFailureListener(e -> {
+                    Toast.makeText(EntrantProfileEditActivity.this, "Profile image upload failed", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Profile image upload failed", e);
+                });
     }
+
 
     private Bitmap generateTextDrawable(String text) {
         // Create a new Bitmap (400x400px for example)
@@ -225,23 +212,6 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         imagePickerLauncher.launch(intent);
-    }
-
-    private void uploadProfileImage(Entrant entrant, Uri imageUri) {
-        StorageReference fileRef = storageRef.child(entrant.getId() + ".jpg");
-        String entrantId = entrant.getId();
-        if (entrantId == null || entrantId.isEmpty()) {
-            Log.e(TAG, "Entrant ID is null or empty");
-            return;  // Stop the upload process
-        }
-        fileRef.putFile(imageUri)
-                .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl()
-                        .addOnSuccessListener(uri -> {
-                            String imageUrl = uri.toString();
-                            saveEntrantToFirestore(entrant, imageUrl);
-                        })
-                        .addOnFailureListener(e -> Log.e(TAG, "Failed to get download URL", e)))
-                .addOnFailureListener(e -> Log.e(TAG, "Profile image upload failed", e));
     }
 
     private void saveEntrantDetails() {
@@ -295,7 +265,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
 
         // Check if a profile picture has been selected
         if (profileImageUri != null) {
-            uploadProfileImage(entrant, profileImageUri);
+            uploadImage(entrant, profileImageUri);
         } else {
             saveEntrantToFirestore(entrant, null);
         }

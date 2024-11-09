@@ -7,7 +7,6 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.UiController;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import org.hamcrest.Matcher;
@@ -29,7 +28,7 @@ import static org.hamcrest.Matchers.allOf;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 
 @RunWith(AndroidJUnit4.class)
-public class AdminBrowseSelectEvents {
+public class AdminBrowseSelectFacilities {
 
     private SimpleIdlingResource idlingResource;
 
@@ -55,39 +54,38 @@ public class AdminBrowseSelectEvents {
         sleep();
 
         // Verify navigation to AdminHomepageActivity
-        onView(withId(R.id.admin_v_ev)).check(matches(isDisplayed()));
+        onView(withId(R.id.admin_v_fac)).check(matches(isDisplayed()));
     }
 
     @Test
-    public void testAdminEvButtonNavigatesToAdminEventEntrants() {
+    public void testAdminFacButtonNavigatesToAdminEventEntrants() {
         // Navigate to AdminHomepageActivity
         onView(withId(R.id.admin_link)).perform(click());
         sleep();
 
-        // Click the admin_v_ev button
-        onView(withId(R.id.admin_v_ev)).perform(click());
+        // Click the admin_v_fac button
+        onView(withId(R.id.admin_v_fac)).perform(click());
         sleep();
 
-        // Verify navigation to AdminSearchEventActivity
-        onView(withId(R.id.admin_search_ev)).check(matches(isDisplayed()));
+        // Verify navigation to AdminSearchFacilityActivity
+        onView(withId(R.id.fsearchView)).check(matches(isDisplayed()));
     }
 
     @Test
-    public void testSearchEventCard() {
+    public void testSearchFacilityItem() {
         // Navigate to AdminHomepageActivity
         onView(withId(R.id.admin_link)).perform(click());
         idlingResource.setIdleState(false); // Set to busy
-        onView(withId(R.id.admin_v_ev)).perform(click());
+        onView(withId(R.id.admin_v_fac)).perform(click());
         idlingResource.setIdleState(true); // Set to idle when the action is done
 
-        onView(withId(R.id.admin_search_ev)).perform(setText("e1"));
+        onView(withId(R.id.fsearchView)).perform(setText("testFacility"));
         idlingResource.setIdleState(true); // Set to idle after typing
 
-        // Perform a scroll to the item with "e1" and check if it's displayed
-        onView(withId(R.id.admin_ev_list))
-                .perform(CustomScrollActions.scrollToHolder(hasDescendant(withText("e1"))));
+        onView(withId(R.id.admin_fac_list))
+                .perform(CustomScrollActions.scrollToHolder(hasDescendant(withText("testFacility"))));
 
-        onView(allOf(withId(R.id.event_name), withText("e1"))).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.facility_name), withText("testFacility"))).check(matches(isDisplayed()));
     }
 
     private ViewAction setText(final String text) {
@@ -123,4 +121,3 @@ public class AdminBrowseSelectEvents {
         }
     }
 }
-

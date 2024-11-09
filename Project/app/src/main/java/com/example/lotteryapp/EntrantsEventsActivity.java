@@ -213,8 +213,8 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
     @Override
     public void onEventClick(Event event) {
         // Navigate to the event details page
-        //Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
-        Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, qr_code.class);
+        Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
+        //Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, qr_code.class);
 
         // Fetch the entrant data from Firestore
         Entrant.getEntrant(this, new GetEntrantCallback() {

@@ -9,23 +9,54 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import android.content.Context;
 
-public class Admin extends User{
-    //private EntrantsOrganizer entrantsOrganizer;
-    //private Event eventsFacility;
+/**
+ * Represents an Admin user who manages events in the application.
+ * This class extends the User class and provides functionalities specific to Admin users.
+ *
+ * @see User
+ * @see FirebaseFirestore
+ * @see Context
+ * @version v1
+ *
+ * @author Team Aurora
+ */
+public class Admin extends User {
+    // private EntrantsOrganizer entrantsOrganizer;
+    // private Event eventsFacility;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private Context context;
 
-    @Override
-    public void displayUserInfo() {
-
-    }
-
-    // Constructor
+    /**
+     * Constructor for the Admin class.
+     * Initializes the Admin with the specified context.
+     *
+     * @param context the context in which the Admin operates
+     */
     public Admin(Context context) {
         this.context = context;
     }
 
-    // Remove Event
+    /**
+     * Displays the user's information.
+     * This method is overridden from the User class.
+     *
+     * @see User#displayUserInfo()
+     */
+    @Override
+    public void displayUserInfo() {
+        // Implementation for displaying user info
+    }
+
+    /**
+     * Removes an event from the database.
+     * Deletes the event document identified by the provided eventId from the "events" collection.
+     *
+     * @param eventId the ID of the event to be removed
+     * @throws Exception if an error occurs while deleting the event
+     *
+     * @see FirebaseFirestore#collection(String)
+     * @see FirebaseFirestore#document(String)
+     */
     public void removeEvent(String eventId) {
         db.collection("events").document(eventId).delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -35,11 +66,13 @@ public class Admin extends User{
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
-                    @Override public void onFailure(@NonNull Exception e) {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
                         Toast.makeText(context, "Error deleting Event!", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+}
 /*
     public void removeProfile(String profileId) {
         entrantsOrganizer.deleteProfile(profileId);
@@ -78,4 +111,3 @@ public class Admin extends User{
         System.out.println("Admin Email: " + getEmail());
     }
  */
-}

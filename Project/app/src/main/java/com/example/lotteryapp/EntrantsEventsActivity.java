@@ -12,8 +12,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -90,8 +88,9 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
                 Intent organizerIntent = new Intent(EntrantsEventsActivity.this, MapActivity.class);
                 startActivity(organizerIntent);
             } else if (id == R.id.qr_code_nav) {
-                Intent organizerIntent = new Intent(EntrantsEventsActivity.this, QRScannerActivity.class);
-                startActivity(organizerIntent);
+                Intent qrScannerIntent = new Intent(EntrantsEventsActivity.this, QRScannerActivity.class);
+                qrScannerIntent.putExtra("entrant_data", entrant);
+                startActivity(qrScannerIntent);
             }
             drawerLayout.closeDrawers(); // Close drawer after selection
             return true;
@@ -215,7 +214,7 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
     public void onEventClick(Event event) {
         // Navigate to the event details page
         Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
-//        Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, qr_code.class);
+        //Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, qr_code.class);
 
         // Fetch the entrant data from Firestore
         Entrant.getEntrant(this, new GetEntrantCallback() {

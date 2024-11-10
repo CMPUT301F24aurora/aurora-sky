@@ -10,6 +10,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The {@code FacilityAdapter} class is an adapter for displaying a list of facilities in a RecyclerView.
+ * It provides filtering capabilities and handles click events for each facility item.
+ *
+ * @see RecyclerView
+ * @see Facility
+ * @version v1
+ * @since v1
+ * @see FacilityClickListener
+ * @see List
+ * @see ViewGroup
+ * @see LayoutInflater
+ */
+
 public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.FacilityViewHolder> {
 
     private List<Facility> facilityList;
@@ -19,6 +33,13 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.Facili
     public interface FacilityClickListener {
         void onFacilityClick(Facility facility);
     }
+
+    /**
+     * Constructs a {@code FacilityAdapter} with the specified list of facilities and click listener.
+     *
+     * @param facilityList      the list of {@code Facility} objects to be displayed
+     * @param clickListener     the {@code FacilityClickListener} for item click events
+     */
 
     public FacilityAdapter(List<Facility> facilityList, FacilityClickListener clickListener) {
         this.facilityList = facilityList;
@@ -53,6 +74,12 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.Facili
             }
         } notifyDataSetChanged();
     }
+
+    /**
+     * Returns the total number of filtered items in the data set held by the adapter.
+     *
+     * @return the number of filtered items in the data set
+     */
 
     @Override
     public int getItemCount() {

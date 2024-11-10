@@ -125,6 +125,10 @@ public class OrganizerFacilityActivity extends AppCompatActivity {
     }
 
     private boolean validateInputs() {
+        if(facility.getStartTime() == null || facility.getEndTime() == null){
+            facility.setStartTime("9:00");
+            facility.setEndTime("17:00");
+        }
         if (nameField.getText().toString().trim().isEmpty() ||
                 facility.getStartTime() == null ||
                 facility.getEndTime() == null ||

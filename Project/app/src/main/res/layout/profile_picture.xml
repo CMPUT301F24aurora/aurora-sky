@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbar"
+        app:titleCentered="true"
+        app:titleTextColor="?attr/colorSurface"
+        android:background="?attr/colorPrimary"/>
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress"
+        android:layout_below="@id/toolbar"/>
+
+    <ImageView
+        android:layout_width="300sp"
+        android:layout_height="300sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20sp"
+        android:layout_below="@id/progress"
+        android:id="@+id/imageView"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select"
+        android:id="@+id/selectImage"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/imageView"
+        android:layout_margin="10sp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/selectImage"
+        android:enabled="false"
+        android:text="Upload Image"
+        android:id="@+id/uploadImage"/>
+
+</RelativeLayout>

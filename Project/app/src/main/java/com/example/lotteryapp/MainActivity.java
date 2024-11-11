@@ -78,23 +78,63 @@ public class MainActivity extends AppCompatActivity {
     private void checkUserExistsAndNavigate(String userType) {
         String deviceId = getDeviceId(this);
 
-        // Check if the user exists in either the entrants or organizers collection
-        db.collection(userType.equals("entrant") ? "entrants" : "organizers").document(deviceId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        // User exists, navigate to the appropriate page based on type
-                        Intent intent = new Intent(MainActivity.this,
-                                userType.equals("entrant") ? EntrantsEventsActivity.class : OrganizerMainPage.class);
-                        startActivity(intent);
-                    } else {
-                        // User does not exist, navigate to profile edit page
-                        Intent intent = new Intent(MainActivity.this, EntrantProfileEditActivity.class);
-                        intent.putExtra("userType", userType);
-                        startActivity(intent);
+        DatabaseManager.getEntrant(this, new GetEntrantCallback() {
+            @Override
+            public void onEntrantFound(Entrant entrant) {
+                // If entrant is found, we assume organizer also exists
+                DatabaseManager.getOrganizerByDeviceId(deviceId, new GetOrganizerCallback() {
+                    @Override
+                    public void onOrganizerFound(Organizer organizer) {
+                        navigateToAppropriateActivity(userType, entrant, organizer);
                     }
-                })
-                .addOnFailureListener(e -> Log.w(TAG, "Error checking user in Firestore", e));
+
+                    @Override
+                    public void onOrganizerNotFound() {
+                        // This shouldn't happen based on our assumption, but handle it just in case
+                        Log.w(TAG, "Organizer not found even though Entrant exists");
+                        navigateToAppropriateActivity(userType, entrant, null);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Log.e(TAG, "Error fetching organizer", e);
+                        navigateToAppropriateActivity(userType, entrant, null);
+                    }
+                });
+            }
+
+            @Override
+            public void onEntrantNotFound(Exception e) {
+                // If entrant is not found, we navigate to profile edit
+                navigateToProfileEdit(userType);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e(TAG, "Error fetching entrant", e);
+                navigateToProfileEdit(userType);
+            }
+        });
+    }
+
+    private void navigateToAppropriateActivity(String userType, Entrant entrant, Organizer organizer) {
+        Intent intent;
+        if (userType.equals("entrant")) {
+            intent = new Intent(MainActivity.this, EntrantsEventsActivity.class);
+        } else {
+            intent = new Intent(MainActivity.this, OrganizerMainPage.class);
+        }
+
+        intent.putExtra("entrant_data", entrant);
+        intent.putExtra("organizer_data", organizer);
+
+        startActivity(intent);
+    }
+
+    private void navigateToProfileEdit(String userType) {
+        Intent intent = new Intent(MainActivity.this, EntrantProfileEditActivity.class);
+        intent.putExtra("userType", userType);
+        startActivity(intent);
     }
 
     /**

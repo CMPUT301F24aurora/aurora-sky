@@ -35,6 +35,7 @@ android {
 }
 
 dependencies {
+    implementation ("com.google.android.gms:play-services-tasks:18.0.2")
     implementation ("androidx.drawerlayout:drawerlayout:1.1.1")
     implementation ("com.google.android.material:material:1.8.0")
     implementation ("com.google.android.gms:play-services-location:21.0.1")

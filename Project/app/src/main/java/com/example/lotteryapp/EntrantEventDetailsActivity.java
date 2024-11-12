@@ -2,6 +2,7 @@ package com.example.lotteryapp;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,7 +14,10 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
 
     private TextView eventTitle, eventDescription, eventDate, eventCapacity;
     private Event event;
-    private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private Entrant entrant;
+    private Organizer organizer;
+    private Button enter_waiting;
+    private Button leave_waiting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +27,7 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
         initializeViews();
         getIntentData();
         displayEventDetails();
+        setupEnterWaiting();
     }
 
     private void initializeViews() {
@@ -30,10 +35,13 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
         eventDescription = findViewById(R.id.event_description);
         eventDate = findViewById(R.id.event_date);
         eventCapacity = findViewById(R.id.event_capacity);
+        enter_waiting = findViewById(R.id.enter_waiting);
     }
 
     private void getIntentData() {
         event = (Event) getIntent().getSerializableExtra("event_data");
+        entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
+        organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
     }
 
     private void displayEventDetails() {
@@ -46,5 +54,12 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
             Toast.makeText(this, "Event data is missing", Toast.LENGTH_SHORT).show();
             finish();
         }
+    }
+
+    private void setupEnterWaiting(){
+        enter_waiting.setOnClickListener(view -> {
+            // Show a toast message when the button is clicked
+            Toast.makeText(EntrantEventDetailsActivity.this, "Entered Waiting List", Toast.LENGTH_SHORT).show();
+        });
     }
 }

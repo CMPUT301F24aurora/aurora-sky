@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <!-- Add permissions if needed -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="31" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -13,27 +28,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LotteryApp"
         tools:targetApi="31">
-
+        <activity
+            android:name=".NotificationActivity"
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".AdminHomepageActivity" />
-        <activity android:name=".EntrantProfileEditActivity" android:exported="true"></activity>
+        <activity
+            android:name=".EntrantProfileEditActivity"
+            android:exported="true" />
         <activity android:name=".EntrantsEventsActivity" />
         <activity android:name=".OrganizerRegistrationActivity" />
         <activity android:name=".EntrantEventDetailsActivity" />
         <activity android:name=".EntrantProfileActivity" />
-        <activity android:name=".EntrantWaitingListActivity"/>
+        <activity android:name=".EntrantWaitingListActivity" />
         <activity android:name=".OrganizerMainPage" />
         <activity android:name=".OrganizerCreateEvent" />
-        <activity android:name=".OrganizerFacilityActivity"/>
-        <activity android:name=".OrganizerFacilityListActivity"/>
+        <activity android:name=".OrganizerFacilityActivity" />
+        <activity android:name=".OrganizerFacilityListActivity" />
         <activity android:name=".MapActivity" />
         <activity android:name=".AdminViewEditEventsActivity" />
         <activity android:name=".AdminViewEventsContent" />
@@ -41,23 +60,13 @@
         <activity android:name=".AdminViewFacilitiesContent" />
         <activity android:name=".AdminViewEditProfilesActivity" />
         <activity android:name=".AdminViewProfilesContent" />
-        <activity android:name=".qr_code"/>
-        <activity android:name=".QRScannerActivity"/>
+        <activity android:name=".qr_code" />
+        <activity android:name=".QRScannerActivity" />
+
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/API_KEY"/>
+            android:value="@string/API_KEY" />
     </application>
-
-    <!-- Add permissions if needed -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="31"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
 </manifest>

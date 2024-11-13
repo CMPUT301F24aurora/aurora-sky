@@ -96,23 +96,6 @@ public class DatabaseManager {
                 .addOnFailureListener(callback::onError);
     }
 
-    public static void getEventsFromFirestore(GetEventsCallback callback) {
-        if (callback == null) return;
-
-        db.collection("events")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<Event> events = new ArrayList<>();
-                    for (DocumentSnapshot document : queryDocumentSnapshots) {
-                        Event event = document.toObject(Event.class);
-                        if (event != null) {
-                            events.add(event);
-                        }
-                    }
-                    callback.onSuccess(events);
-                })
-                .addOnFailureListener(e -> callback.onFailure(e));
-    }
 
     // Utility method
     private static String getDeviceId(Context context) {

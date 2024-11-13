@@ -3,7 +3,6 @@ package com.example.lotteryapp;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -15,12 +14,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * The {@code Event} class represents an event with details such as the event name, date,
  * geolocation requirement, number of attendees, description, waiting list, and a generated QR code.
  * It supports saving to and retrieving from Firebase Firestore.
  *
- * @author Team Aurora
  * @version v1
  * @see FirebaseFirestore
  */
@@ -34,7 +33,7 @@ public class Event implements Serializable {
     private Integer numPeople;
     private String description;
     private String qr_code;
-    private WaitingList waitingList;
+    private List<String> waitingList;
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public Event() {
@@ -47,16 +46,14 @@ public class Event implements Serializable {
         this.numPeople = numPeople;
         this.description = description;
         this.qr_code = generateQRHash();
-        this.waitingList = new WaitingList(this.qr_code);
-
-
+        this.waitingList = new ArrayList<>();  // Initialize waitingList as an empty list
     }
 
-    public String getName() {
-        return eventName;
+    public String getEventName() {
+        return this.eventName;
     }
 
-    public void setName(String eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
     }
 
@@ -83,6 +80,7 @@ public class Event implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+
     public String getQR_code(){
         return this.qr_code;
     }
@@ -95,35 +93,34 @@ public class Event implements Serializable {
         this.geolocationRequired = geolocationRequired;
     }
 
-
-    //Get the waiting list for this event
-    public WaitingList getWaitingList() {
-        return waitingList;
+    // Get the waiting list for this event
+    public List<String> getWaitingList() {
+        return this.waitingList;
     }
 
-    //Add an entrant to the waiting list
+    // Add an entrant to the waiting list
     public boolean addEntrantToWaitingList(String entrantId) {
-        return waitingList.addEntrant(entrantId);
+        if (!waitingList.contains(entrantId)) {
+            waitingList.add(entrantId);
+            return true;
+        }
+        return false;  // Entrant is already in the waiting list
     }
 
-    //Remove an entrant from the waiting list
+    // Remove an entrant from the waiting list
     public boolean removeEntrantFromWaitingList(String entrantId) {
-        return waitingList.removeEntrant(entrantId);
+        return waitingList.remove(entrantId);
     }
 
-    //Check if the waiting list is full
+    // Check if the waiting list is full (assuming some arbitrary limit for the waiting list)
     public boolean isWaitingListFull() {
-        return waitingList.isFull();
+        return waitingList.size() >= numPeople; // For example, using numPeople as capacity limit
     }
 
-
-
-    // Method to generate a QR code hash for the event
     /**
      * Generates a bitmap image of the QR code.
      *
      * @return the QR code bitmap
-     * @throws WriterException if there is an error encoding the QR code
      */
     public String generateQRHash() {
         String uniqueIdentifier = eventName + eventDate + System.currentTimeMillis();
@@ -180,5 +177,4 @@ public class Event implements Serializable {
             return null;
         }
     }
-
 }

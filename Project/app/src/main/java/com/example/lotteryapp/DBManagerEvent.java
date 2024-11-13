@@ -1,10 +1,14 @@
 package com.example.lotteryapp;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DBManagerEvent {
@@ -15,12 +19,12 @@ public class DBManagerEvent {
     public Event addEventToDatabase(Event event) {
         String eventId = event.getQR_code();  // Use QR code as event ID
         Map<String, Object> eventData = new HashMap<>();
-        eventData.put("eventName", event.getName());
+        eventData.put("eventName", event.getEventName());
         eventData.put("eventDate", event.getEventDate());
         eventData.put("numPeople", event.getNumPeople());
         eventData.put("description", event.getDescription());
         eventData.put("qr_code", eventId);  // Store QR code as the ID field
-        eventData.put("waitingList", event.getWaitingList().getWaitingListIds());  // Store waiting list IDs
+        eventData.put("waitingList", event.getWaitingList());  // Store waiting list IDs
 
         // Add event to "events" collection in Firestore
         DocumentReference eventRef = db.collection("events").document(eventId);
@@ -39,5 +43,23 @@ public class DBManagerEvent {
             System.out.println("Exception while adding event: " + e.getMessage());
             return null;
         }
+    }
+
+    public void getEventsFromFirestore(GetEventsCallback callback) {
+        if (callback == null) return;
+
+        db.collection("events")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Event> events = new ArrayList<>();
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        Event event = document.toObject(Event.class);
+                        if (event != null) {
+                            events.add(event);
+                        }
+                    }
+                    callback.onSuccess(events);
+                })
+                .addOnFailureListener(e -> callback.onFailure(e));
     }
 }

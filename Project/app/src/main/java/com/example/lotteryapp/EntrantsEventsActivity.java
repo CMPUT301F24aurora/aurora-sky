@@ -1,7 +1,9 @@
 package com.example.lotteryapp;
 
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -29,6 +31,7 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
     private Organizer organizer;
     private ImageButton profileIcon;
     private RefreshDataManager refreshDataManager;
+    private DBManagerEvent dbManagerEvent;
 
 
     @Override
@@ -36,6 +39,7 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrants_events_page);
         refreshDataManager = new RefreshDataManager(this);
+        dbManagerEvent = new DBManagerEvent();
 
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
@@ -122,7 +126,7 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
     }
 
     private void loadEvents() {
-        DatabaseManager.getEventsFromFirestore(new GetEventsCallback() {
+        dbManagerEvent.getEventsFromFirestore(new GetEventsCallback() {
             @Override
             public void onSuccess(List<Event> events) {
                 eventList.clear();

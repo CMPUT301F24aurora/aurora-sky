@@ -46,7 +46,7 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
 
     private void displayEventDetails() {
         if (event != null) {
-            eventTitle.setText(event.getName());
+            eventTitle.setText(event.getEventName());
             eventDescription.setText(event.getDescription());
             eventDate.setText("Date: " + event.getEventDate());
             eventCapacity.setText("Capacity: " + event.getNumPeople());

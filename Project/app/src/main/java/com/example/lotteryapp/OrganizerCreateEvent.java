@@ -23,6 +23,8 @@ public class OrganizerCreateEvent extends AppCompatActivity {
     private EditText eventDateTime, eventName, eventNumberOfPeople, eventDescription;
     private Button organizerCreateEvent;
     private Organizer organizer;
+    private Entrant entrant;
+    private DBManagerEvent dbManagerEvent;
 
 
     @Override
@@ -31,7 +33,9 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         setContentView(R.layout.organizer_create_event);
 
         // Retrieve the Organizer object from the Intent
-        organizer = (Organizer) getIntent().getSerializableExtra("organizer");
+        organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
+        entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
+
         if (organizer == null) {
             Toast.makeText(this, "Error: Organizer data not found", Toast.LENGTH_SHORT).show();
             finish(); // Close the activity if organizer data is not available
@@ -39,6 +43,8 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         } else {
             //Toast.makeText(this, "Error: Organizer found " + organizer.getName(), Toast.LENGTH_SHORT).show();
         }
+
+        dbManagerEvent = new DBManagerEvent();
 
         // Initialize EditText and Buttons
         eventName = findViewById(R.id.editTextEventName);
@@ -100,50 +106,19 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         }
 
         Event event = new Event(name, dateTime, numPeople, description);
-
-        event.saveToFirestore(new SaveEventCallback() {
+        dbManagerEvent.addEventToDatabase(event);
+        organizer.addEventHash(event.getQR_code(), new Organizer.AddEventCallback() {
             @Override
-            public void onSuccess(String eventId) {
-                // After the event is successfully saved to Firestore, add its hash to the organizer's list
-                //Log.v(TAG, "VERBOSE message");
-
-                String eventHash = event.getQR_code();
-                organizer.addEventHash(eventHash, new Organizer.AddEventCallback() {
-                    @Override
-                    public void onEventAdded(String eventHash) {
-                        Toast.makeText(OrganizerCreateEvent.this, "Event created Successfully", Toast.LENGTH_SHORT).show();
-
-                        // Save the updated organizer to Firestore
-                        organizer.saveToFirestore(new SaveOrganizerCallback() {
-                            @Override
-                            public void onSuccess() {
-                                // Navigate back to OrganizerMainPage
-                                Intent intent = new Intent(OrganizerCreateEvent.this, OrganizerMainPage.class);
-                                intent.putExtra("organizer", organizer); // Pass the updated organizer back
-                                startActivity(intent);
-
-                            }
-
-                            @Override
-                            public void onFailure(Exception e) {
-                                Toast.makeText(OrganizerCreateEvent.this, "Error saving updated organizer", Toast.LENGTH_SHORT).show();
-                                Log.w(TAG, "Error saving updated organizer", e);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        Toast.makeText(OrganizerCreateEvent.this, "Error adding event hash to organizer", Toast.LENGTH_SHORT).show();
-                        Log.w(TAG, "Error adding event hash to organizer", e);
-                    }
-                });
+            public void onEventAdded(String eventHash) {
+                Intent intent = new Intent(OrganizerCreateEvent.this, OrganizerMainPage.class);
+                intent.putExtra("organizer_data", organizer);
+                intent.putExtra("entrant_data", entrant);
+                startActivity(intent);
             }
 
             @Override
-            public void onFailure(Exception e) {
-                Toast.makeText(OrganizerCreateEvent.this, "Error saving event", Toast.LENGTH_SHORT).show();
-                Log.w(TAG, "Error writing document", e);
+            public void onError(Exception e) {
+                Log.d(TAG,"Event Hash adding error");
             }
         });
     }

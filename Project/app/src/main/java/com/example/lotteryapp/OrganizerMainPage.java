@@ -20,38 +20,24 @@ public class OrganizerMainPage extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private Organizer currentOrganizer;
+    private Entrant entrant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.organizer_main_page);
 
+        currentOrganizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
+        entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
+
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         ImageButton menuButton = findViewById(R.id.menu_button);
 
         createEventButton = findViewById(R.id.create_event_button);
-        facilityButton = findViewById(R.id.create_facility_button); // Ensure this ID matches your XML
+        facilityButton = findViewById(R.id.create_facility_button);
+        setupFacilityButton();
 
-        // Fetch the current organizer based on device ID
-        String deviceId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
-        Organizer.getOrganizerByDeviceId(deviceId, new GetOrganizerCallback() {
-            @Override
-            public void onOrganizerFound(Organizer organizer) {
-                currentOrganizer = organizer;
-                setupFacilityButton(); // Call to setup the facility button here
-            }
-
-            @Override
-            public void onOrganizerNotFound() {
-                Toast.makeText(OrganizerMainPage.this, "Organizer not found.", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Toast.makeText(OrganizerMainPage.this, "Error fetching organizer.", Toast.LENGTH_SHORT).show();
-            }
-        });
 
         // Open drawer when menu button is clicked
         menuButton.setOnClickListener(v -> drawerLayout.openDrawer(navigationView));
@@ -77,7 +63,8 @@ public class OrganizerMainPage extends AppCompatActivity {
 
         createEventButton.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerMainPage.this, OrganizerCreateEvent.class);
-            intent.putExtra("organizer", currentOrganizer);
+            intent.putExtra("organizer_data", currentOrganizer);
+            intent.putExtra("entrant_data", entrant);
             startActivity(intent);
         });
     }
@@ -91,7 +78,8 @@ public class OrganizerMainPage extends AppCompatActivity {
                 facilityButton.setText("Create Facility");
                 facilityButton.setOnClickListener(v -> {
                     Intent intent = new Intent(OrganizerMainPage.this, OrganizerFacilityActivity.class);
-                    intent.putExtra("organizer", currentOrganizer);
+                    intent.putExtra("organizer_data", currentOrganizer);
+                    intent.putExtra("entrant_data", entrant);
                     startActivity(intent);
                 });
             } else {

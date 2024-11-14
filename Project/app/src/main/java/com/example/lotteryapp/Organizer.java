@@ -1,7 +1,5 @@
 package com.example.lotteryapp;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -10,8 +8,9 @@ import com.google.firebase.firestore.Query;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
- * The {@code Organizer} class represents an organizer user type with unique permissions and functionalities
+ * The {@code Organizer} class represents an organizer user type with unique functionalities
  * for managing events. This class extends the {@code User} class and implements {@code Serializable}.
  * It includes functionality for managing event hashes and saving organizer details to Firestore.
  *
@@ -44,10 +43,6 @@ public class Organizer extends User implements Serializable {
     @Override
     public void displayUserInfo() {
         System.out.println("Organizer Info: " + getName());
-    }
-
-    public boolean hasOrganizerPermissions() {
-        return "organizer".equals(getRole());
     }
 
     public void addEventHash(String eventHash, AddEventCallback callback) {
@@ -96,7 +91,6 @@ public class Organizer extends User implements Serializable {
      * @param callback callback to handle the result of the query
      * @see GetOrganizerCallback
      */
-
     public static void getOrganizerByDeviceId(String deviceId, GetOrganizerCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query query = db.collection("organizers").whereEqualTo("id", deviceId);
@@ -127,15 +121,4 @@ public class Organizer extends User implements Serializable {
         void onEventAdded(String eventHash);
         void onError(Exception e);
     }
-
-//    public interface GetOrganizerCallback {
-//        void onOrganizerFound(Organizer organizer);
-//        void onOrganizerNotFound();
-//        void onError(Exception e);
-//    }
-//
-//    public interface SaveOrganizerCallback {
-//        void onSuccess();
-//        void onFailure(Exception e);
-//    }
 }

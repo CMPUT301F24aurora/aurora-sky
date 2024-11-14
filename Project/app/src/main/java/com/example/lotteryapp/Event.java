@@ -3,7 +3,6 @@ package com.example.lotteryapp;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -15,12 +14,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * The {@code Event} class represents an event with details such as the event name, date,
  * geolocation requirement, number of attendees, description, waiting list, and a generated QR code.
  * It supports saving to and retrieving from Firebase Firestore.
  *
- * @author Team Aurora
  * @version v1
  * @see FirebaseFirestore
  */
@@ -33,8 +32,8 @@ public class Event implements Serializable {
     private Boolean geolocationRequired = Boolean.FALSE;
     private Integer numPeople;
     private String description;
-    private ArrayList<Entrant> waitingList;
     private String qr_code;
+    private List<String> waitingList;
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public Event() {
@@ -46,15 +45,15 @@ public class Event implements Serializable {
         this.eventDate = eventDate;
         this.numPeople = numPeople;
         this.description = description;
-        this.waitingList = new ArrayList<>();
         this.qr_code = generateQRHash();
+        this.waitingList = new ArrayList<>();  // Initialize waitingList as an empty list
     }
 
-    public String getName() {
-        return eventName;
+    public String getEventName() {
+        return this.eventName;
     }
 
-    public void setName(String eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
     }
 
@@ -81,6 +80,7 @@ public class Event implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+
     public String getQR_code(){
         return this.qr_code;
     }
@@ -93,76 +93,34 @@ public class Event implements Serializable {
         this.geolocationRequired = geolocationRequired;
     }
 
-
-    public ArrayList<Entrant> getWaitingList() {
-        return waitingList;
+    // Get the waiting list for this event
+    public List<String> getWaitingList() {
+        return this.waitingList;
     }
 
-    // Method to add an entrant to the waiting list if the event is full
-    /**
-     * Adds an entrant to the waiting list if the event is full.
-     *
-     * @param entrant   the entrant to be added
-     * @param callback  the callback to handle success or failure
-     * @return {@code true} if the entrant was added, {@code false} if already present
-     * @throws Exception if the entrant is already in the waiting list
-     * @see WaitingListCallback
-     */
-    public boolean addEntrantToWaitingList(Entrant entrant, WaitingListCallback callback) {
-        if (waitingList.contains(entrant)) {
-            callback.onFailure(new Exception("Entrant is already in the waiting list."));
-            return false; // Entrant is already in the waiting list
+    // Add an entrant to the waiting list
+    public boolean addEntrantToWaitingList(String entrantId) {
+        if (!waitingList.contains(entrantId)) {
+            waitingList.add(entrantId);
+            return true;
         }
-
-        waitingList.add(entrant); // Add the entrant to the waiting list
-        String eventHash = this.getQR_code();
-        // Update Firestore to save the waiting list
-        db.collection("events").document(eventHash)
-                .update("waitingList", waitingList)
-                .addOnSuccessListener(aVoid -> callback.onSuccess("Entrant added to the waiting list."))
-                .addOnFailureListener(callback::onFailure);
-
-        return true;
+        return false;  // Entrant is already in the waiting list
     }
 
-    /**
-     * Removes an entrant from the waiting list.
-     *
-     * @param entrant   the entrant to be removed
-     * @param callback  the callback to handle success or failure
-     * @see WaitingListCallback
-     */
-    public void removeEntrantFromWaitingList(Entrant entrant, WaitingListCallback callback) {
-        if (!waitingList.contains(entrant)) {
-            callback.onFailure(new Exception("Entrant is not in the waiting list."));
-            return; // Entrant is not in the waiting list
-        }
-
-        waitingList.remove(entrant); // Remove the entrant from the waiting list
-        String eventHash = this.getQR_code();
-
-        // Update Firestore to save the updated waiting list
-        db.collection("events").document(eventHash)
-                .update("waitingList", waitingList)
-                .addOnSuccessListener(aVoid -> callback.onSuccess("Entrant removed from the waiting list."))
-                .addOnFailureListener(callback::onFailure);
+    // Remove an entrant from the waiting list
+    public boolean removeEntrantFromWaitingList(String entrantId) {
+        return waitingList.remove(entrantId);
     }
 
-    // Method to remove an entrant from the waiting list
-    public boolean removeEntrantFromWaitingList(Entrant entrant) {
-        return waitingList.remove(entrant);
+    // Check if the waiting list is full (assuming some arbitrary limit for the waiting list)
+    public boolean isWaitingListFull() {
+        return waitingList.size() >= numPeople; // For example, using numPeople as capacity limit
     }
 
-    public boolean isEntrantRegistered(Entrant entrant) {
-        return waitingList != null && waitingList.contains(entrant.getId());
-    }
-
-    // Method to generate a QR code hash for the event
     /**
      * Generates a bitmap image of the QR code.
      *
      * @return the QR code bitmap
-     * @throws WriterException if there is an error encoding the QR code
      */
     public String generateQRHash() {
         String uniqueIdentifier = eventName + eventDate + System.currentTimeMillis();
@@ -219,37 +177,4 @@ public class Event implements Serializable {
             return null;
         }
     }
-
-    /**
-     * Saves the event object to Firebase Firestore.
-     *
-     * @param callback the callback to handle success or failure
-     * @see SaveEventCallback
-     */
-    public void saveToFirestore(SaveEventCallback callback) {
-        String eventHash = this.getQR_code(); // Unique hash including timestamp
-
-        db.collection("events").document(eventHash).set(this)
-                .addOnSuccessListener(aVoid -> callback.onSuccess(eventHash))
-                .addOnFailureListener(e -> callback.onFailure(e));
-    }
-
-    // Get events from Firebase
-    public static void getEventsFromFirestore(GetEventsCallback callback) {
-        db.collection("events")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<Event> events = new ArrayList<>();
-                        for (DocumentSnapshot document : task.getResult()) {
-                            Event event = document.toObject(Event.class);
-                            events.add(event);
-                        }
-                        callback.onSuccess(events);
-                    } else {
-                        callback.onFailure(task.getException());
-                    }
-                });
-    }
-
 }

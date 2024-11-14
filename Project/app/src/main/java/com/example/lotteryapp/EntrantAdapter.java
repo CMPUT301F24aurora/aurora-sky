@@ -12,7 +12,7 @@ import java.util.List;
 
 public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantViewHolder> {
 
-    private final List<Entrant> entrantList;
+    private List<Entrant> entrantList;
     private List<Entrant> filteredEntrantList;
     private final EntrantClickListener clickListener;
 
@@ -35,30 +35,34 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
 
     @Override
     public void onBindViewHolder(@NonNull EntrantViewHolder holder, int position) {
-        Entrant entrant = filteredEntrantList.get(position);
+        //Entrant entrant = filteredEntrantList.get(position);
+        Entrant entrant = entrantList.get(position);
         holder.entrantName.setText(entrant.getName());
         holder.itemView.setOnClickListener(v -> clickListener.onEntrantClick(entrant));
     }
 
     @Override
     public int getItemCount() {
-        return filteredEntrantList.size();
+        //return filteredEntrantList.size();
+        return entrantList.size();
     }
 
-    public void filter(String query) {
+    public List<Entrant> filter(String query) {
         filteredEntrantList.clear();
-        if (query.isEmpty()) {
-            filteredEntrantList.addAll(entrantList);
-        }
-        else {
-            for (Entrant entrant : entrantList) {
-                if (entrant.getName().toLowerCase().contains(query.toLowerCase())) {
-                    filteredEntrantList.add(entrant);
-                }
+        for (Entrant entrant : entrantList) {
+            if (entrant.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredEntrantList.add(entrant);
             }
         }
-        notifyDataSetChanged();
+        return filteredEntrantList;
     }
+
+    public void updateList(List<Entrant> newEntrantList) {
+        entrantList.clear();
+        entrantList.addAll(newEntrantList);
+        filteredEntrantList = new ArrayList<>(entrantList); // Ensure proper copy
+        notifyDataSetChanged(); // Show all entrants initially
+        }
 
     public static class EntrantViewHolder extends RecyclerView.ViewHolder {
         TextView entrantName;

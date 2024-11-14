@@ -31,9 +31,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
 }
 
 dependencies {
+    implementation ("com.google.android.gms:play-services-tasks:18.0.2")
     implementation ("androidx.drawerlayout:drawerlayout:1.1.1")
     implementation ("com.google.android.material:material:1.8.0")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
@@ -65,6 +67,5 @@ dependencies {
     testImplementation("org.robolectric:robolectric:4.6.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.4.0")
-
 }
 

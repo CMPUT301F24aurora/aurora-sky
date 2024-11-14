@@ -39,6 +39,7 @@ public class AdminViewEditFacilitiesActivity extends AppCompatActivity implement
     private RecyclerView adminFacList;
     private FacilityAdapter facilityAdapter;
     private List<Facility> facilityList;
+    private List<Facility> filteredFacilityList;
     private FirebaseFirestore db;
 
     /**
@@ -55,11 +56,11 @@ public class AdminViewEditFacilitiesActivity extends AppCompatActivity implement
 
         //Add mock facility:
         /*
-        Facility facility = new Facility("test", "12:50", "Edmonton", "testing@gmail.com");
+        Facility facility = new Facility("12345", "test", "12:50", "13:50", "Edmonton", "testing@gmail.com");
         facility.saveToFirestore(new Facility.FacilityCallback() {
+
             @Override
-            public void onSuccess(String documentId) {
-                facility.setId(documentId);
+            public void onSuccess() {
                 Log.d("AddMockFaculty", "Faculty created successfully!");
             }
 
@@ -91,7 +92,10 @@ public class AdminViewEditFacilitiesActivity extends AppCompatActivity implement
              */
             @Override
             public boolean onQueryTextSubmit(String query) {
-                facilityAdapter.filter(query);
+                filteredFacilityList = facilityAdapter.filter(query);
+                facilityList.clear();
+                facilityList.addAll(filteredFacilityList);
+                facilityAdapter.notifyDataSetChanged();
                 return false;
             }
 
@@ -103,7 +107,15 @@ public class AdminViewEditFacilitiesActivity extends AppCompatActivity implement
              */
             @Override
             public boolean onQueryTextChange(String newText) {
-                facilityAdapter.filter(newText);
+                if (newText != null && !newText.trim().isEmpty()) {
+                    filteredFacilityList = facilityAdapter.filter(newText);
+                    facilityList.clear();
+                    facilityList.addAll(filteredFacilityList);
+                    facilityAdapter.notifyDataSetChanged();
+                }
+                else {
+                    loadFacilities(); // Reload data from Firestore when query is cleared
+                }
                 return false;
             }
         });

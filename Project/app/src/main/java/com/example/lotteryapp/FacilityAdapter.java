@@ -58,21 +58,18 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.Facili
     public void onBindViewHolder(@NonNull FacilityViewHolder holder, int position) {
         Facility facility = facilityList.get(position);
         holder.facilityName.setText(facility.getName());
+        holder.facilityLocation.setText(facility.getLocation());
         holder.itemView.setOnClickListener(v -> clickListener.onFacilityClick(facility));
     }
 
-    public void filter(String query) {
+    public List<Facility> filter(String query) {
         filteredFacilityList.clear();
-        if (query.isEmpty()) {
-            filteredFacilityList.addAll(facilityList);
-        }
-        else {
-            for (Facility facility : facilityList) {
-                if (facility.getName().toLowerCase().contains(query.toLowerCase())) {
-                    filteredFacilityList.add(facility);
-                }
+        for (Facility facility : facilityList) {
+            if (facility.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredFacilityList.add(facility);
             }
-        } notifyDataSetChanged();
+        }
+        return filteredFacilityList;
     }
 
     /**
@@ -83,15 +80,17 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.Facili
 
     @Override
     public int getItemCount() {
-        return filteredFacilityList.size();
+        return facilityList.size();
     }
 
     public static class FacilityViewHolder extends RecyclerView.ViewHolder {
         TextView facilityName;
+        TextView facilityLocation;
 
         public FacilityViewHolder(@NonNull View itemView) {
             super(itemView);
             facilityName = itemView.findViewById(R.id.facility_name);
+            facilityLocation = itemView.findViewById(R.id.facility_loc);
         }
     }
 }

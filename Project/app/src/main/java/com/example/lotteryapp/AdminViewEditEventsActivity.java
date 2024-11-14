@@ -39,10 +39,11 @@ import java.util.List;
  *
  * @author Team Aurora
  */
-public class AdminViewEditEventsActivity extends AppCompatActivity implements AdminEventAdapter.OnEventClickListener {
+public class AdminViewEditEventsActivity extends AppCompatActivity implements AdminEventAdapter.AdminEventClickListener {
 
     private RecyclerView adminEvList;
     private List<Event> eventList;
+    private List<Event> filteredEventList;
     private AdminEventAdapter adapter;
     private FirebaseFirestore db;
 
@@ -80,7 +81,10 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ad
              */
             @Override
             public boolean onQueryTextSubmit(String query) {
-                adapter.filter(query);
+                filteredEventList = adapter.filter(query);
+                eventList.clear();
+                eventList.addAll(filteredEventList);
+                adapter.notifyDataSetChanged();
                 return false;
             }
 
@@ -92,7 +96,15 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ad
              */
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.filter(newText);
+                if (newText != null && !newText.trim().isEmpty()) {
+                    filteredEventList = adapter.filter(newText);
+                    eventList.clear();
+                    eventList.addAll(filteredEventList);
+                    adapter.notifyDataSetChanged();
+                }
+                else{
+                    loadEvents();
+                }
                 return false;
             }
         });

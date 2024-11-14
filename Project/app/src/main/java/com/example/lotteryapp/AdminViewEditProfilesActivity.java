@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,7 +14,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -38,6 +41,7 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
     private RecyclerView recyclerViewEntrants;
     private EntrantAdapter entrantAdapter;
     private List<Entrant> entrantList;
+    private List<Entrant> filteredEntrantList;
     private FirebaseFirestore db;
 
     /**
@@ -45,7 +49,6 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
      * This method sets up the layout, initializes the RecyclerView, and loads entrants from the database.
      *
      * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle). Note: Otherwise it is null.
-     * @see AppCompatActivity#onCreate(Bundle)
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +76,11 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
              */
             @Override
             public boolean onQueryTextSubmit(String query) {
-                entrantAdapter.filter(query);
+                //recyclerViewEntrants.setAdapter();
+                filteredEntrantList = entrantAdapter.filter(query);
+                entrantList.clear();
+                entrantList.addAll(filteredEntrantList);
+                entrantAdapter.notifyDataSetChanged();
                 return false;
             }
 
@@ -85,7 +92,15 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
              */
             @Override
             public boolean onQueryTextChange(String newText) {
-                entrantAdapter.filter(newText);
+                if (newText != null && !newText.trim().isEmpty()) {
+                    filteredEntrantList = entrantAdapter.filter(newText);
+                    entrantList.clear();
+                    entrantList.addAll(filteredEntrantList);
+                    entrantAdapter.notifyDataSetChanged();
+                }
+                else {
+                    loadEntrants(); // Reload data from Firestore when query is cleared
+                }
                 return false;
             }
         });
@@ -94,17 +109,15 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
     /**
      * Loads entrants from the database and updates the entrant list.
      * Retrieves entrants from the "entrants" collection in Firestore and adds them to the entrant list.
-     *
-     * @see FirebaseFirestore#collection(String)
      */
     private void loadEntrants() {
         CollectionReference entrantsRef = db.collection("entrants");
+        /**
+         * Called when the task to retrieve entrants is complete.
+         *
+         * @param task the task to retrieve entrants
+         */
         entrantsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            /**
-             * Called when the task to retrieve entrants is complete.
-             *
-             * @param task the task to retrieve entrants
-             */
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -112,12 +125,33 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
                         Entrant entrant = document.toObject(Entrant.class);
                         entrantList.add(entrant);
                     }
+                    //entrantAdapter.updateList(entrantList);
                     entrantAdapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(AdminViewEditProfilesActivity.this, "Error getting documents: " + task.getException(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+        /*
+        entrantsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Toast.makeText(AdminViewEditProfilesActivity.this, "Error getting documents: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    return;
+                } if (snapshots != null) {
+                    entrantList.clear();
+                    for (DocumentSnapshot document : snapshots.getDocuments()) {
+                        Entrant entrant = document.toObject(Entrant.class);
+                        entrantList.add(entrant);
+                    }
+                    entrantAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+         */
     }
 
     /**

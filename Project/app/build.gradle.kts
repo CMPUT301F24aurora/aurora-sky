@@ -65,6 +65,5 @@ dependencies {
     testImplementation("org.robolectric:robolectric:4.6.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.4.0")
-
 }
 

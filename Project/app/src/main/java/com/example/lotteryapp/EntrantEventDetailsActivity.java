@@ -8,16 +8,15 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-
 public class EntrantEventDetailsActivity extends AppCompatActivity {
 
     private TextView eventTitle, eventDescription, eventDate, eventCapacity;
     private Event event;
     private Entrant entrant;
     private Organizer organizer;
-    private Button enter_waiting;
-    private Button leave_waiting;
+    private Button enterWaitingButton;
+    private Button leaveWaitingButton;
+    private WaitingList waitingList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +26,12 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
         initializeViews();
         getIntentData();
         displayEventDetails();
+
+        // Initialize waiting list with the event QR code (as ID)
+        waitingList = new WaitingList(event.getQR_code());
+
         setupEnterWaiting();
+        setupLeaveWaiting();
     }
 
     private void initializeViews() {
@@ -35,7 +39,8 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
         eventDescription = findViewById(R.id.event_description);
         eventDate = findViewById(R.id.event_date);
         eventCapacity = findViewById(R.id.event_capacity);
-        enter_waiting = findViewById(R.id.enter_waiting);
+        enterWaitingButton = findViewById(R.id.enter_waiting);
+        leaveWaitingButton = findViewById(R.id.leave_waiting);
     }
 
     private void getIntentData() {
@@ -56,10 +61,67 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void setupEnterWaiting(){
-        enter_waiting.setOnClickListener(view -> {
-            // Show a toast message when the button is clicked
-            Toast.makeText(EntrantEventDetailsActivity.this, "Entered Waiting List", Toast.LENGTH_SHORT).show();
+    private void setupEnterWaiting() {
+        updateButtonStates();
+
+        enterWaitingButton.setOnClickListener(view -> {
+            if (event.getWaitingList().contains(entrant.getId())) {
+                Toast.makeText(this, "Already in the Waiting list", Toast.LENGTH_SHORT).show();
+            } else {
+                waitingList.addEntrant(entrant.getId(), event.getWaitingList(), new WaitingList.OnDatabaseUpdateListener() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(EntrantEventDetailsActivity.this, "Joined the Waiting list", Toast.LENGTH_SHORT).show();
+                        updateButtonStates();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(EntrantEventDetailsActivity.this, "Failed to join the Waiting list", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         });
+    }
+
+    private void setupLeaveWaiting() {
+        updateButtonStates();
+
+        leaveWaitingButton.setOnClickListener(view -> {
+            if (!event.getWaitingList().contains(entrant.getId())) {
+                Toast.makeText(this, "Not in the Waiting list", Toast.LENGTH_SHORT).show();
+            } else {
+                waitingList.removeEntrant(entrant.getId(), event.getWaitingList(), new WaitingList.OnDatabaseUpdateListener() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(EntrantEventDetailsActivity.this, "Left the Waiting list", Toast.LENGTH_SHORT).show();
+                        updateButtonStates();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(EntrantEventDetailsActivity.this, "Failed to leave the Waiting list", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * Updates the states of the Enter and Leave Waiting buttons
+     * based on whether the entrant is already in the waiting list.
+     */
+    private void updateButtonStates() {
+        if (event.getWaitingList().contains(entrant.getId())) {
+            enterWaitingButton.setEnabled(false);
+            enterWaitingButton.setText("Already in Waiting List");
+            leaveWaitingButton.setEnabled(true);
+            leaveWaitingButton.setText("Leave Waiting List");
+        } else {
+            enterWaitingButton.setEnabled(true);
+            enterWaitingButton.setText("Join Waiting List");
+            leaveWaitingButton.setEnabled(false);
+            leaveWaitingButton.setText("Not in Waiting List");
+        }
     }
 }

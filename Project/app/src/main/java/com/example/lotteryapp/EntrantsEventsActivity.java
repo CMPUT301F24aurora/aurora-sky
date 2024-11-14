@@ -1,12 +1,9 @@
 package com.example.lotteryapp;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -18,61 +15,42 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
-import com.squareup.picasso.Picasso;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EntrantsEventsActivity extends AppCompatActivity implements EventAdapter.OnEventClickListener {
 
-    private ImageButton profileIcon;
     private RecyclerView eventsRecyclerView;
     private EventAdapter eventAdapter;
     private List<Event> eventList;
     private TextView noEventsText;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private ImageButton profileButton;
+    private Entrant entrant;
+    private Organizer organizer;
+    private ImageButton profileIcon;
+    private RefreshDataManager refreshDataManager;
+    private DBManagerEvent dbManagerEvent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrants_events_page);
+        refreshDataManager = new RefreshDataManager(this);
+        dbManagerEvent = new DBManagerEvent();
 
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         ImageButton menuButton = findViewById(R.id.menu_button);
 
-        // Set up profile icon
-        profileIcon = findViewById(R.id.profile_icon);
-
         // Retrieve Entrant data
         Intent oldIntent = getIntent();
-        Entrant entrant = (Entrant) oldIntent.getSerializableExtra("entrant_data");
+        entrant = (Entrant) oldIntent.getSerializableExtra("entrant_data");
+        organizer = (Organizer) oldIntent.getSerializableExtra("organizer_data");
 
-        if (entrant != null) {
-            // Check if the entrant has a profile image URL
-            if (entrant.getProfileImageUrl() == null || entrant.getProfileImageUrl().isEmpty()) {
-                // Set the generated initial as the icon if no profile image is available
-                profileIcon.setImageBitmap(generateTextDrawable(entrant.getName()));
-            } else {
-                // Load the profile image if available
-                Picasso.get().load(entrant.getProfileImageUrl()).into(profileIcon);
-            }
-        }
-
-        // Handle profile icon click
-        profileIcon.setOnClickListener(v -> {
-            if (entrant != null) {
-                Intent intent = new Intent(EntrantsEventsActivity.this, EntrantProfileActivity.class);
-                intent.putExtra("entrant_data", entrant);
-                startActivity(intent);
-            }
-        });
-
-        //Open drawer when menu button is clicked
+        // Open drawer when menu button is clicked
         menuButton.setOnClickListener(v -> drawerLayout.openDrawer(navigationView));
 
         // Handle navigation item clicks
@@ -80,9 +58,10 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
             int id = item.getItemId();
             if (id == R.id.entrant_nav) {
                 Toast.makeText(EntrantsEventsActivity.this, "You are on the entrant page", Toast.LENGTH_SHORT).show();
-                // Add your navigation logic here
             } else if (id == R.id.organizer_nav) {
                 Intent organizerIntent = new Intent(EntrantsEventsActivity.this, OrganizerMainPage.class);
+                organizerIntent.putExtra("entrant_data", entrant);
+                organizerIntent.putExtra("organizer_data", organizer);
                 startActivity(organizerIntent);
             } else if (id == R.id.map_nav) {
                 Intent organizerIntent = new Intent(EntrantsEventsActivity.this, MapActivity.class);
@@ -90,9 +69,10 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
             } else if (id == R.id.qr_code_nav) {
                 Intent qrScannerIntent = new Intent(EntrantsEventsActivity.this, QRScannerActivity.class);
                 qrScannerIntent.putExtra("entrant_data", entrant);
+                qrScannerIntent.putExtra("organizer_data", organizer);
                 startActivity(qrScannerIntent);
             }
-            drawerLayout.closeDrawers(); // Close drawer after selection
+            drawerLayout.closeDrawers();
             return true;
         });
 
@@ -103,106 +83,66 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
 
         // Initialize event list and adapter with click listener
         eventList = new ArrayList<>();
-        eventAdapter = new EventAdapter(eventList, this); // Pass `this` as the listener
+        eventAdapter = new EventAdapter(eventList, this);
         eventsRecyclerView.setAdapter(eventAdapter);
 
+        profileIcon = findViewById(R.id.profile_icon);
+        setupProfileIcon();
         // Load events into RecyclerView
         loadEvents();
-
     }
-
-    public static class AvatarUtils {
-        public static int getColorFromHash(String name) {
-            String hash = hash(name);
-            if (hash == null || hash.isEmpty()) return Color.GRAY;
-            return Color.parseColor("#" + hash.substring(0, 6));
-        }
-
-        private static String hash(String input) {
-            try {
-                MessageDigest digest = MessageDigest.getInstance("SHA-256");
-                byte[] hashBytes = digest.digest(input.getBytes());
-                StringBuilder hexString = new StringBuilder();
-                for (byte b : hashBytes) {
-                    String hex = Integer.toHexString(0xFF & b);
-                    if (hex.length() == 1) {
-                        hexString.append('0');
-                    }
-                    hexString.append(hex);
-                }
-                return hexString.toString();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-    }
-
-
-    private Bitmap generateTextDrawable(String name) {
-        String initial = name != null && !name.isEmpty() ? String.valueOf(name.charAt(0)).toUpperCase() : "?";
-        int size = 100; // Define icon size
-        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-
-        // Use the getColorFromHash method to generate a consistent background color
-        int color = AvatarUtils.getColorFromHash(name);
-
-        Paint paint = new Paint();
-        paint.setColor(color); // Set the generated background color
-        paint.setStyle(Paint.Style.FILL);
-        canvas.drawRect(0, 0, size, size, paint);
-
-        paint.setColor(Color.WHITE); // Set text color
-        paint.setTextSize(40); // Set text size
-        paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-        paint.setTextAlign(Paint.Align.CENTER);
-
-        // Draw the initial in the center of the bitmap
-        canvas.drawText(initial, size / 2, size / 2 - ((paint.descent() + paint.ascent()) / 2), paint);
-
-        return bitmap;
-    }
-
-
-    private int generateBackgroundColor(String name) {
-        int hash = name.hashCode();
-        int r = (hash & 0xFF0000) >> 16;
-        int g = (hash & 0x00FF00) >> 8;
-        int b = (hash & 0x0000FF);
-        return Color.rgb(r, g, b);
-    }
-
 
     @Override
     protected void onResume() {
         super.onResume();
         // Refresh the event list when the activity is resumed
-        loadEvents();
+        refreshData();
+    }
+
+    private void refreshData() {
+        if (refreshDataManager == null) {
+            Toast.makeText(EntrantsEventsActivity.this, "Refresh manager not initialized.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (entrant != null) {
+            refreshDataManager.refreshData(entrant.getId(), new RefreshDataManager.DataRefreshListener() {
+                @Override
+                public void onDataRefreshed(Entrant refreshedEntrant, Organizer refreshedOrganizer) {
+                    entrant = refreshedEntrant;
+                    organizer = refreshedOrganizer;
+                    //Toast.makeText(EntrantsEventsActivity.this, "Data refreshed successfully", Toast.LENGTH_SHORT).show();
+                    loadEvents(); // Reload events if necessary
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    //Toast.makeText(EntrantsEventsActivity.this, "Error refreshing data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(EntrantsEventsActivity.this, "No entrant data to refresh.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loadEvents() {
-        // Call the Firestore retrieval method from Event class
-        Event.getEventsFromFirestore(new GetEventsCallback() {
+        dbManagerEvent.getEventsFromFirestore(new GetEventsCallback() {
             @Override
             public void onSuccess(List<Event> events) {
                 eventList.clear();
                 eventList.addAll(events);
-
-                // Check if events were retrieved and update visibility of RecyclerView and noEventsText
                 if (eventList.isEmpty()) {
-                    noEventsText.setVisibility(View.VISIBLE); // Show "No events available" message
-                    eventsRecyclerView.setVisibility(View.GONE); // Hide RecyclerView
+                    noEventsText.setVisibility(View.VISIBLE);
+                    eventsRecyclerView.setVisibility(View.GONE);
                 } else {
-                    noEventsText.setVisibility(View.GONE); // Hide "No events available" message
-                    eventsRecyclerView.setVisibility(View.VISIBLE); // Show RecyclerView with events
+                    noEventsText.setVisibility(View.GONE);
+                    eventsRecyclerView.setVisibility(View.VISIBLE);
                 }
-                eventAdapter.notifyDataSetChanged(); // Notify adapter of data change
+                eventAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onFailure(Exception e) {
-                // Handle the error (you can display a Toast or log the error)
                 noEventsText.setVisibility(View.VISIBLE);
                 eventsRecyclerView.setVisibility(View.GONE);
                 noEventsText.setText("Failed to load events. Please try again.");
@@ -210,38 +150,25 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
         });
     }
 
+    private void setupProfileIcon() {
+        if (profileIcon != null) {
+            profileIcon.setOnClickListener(v -> {
+                Intent profileIntent = new Intent(EntrantsEventsActivity.this, EntrantProfileActivity.class);
+                profileIntent.putExtra("entrant_data", entrant);
+                profileIntent.putExtra("organizer_data", organizer);
+                startActivity(profileIntent);
+            });
+        }
+    }
+
     @Override
     public void onEventClick(Event event) {
-        // Navigate to the event details page
         Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
-        //Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, qr_code.class);
-
-        // Fetch the entrant data from Firestore
-        Entrant.getEntrant(this, new GetEntrantCallback() {
-            @Override
-            public void onEntrantFound(Entrant fetchedEntrant) {
-                // Successfully retrieved entrant, put the event and entrant data into the intent
-                eventDetailsIntent.putExtra("event_data", event); // Assuming Event implements Serializable
-                eventDetailsIntent.putExtra("entrant_data", fetchedEntrant); // Pass the fetched entrant data
-
-                // Start the event details activity
-                startActivity(eventDetailsIntent);
-            }
-
-            @Override
-            public void onEntrantNotFound(Exception e) {
-                // Handle case when entrant data is not found
-                //Log.w(TAG, "Entrant not found", e);
-                Toast.makeText(EntrantsEventsActivity.this, "Entrant not found", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(Exception e) {
-                // Handle error while fetching entrant data
-                //Log.e(TAG, "Error fetching entrant", e);
-                Toast.makeText(EntrantsEventsActivity.this, "Error fetching entrant", Toast.LENGTH_SHORT).show();
-            }
-        });
+        eventDetailsIntent.putExtra("event_data", event);
+        eventDetailsIntent.putExtra("entrant_data", entrant);
+        eventDetailsIntent.putExtra("organizer_data", organizer);
+        startActivity(eventDetailsIntent);
     }
+
 
 }

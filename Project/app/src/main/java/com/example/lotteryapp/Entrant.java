@@ -1,13 +1,5 @@
 package com.example.lotteryapp;
 
-import android.content.Context;
-import android.provider.Settings;
-
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.io.Serializable;
-import java.util.Objects;
-
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -16,7 +8,6 @@ import java.util.Objects;
  * This class extends the User class and implements Serializable for data storage and retrieval.
  *
  * @see User
- * @see FirebaseFirestore
  * @see Serializable
  * @version v1
  *
@@ -24,22 +15,21 @@ import java.util.Objects;
  */
 public class Entrant extends User implements Serializable {
 
-    private static FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private String profileImageUrl;
-
     /**
      * Default constructor required for Firestore.
      */
     public Entrant() {}
 
     /**
-     * Constructor with three parameters, calls main constructor with a default phone value.
+     * Constructor with three parameters.
      *
      * @param id the ID of the entrant
      * @param name the name of the entrant
      * @param email the email of the entrant
      */
-    public Entrant(String id, String name, String email) {}
+    public Entrant(String id, String name, String email) {
+        super(id, name, email);
+    }
 
     /**
      * Constructor with four parameters.
@@ -47,128 +37,10 @@ public class Entrant extends User implements Serializable {
      * @param id the ID of the entrant
      * @param name the name of the entrant
      * @param email the email of the entrant
-     * @param profileImageUrl the URL of the entrant's profile image
-     */
-    public Entrant(String id, String name, String email, String profileImageUrl) {
-        this(id, name, email, null, profileImageUrl);
-    }
-
-    /**
-     * Main constructor with five parameters.
-     *
-     * @param id the ID of the entrant
-     * @param name the name of the entrant
-     * @param email the email of the entrant
      * @param phone the phone number of the entrant
-     * @param profileImageUrl the URL of the entrant's profile image
      */
-    public Entrant(String id, String name, String email, String phone, String profileImageUrl) {
+    public Entrant(String id, String name, String email, String phone) {
         super(id, name, email, phone);
-        this.profileImageUrl = profileImageUrl;
-    }
-
-    /**
-     * Gets the profile image URL of the entrant.
-     *
-     * @return the profile image URL
-     */
-    public String getProfileImageUrl() {
-        return profileImageUrl;
-    }
-
-    /**
-     * Sets the profile image URL of the entrant.
-     *
-     * @param profileImageUrl the new profile image URL
-     */
-    public void setProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
-    }
-
-    /**
-     * Removes the profile image of the entrant.
-     */
-    public void removeProfileImage() {
-        this.profileImageUrl = null;
-    }
-
-    /**
-     * Sets the Firestore database instance for testing or alternative setups.
-     *
-     * @param firestore the Firestore instance to set
-     */
-    public static void setDatabase(FirebaseFirestore firestore) {
-        db = firestore;
-    }
-
-    /**
-     * Retrieves the device ID.
-     *
-     * @param context the context to use for retrieving the device ID
-     * @return the device ID
-     */
-    private static String getDeviceId(Context context) {
-        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-    }
-
-    /**
-     * Checks if an entrant exists in Firestore.
-     *
-     * @param deviceId the device ID to check for
-     * @param callback the callback to handle the result
-     */
-    public static void checkEntrantExists(String deviceId, EntrantCheckCallback callback) {
-        if (callback == null) return;
-
-        db.collection("entrants").document(deviceId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Entrant entrant = documentSnapshot.toObject(Entrant.class);
-                        callback.onEntrantExists(entrant);
-                    } else {
-                        callback.onEntrantNotFound();
-                    }
-                })
-                .addOnFailureListener(callback::onError);
-    }
-
-    /**
-     * Retrieves an entrant by device ID from Firestore.
-     *
-     * @param context the context to use for retrieving the device ID
-     * @param callback the callback to handle the result
-     */
-    public static void getEntrant(Context context, GetEntrantCallback callback) {
-        if (callback == null) return;
-
-        String deviceId = getDeviceId(context); // Get device ID
-
-        db.collection("entrants").document(deviceId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Entrant entrant = documentSnapshot.toObject(Entrant.class);
-                        callback.onEntrantFound(entrant);
-                    } else {
-                        callback.onEntrantNotFound(new Exception("Entrant not found"));
-                    }
-                })
-                .addOnFailureListener(callback::onError);
-    }
-
-    /**
-     * Saves the Entrant object to Firestore.
-     *
-     * @param callback the callback to handle the result
-     */
-    public void saveToFirestore(SaveEntrantCallback callback) {
-        if (callback == null) return;
-
-        db.collection("entrants").document(this.getId())
-                .set(this)
-                .addOnSuccessListener(aVoid -> callback.onSuccess())
-                .addOnFailureListener(callback::onFailure);
     }
 
     /**
@@ -187,7 +59,7 @@ public class Entrant extends User implements Serializable {
      * Equality is based on the ID of the Entrant.
      *
      * @param o the object to compare to
-     * @return true if the objects are equal, false otherwise)
+     * @return true if the objects are equal, false otherwise
      */
     @Override
     public boolean equals(Object o) {

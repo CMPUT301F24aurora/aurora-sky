@@ -74,7 +74,7 @@ public class AdminEventAdapter extends RecyclerView.Adapter<AdminEventAdapter.Ev
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         Event event = eventList.get(position);
-        holder.eventName.setText(event.getName());
+        holder.eventName.setText(event.getEventName());
         holder.eventDate.setText(event.getEventDate());
         holder.eventDescription.setText(event.getDescription());
 
@@ -101,7 +101,7 @@ public class AdminEventAdapter extends RecyclerView.Adapter<AdminEventAdapter.Ev
     public List<Event> filter(String query) {
         filteredEventList.clear();
         for (Event event : eventList) {
-            if (event.getName().toLowerCase().contains(query.toLowerCase())) {
+            if (event.getEventName().toLowerCase().contains(query.toLowerCase())) {
                 filteredEventList.add(event);
             }
         }

@@ -62,4 +62,65 @@ public class DBManagerEvent {
                 })
                 .addOnFailureListener(e -> callback.onFailure(e));
     }
+
+    public void getEventsByQRCodes(List<String> qrCodes, GetEventsCallback callback) {
+        if (callback == null || qrCodes == null || qrCodes.isEmpty()) {
+            callback.onFailure(new IllegalArgumentException("Invalid input parameters"));
+            return;
+        }
+
+        List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+
+        for (String qrCode : qrCodes) {
+            Task<DocumentSnapshot> task = db.collection("events").document(qrCode).get();
+            tasks.add(task);
+        }
+
+        Tasks.whenAllComplete(tasks)
+                .addOnSuccessListener(taskSnapshots -> {
+                    List<Event> events = new ArrayList<>();
+                    for (Task<DocumentSnapshot> task : tasks) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document != null && document.exists()) {
+                                Event event = document.toObject(Event.class);
+                                if (event != null) {
+                                    events.add(event);
+                                }
+                            }
+                        }
+                    }
+                    callback.onSuccess(events);
+                })
+                .addOnFailureListener(e -> callback.onFailure(e));
+    }
+
+    public void getEventByQRCode(String qrCode, GetEventCallback callback) {
+        if (qrCode == null || qrCode.isEmpty() || callback == null) {
+            callback.onFailure(new IllegalArgumentException("Invalid QR code or callback"));
+            return;
+        }
+
+        db.collection("events").document(qrCode).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Event event = documentSnapshot.toObject(Event.class);
+                        if (event != null) {
+                            callback.onSuccess(event);
+                        } else {
+                            callback.onFailure(new Exception("Failed to parse event"));
+                        }
+                    } else {
+                        callback.onFailure(new Exception("Event not found"));
+                    }
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public interface GetEventCallback {
+        void onSuccess(Event event);
+        void onFailure(Exception e);
+    }
+
+
 }

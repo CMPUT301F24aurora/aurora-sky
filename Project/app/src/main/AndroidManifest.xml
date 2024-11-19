@@ -33,7 +33,6 @@
         <activity android:name=".OrganizerMainPage" />
         <activity android:name=".OrganizerCreateEvent" />
         <activity android:name=".OrganizerFacilityActivity"/>
-        <activity android:name=".OrganizerFacilityListActivity"/>
         <activity android:name=".MapActivity" />
         <activity android:name=".AdminViewEditEventsActivity" />
         <activity android:name=".AdminViewEventsContent" />
@@ -43,6 +42,7 @@
         <activity android:name=".AdminViewProfilesContent" />
         <activity android:name=".qr_code"/>
         <activity android:name=".QRScannerActivity"/>
+        <activity android:name=".ProfileActivity"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

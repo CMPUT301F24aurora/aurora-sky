@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.FirebaseApp;
 
 import java.util.Objects;
@@ -46,6 +47,19 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             editName.setText(entrant.getName());
             editEmail.setText(entrant.getEmail());
             editPhone.setText(entrant.getPhone());
+
+            if (entrant.getImage_url() != null && !entrant.getImage_url().isEmpty()) {
+                // Load the image from the URL
+                Glide.with(this)
+                        .load(entrant.getImage_url())
+                        .placeholder(R.drawable.ic_profile_photo) // Optional: Placeholder image
+                        .error(R.drawable.ic_profile_photo) // Optional: Fallback image on error
+                        .circleCrop() // Circular cropping
+                        .into(currentProfilePicture);
+            } else {
+                // Fallback to default image
+                currentProfilePicture.setImageResource(R.drawable.ic_profile_photo);
+            }
         }
 
         // Set up listeners
@@ -92,22 +106,34 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
 
     private void createOrUpdateEntrant(String deviceId, String name, String email, String phone, Organizer organizer) {
         Entrant entrant = new Entrant(deviceId, name, email, phone);
+        ProfileImage profileImage = new ProfileImage();
 
-        // Save Entrant without image handling
-        DatabaseManager.saveEntrant(entrant, new SaveEntrantCallback() {
+        profileImage.ensureProfileImage(deviceId, name, new ProfileImage.ProfileImageCallback() {
             @Override
-            public void onSuccess() {
-                Toast.makeText(EntrantProfileEditActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-                navigateToNextActivity(entrant, organizer);
+            public void onSuccess(String imageUrl) {
+                entrant.setImage_url(imageUrl); // Save image URL in the entrant object
+                DatabaseManager.saveEntrant(entrant, new SaveEntrantCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(EntrantProfileEditActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                        navigateToNextActivity(entrant, organizer);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(EntrantProfileEditActivity.this, "Error saving profile", Toast.LENGTH_SHORT).show();
+                        Log.w(TAG, "Error writing document", e);
+                    }
+                });
             }
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(EntrantProfileEditActivity.this, "Error saving profile", Toast.LENGTH_SHORT).show();
-                Log.w(TAG, "Error writing document", e);
+                Toast.makeText(EntrantProfileEditActivity.this, "Error generating profile image", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     private void navigateToNextActivity(Entrant entrant, Organizer organizer) {
         Intent intent;

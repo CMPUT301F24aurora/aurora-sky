@@ -14,7 +14,7 @@ import java.util.Objects;
  * Author: Team Aurora
  */
 public class Entrant extends User implements Serializable {
-
+    private String image_url;
     /**
      * Default constructor required for Firestore.
      */
@@ -41,6 +41,14 @@ public class Entrant extends User implements Serializable {
      */
     public Entrant(String id, String name, String email, String phone) {
         super(id, name, email, phone);
+    }
+
+    public String getImage_url() {
+        return image_url;
+    }
+
+    public void setImage_url(String image_url) {
+        this.image_url = image_url;
     }
 
     /**
@@ -79,4 +87,6 @@ public class Entrant extends User implements Serializable {
     public int hashCode() {
         return Objects.hash(getId());
     }
+
+
 }

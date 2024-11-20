@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
 
 public class EntrantProfileActivity extends AppCompatActivity {
     private static final String TAG = "EntrantProfileActivity";
@@ -16,12 +19,14 @@ public class EntrantProfileActivity extends AppCompatActivity {
     private TextView entrantPhoneTextView;
     private Entrant entrant;
     private Organizer organizer;
+    private ImageView profilePicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrant_profile);
 
+        profilePicture = findViewById(R.id.profile_picture);
         entrantNameTextView = findViewById(R.id.profile_name_value);
         entrantEmailTextView = findViewById(R.id.profile_email_value);
         entrantPhoneTextView = findViewById(R.id.profile_phone_value);
@@ -54,5 +59,16 @@ public class EntrantProfileActivity extends AppCompatActivity {
         entrantNameTextView.setText(entrant.getName());
         entrantEmailTextView.setText(entrant.getEmail());
         entrantPhoneTextView.setText(entrant.getPhone());
+
+        if (entrant.getImage_url() != null && !entrant.getImage_url().isEmpty()) {
+            Glide.with(this)
+                    .load(entrant.getImage_url())
+                    .placeholder(R.drawable.ic_profile_photo) // Fallback placeholder image
+                    .error(R.drawable.ic_profile_photo) // Fallback error image
+                    .circleCrop() // Make image circular
+                    .into(profilePicture);
+        } else {
+            profilePicture.setImageResource(R.drawable.ic_profile_photo); // Default placeholder
+        }
     }
 }

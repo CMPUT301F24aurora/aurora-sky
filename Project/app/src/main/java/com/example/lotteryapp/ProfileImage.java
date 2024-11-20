@@ -6,10 +6,19 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.util.Log;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
 
 public class ProfileImage {
 
-    // Method for generating an arbitrary picture
+    private static final String TAG = "ProfileImage";
+
+    // Generate an arbitrary picture for the given name
     public Bitmap generateArbitraryPicture(String name) {
         int size = 200; // Size of the profile image
         Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
@@ -40,7 +49,6 @@ public class ProfileImage {
 
     // Helper method to generate a random color
     private int generateRandomColor() {
-        // This is a simple implementation, you can customize it further
         return Color.rgb(
                 (int) (Math.random() * 255),
                 (int) (Math.random() * 255),
@@ -48,8 +56,43 @@ public class ProfileImage {
         );
     }
 
-    // Method for uploading a picture
-    public void uploadPicture() {
-        // TODO: Add implementation to upload the picture
+    // Save the generated image to Firebase Storage if it doesn't already exist
+    public void ensureProfileImage(String entrantId, String name, ProfileImageCallback callback) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference imageRef = storageRef.child("profile-images/" + entrantId + ".png");
+
+        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+            // Image already exists
+            Log.d(TAG, "Profile image already exists: " + uri.toString());
+            callback.onSuccess(uri.toString());
+        }).addOnFailureListener(exception -> {
+            // Image doesn't exist, generate and upload
+            Log.d(TAG, "Profile image does not exist, generating...");
+            Bitmap generatedBitmap = generateArbitraryPicture(name);
+            uploadImage(imageRef, generatedBitmap, callback);
+        });
+    }
+
+    private void uploadImage(StorageReference imageRef, Bitmap bitmap, ProfileImageCallback callback) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = imageRef.putBytes(data);
+        uploadTask.addOnFailureListener(e -> {
+            Log.e(TAG, "Image upload failed: " + e.getMessage());
+            callback.onFailure(e);
+        }).addOnSuccessListener(taskSnapshot -> {
+            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                Log.d(TAG, "Image uploaded successfully: " + uri.toString());
+                callback.onSuccess(uri.toString());
+            });
+        });
+    }
+
+    public interface ProfileImageCallback {
+        void onSuccess(String imageUrl);
+        void onFailure(Exception e);
     }
 }

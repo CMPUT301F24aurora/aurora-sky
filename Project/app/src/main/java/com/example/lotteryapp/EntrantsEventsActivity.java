@@ -14,6 +14,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -151,7 +152,14 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
     }
 
     private void setupProfileIcon() {
-        if (profileIcon != null) {
+        if (profileIcon != null && entrant != null && entrant.getImage_url() != null) {
+            Glide.with(this)
+                    .load(entrant.getImage_url()) // Load the URL from the entrant object
+                    .placeholder(R.drawable.ic_profile_photo) // Optional: Placeholder while loading
+                    .error(R.drawable.ic_profile_photo) // Optional: Fallback image on error
+                    .circleCrop() // Makes the image circular
+                    .into(profileIcon);
+
             profileIcon.setOnClickListener(v -> {
                 Intent profileIntent = new Intent(EntrantsEventsActivity.this, EntrantProfileActivity.class);
                 profileIntent.putExtra("entrant_data", entrant);

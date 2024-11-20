@@ -42,7 +42,7 @@ dependencies {
     implementation ("com.google.android.gms:play-services-location:21.0.1")
     implementation ("com.google.firebase:firebase-appcheck-safetynet:16.0.1")
     implementation ("com.squareup.picasso:picasso:2.71828")
-    implementation ("com.github.bumptech.glide:glide:4.15.0")
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
     implementation ("com.google.firebase:firebase-auth:21.1.0")
     implementation ("com.google.firebase:firebase-storage:20.0.0")
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))

@@ -39,6 +39,12 @@
         android:textColor="@android:color/white" />
 
     <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Button" />
+
+    <Button
         android:id="@+id/admin_link"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -46,4 +52,5 @@
         android:text="Admin?"
         android:textColor="@android:color/holo_blue_dark"
         android:textSize="20sp" />
+
 </LinearLayout>

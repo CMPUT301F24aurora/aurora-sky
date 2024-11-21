@@ -40,8 +40,7 @@
         </activity>
 
         <activity
-            android:name=".Sampling"
-            android:exported="true" />
+            android:name=".Sampling" />
 
         <activity android:name=".AdminHomepageActivity" />
         <activity android:name=".EntrantProfileEditActivity" android:exported="true"></activity>

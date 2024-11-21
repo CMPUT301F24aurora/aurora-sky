@@ -16,6 +16,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private Button viewEntrantsButton;
     private Button viewQrCodeButton;
     private ImageView eventPosterView;
+    private Organizer organizer;
+    private Entrant  entrant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +32,11 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         viewQrCodeButton = findViewById(R.id.view_qr_code_button);
         eventPosterView = findViewById(R.id.poster);
 
+
         // Get event data from the intent
         Event selectedEvent = (Event) getIntent().getSerializableExtra("event_data");
+        entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
+        organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
 
         if (selectedEvent != null) {
             // Populate views with event details
@@ -49,6 +54,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             viewQrCodeButton.setOnClickListener(v->{
                 Intent intent = new Intent(OrganizerEventDetailsActivity.this, qr_code.class);
                 intent.putExtra("event_data", selectedEvent);
+                intent.putExtra("entrant_data", entrant);
+                intent.putExtra("organizer_data", organizer);
                 startActivity(intent);
             });
         } else {

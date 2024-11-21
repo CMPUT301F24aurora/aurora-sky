@@ -17,14 +17,15 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
     private Button enterWaitingButton;
     private Button leaveWaitingButton;
     private WaitingList waitingList;
+    private boolean signUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrant_event_details);
 
-        initializeViews();
         getIntentData();
+        initializeViews();
         displayEventDetails();
 
         // Initialize waiting list with the event QR code (as ID)
@@ -32,6 +33,8 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
 
         setupEnterWaiting();
         setupLeaveWaiting();
+        autoRegisterIfSignUpTrue();
+
     }
 
     private void initializeViews() {
@@ -47,6 +50,7 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
         event = (Event) getIntent().getSerializableExtra("event_data");
         entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
         organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
+        signUp = (Boolean) getIntent().getBooleanExtra("sign_up", false);
     }
 
     private void displayEventDetails() {
@@ -122,6 +126,27 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
             enterWaitingButton.setText("Join Waiting List");
             leaveWaitingButton.setEnabled(false);
             leaveWaitingButton.setText("Not in Waiting List");
+        }
+    }
+
+    private void autoRegisterIfSignUpTrue() {
+        if (signUp) {
+            if (!event.getWaitingList().contains(entrant.getId())) {
+                waitingList.addEntrant(entrant.getId(), event.getWaitingList(), new WaitingList.OnDatabaseUpdateListener() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(EntrantEventDetailsActivity.this, "Automatically joined the Waiting list", Toast.LENGTH_SHORT).show();
+                        updateButtonStates();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(EntrantEventDetailsActivity.this, "Failed to automatically join the Waiting list", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                Log.d("EntrantEventDetails", "Entrant already in the waiting list, no need to auto-register.");
+            }
         }
     }
 }

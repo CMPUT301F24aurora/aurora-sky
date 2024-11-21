@@ -175,6 +175,7 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
         eventDetailsIntent.putExtra("event_data", event);
         eventDetailsIntent.putExtra("entrant_data", entrant);
         eventDetailsIntent.putExtra("organizer_data", organizer);
+        eventDetailsIntent.putExtra("sign_up", false);
         startActivity(eventDetailsIntent);
     }
 

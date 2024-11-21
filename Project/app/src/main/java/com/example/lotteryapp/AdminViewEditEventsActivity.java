@@ -70,15 +70,15 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ad
 
         loadEvents();
 
+        /*
         // Set up SearchView
         SearchView searchView = findViewById(R.id.admin_search_ev);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            /**
-             * Called when a query is submitted in the SearchView.
+            //Called when a query is submitted in the SearchView.
              *
              * @param query the search query
              * @return false to indicate the query has been handled
-             */
+             //
             @Override
             public boolean onQueryTextSubmit(String query) {
                 filteredEventList = adapter.filter(query);
@@ -88,12 +88,12 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ad
                 return false;
             }
 
-            /**
+            //
              * Called when the query text is changed in the SearchView.
              *
              * @param newText the new text in the SearchView
              * @return false to indicate the query text change has been handled
-             */
+             //
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText != null && !newText.trim().isEmpty()) {
@@ -108,6 +108,7 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ad
                 return false;
             }
         });
+    */
     }
 
     /**

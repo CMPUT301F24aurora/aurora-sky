@@ -20,6 +20,11 @@ public class Entrant extends User implements Serializable {
      */
     public Entrant() {}
 
+    public Entrant(String name) {
+        super(); // Calls the default User constructor
+        this.setName(name);
+    }
+
     /**
      * Constructor with three parameters.
      *

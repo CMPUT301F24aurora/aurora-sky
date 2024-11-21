@@ -39,12 +39,17 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".Sampling"
+            android:exported="true" />
+
         <activity android:name=".AdminHomepageActivity" />
         <activity android:name=".EntrantProfileEditActivity" android:exported="true"></activity>
         <activity android:name=".EntrantsEventsActivity" />
-        <activity android:name=".OrganizerRegistrationActivity" />
+        <activity android:name=".OrganizerEventDetailsActivity" />
         <activity android:name=".EntrantEventDetailsActivity" />
         <activity android:name=".EntrantProfileActivity" />
+        <activity android:name=".EntrantsSelectedActivity" />
         <activity android:name=".EntrantWaitingListActivity"/>
         <activity android:name=".OrganizerMainPage" />
         <activity android:name=".OrganizerCreateEvent" />

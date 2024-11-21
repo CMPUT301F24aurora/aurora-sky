@@ -19,7 +19,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrganizerMainPage extends AppCompatActivity {
+public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdapter.OnEventClickListener {
 
     private Button createEventButton;
     private Button facilityButton; // Ensure this is declared
@@ -52,8 +52,9 @@ public class OrganizerMainPage extends AppCompatActivity {
         orgRecyclerView = findViewById(R.id.org_events_recycler_view);
         orgRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         eventList = new ArrayList<>();
-        orgEventAdapter = new OrgEventAdapter(eventList);
-        orgRecyclerView.setAdapter(orgEventAdapter); // Set the adapter here
+        orgEventAdapter = new OrgEventAdapter(eventList, this); // Pass 'this' as the listener
+        orgRecyclerView.setAdapter(orgEventAdapter);
+        // Set the adapter here
 
         // Open drawer when menu button is clicked
         menuButton.setOnClickListener(v -> drawerLayout.openDrawer(navigationView));
@@ -137,4 +138,11 @@ public class OrganizerMainPage extends AppCompatActivity {
         });
         orgEventAdapter.notifyDataSetChanged(); // Refresh adapter to show added events
     }
+
+    public void onEventClick(Event event) {
+        Intent eventDetailsIntent = new Intent(this, OrganizerEventDetailsActivity.class);
+        eventDetailsIntent.putExtra("event_data", event);
+        startActivity(eventDetailsIntent);
+    }
+
 }

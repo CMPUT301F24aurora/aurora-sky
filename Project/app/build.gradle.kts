@@ -46,6 +46,7 @@ dependencies {
     implementation ("com.google.firebase:firebase-auth:21.1.0")
     implementation ("com.google.firebase:firebase-storage:20.0.0")
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

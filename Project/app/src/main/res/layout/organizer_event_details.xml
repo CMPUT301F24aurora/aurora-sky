@@ -47,6 +47,17 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"/>
 
+    <TextView
+        android:id="@+id/eventDetailsTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="Event Name: [Event Name]\nEvent Date: [Event Date]"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/event_details_edit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/view_entrants_button"

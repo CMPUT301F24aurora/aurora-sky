@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.util.Log;
 
 import com.google.firebase.storage.FirebaseStorage;
@@ -56,36 +57,43 @@ public class ProfileImage {
         );
     }
 
-    // Save the generated image to Firebase Storage if it doesn't already exist
-    public void ensureProfileImage(String entrantId, String name, ProfileImageCallback callback) {
+    // Save or upload the provided URI image or generate a default image if none exists
+    public void uploadImageToFirebase(String entrantId, Uri imageUri, String name, ProfileImageCallback callback) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference imageRef = storageRef.child("profile-images/" + entrantId + ".png");
 
-        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-            // Image already exists
-            Log.d(TAG, "Profile image already exists: " + uri.toString());
-            callback.onSuccess(uri.toString());
-        }).addOnFailureListener(exception -> {
-            // Image doesn't exist, generate and upload
-            Log.d(TAG, "Profile image does not exist, generating...");
+        if (imageUri != null) {
+            // Upload the selected image URI
+            imageRef.putFile(imageUri)
+                    .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        Log.d(TAG, "Image uploaded successfully: " + uri.toString());
+                        callback.onSuccess(uri.toString());
+                    }))
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Image upload failed: " + e.getMessage());
+                        callback.onFailure(e);
+                    });
+        } else {
+            // Generate and upload a default image
             Bitmap generatedBitmap = generateArbitraryPicture(name);
-            uploadImage(imageRef, generatedBitmap, callback);
-        });
+            uploadGeneratedImage(imageRef, generatedBitmap, callback);
+        }
     }
 
-    private void uploadImage(StorageReference imageRef, Bitmap bitmap, ProfileImageCallback callback) {
+    // Upload a generated Bitmap to Firebase Storage
+    private void uploadGeneratedImage(StorageReference imageRef, Bitmap bitmap, ProfileImageCallback callback) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         byte[] data = baos.toByteArray();
 
         UploadTask uploadTask = imageRef.putBytes(data);
         uploadTask.addOnFailureListener(e -> {
-            Log.e(TAG, "Image upload failed: " + e.getMessage());
+            Log.e(TAG, "Generated image upload failed: " + e.getMessage());
             callback.onFailure(e);
         }).addOnSuccessListener(taskSnapshot -> {
             imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                Log.d(TAG, "Image uploaded successfully: " + uri.toString());
+                Log.d(TAG, "Generated image uploaded successfully: " + uri.toString());
                 callback.onSuccess(uri.toString());
             });
         });

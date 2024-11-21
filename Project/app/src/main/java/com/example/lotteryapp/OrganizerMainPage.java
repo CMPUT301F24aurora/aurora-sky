@@ -93,7 +93,7 @@ public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdap
         if (currentOrganizer != null) { // Check if currentOrganizer is initialized
             Log.w("Yes", currentOrganizer.getName());
 
-            if (currentOrganizer.getFacility_id() == null || currentOrganizer.getFacility_id().isEmpty()) {
+            if (currentOrganizer.getFacility_id() == null) {
                 // Organizer does not have a facility, show "Create Facility"
                 facilityButton.setText("Create Facility");
                 facilityButton.setOnClickListener(v -> {
@@ -107,7 +107,8 @@ public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdap
                 facilityButton.setText("Manage Facility");
                 facilityButton.setOnClickListener(v -> {
                     Intent intent = new Intent(OrganizerMainPage.this, OrganizerFacilityActivity.class);
-                    intent.putExtra("organizer", currentOrganizer);
+                    intent.putExtra("organizer_data", currentOrganizer);
+                    intent.putExtra("entrant_data", entrant);
                     intent.putExtra("facility_id", currentOrganizer.getFacility_id());
                     startActivity(intent);
                 });

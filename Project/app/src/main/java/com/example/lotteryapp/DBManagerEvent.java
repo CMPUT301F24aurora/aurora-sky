@@ -1,5 +1,7 @@
 package com.example.lotteryapp;
 
+import android.util.Log;
+
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentReference;
@@ -17,6 +19,7 @@ public class DBManagerEvent {
 
     // Method to add an Event to the database and return the Event
     public Event addEventToDatabase(Event event) {
+        Log.d("", "Uploading event " + event.getEventName());
         String eventId = event.getQR_code();  // Use QR code as event ID
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("eventName", event.getEventName());
@@ -25,6 +28,7 @@ public class DBManagerEvent {
         eventData.put("description", event.getDescription());
         eventData.put("qr_code", eventId);  // Store QR code as the ID field
         eventData.put("waitingList", event.getWaitingList());  // Store waiting list IDs
+        eventData.put("image_url", event.getImage_url());
 
         // Add event to "events" collection in Firestore
         DocumentReference eventRef = db.collection("events").document(eventId);

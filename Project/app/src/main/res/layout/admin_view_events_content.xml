@@ -1,43 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="81dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
+    android:layout_height="match_parent">
+
+    <!-- Event Name -->
+    <TextView
+        android:id="@+id/admin_event_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Event Name"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="16dp"/>
 
-        <TextView
-            android:id="@+id/admin_event_name"
-            android:layout_width="324dp"
-            android:layout_height="match_parent"
-            android:text="Event_name"
-            android:textSize="34sp" />
+    <!-- Poster Image (Initially Hidden) -->
+    <ImageView
+        android:id="@+id/admin_event_poster"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/admin_event_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="Event Poster"
+         />
 
-        <ImageView
-            android:id="@+id/imageView_admin_event"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            tools:srcCompat="@tools:sample/avatars" />
-    </LinearLayout>
+    <!-- Event Description -->
+    <TextView
+        android:id="@+id/admin_event_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Event Description"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/admin_event_poster"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp"/>
 
+    <!-- Event Capacity -->
+    <TextView
+        android:id="@+id/admin_event_capacity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Capacity: 100"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/admin_event_description"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp"/>
+
+    <!-- Event Date -->
+    <TextView
+        android:id="@+id/admin_event_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Date: Jan 01, 2024"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/admin_event_capacity"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp"/>
+
+    <!-- Remove QR Code Button -->
+    <Button
+        android:id="@+id/admin_ev_remove_qr"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:backgroundTint="#000000"
+        android:text="Remove QR Code"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@id/admin_ev_remove"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Remove Event Button -->
     <Button
         android:id="@+id/admin_ev_remove"
-        android:layout_width="132dp"
+        android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginBottom="16dp"
         android:backgroundTint="#000000"
-        android:text="Remove"
+        android:text="Remove Event"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
-
+        android:layout_marginBottom="16dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,16 +5,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,39 +32,65 @@ import com.google.firebase.firestore.FirebaseFirestore;
  */
 public class AdminViewEventsContent extends AppCompatActivity {
 
-    private TextView eventNameTextView;
+    private TextView eventNameTextView, eventDescriptionTextView, eventCapacityTextView, eventDateTextView;
+    private ImageView eventPosterImageView;
     private Button adminEvRemove;
     private FirebaseFirestore db;
+    private Event event;
 
     /**
      * Called when the activity is first created.
      * This method sets up the layout and initializes views and Firestore.
      *
      * @param savedInstanceState If the activity is being re-initialized after previously being shut down, this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle). Otherwise, it is null.
-     * @see AppCompatActivity#onCreate(Bundle)
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.admin_view_events_content);
 
+        // Initialize views
         eventNameTextView = findViewById(R.id.admin_event_name);
+        eventDescriptionTextView = findViewById(R.id.admin_event_description);
+        eventCapacityTextView = findViewById(R.id.admin_event_capacity);
+        eventDateTextView = findViewById(R.id.admin_event_date);
+        eventPosterImageView = findViewById(R.id.admin_event_poster);
+        adminEvRemove = findViewById(R.id.admin_ev_remove);
+        event = (Event) getIntent().getSerializableExtra("event_data");
 
         // Get the intent extras and set the text views
-        String eventName = getIntent().getStringExtra("eventName");
-        //String eventDate = getIntent().getStringExtra("eventDate");
-        //String eventDescription = getIntent().getStringExtra("eventDescription");
+        String eventName = event.getEventName();
+        String eventDescription = event.getDescription();
+        String eventCapacity = String.valueOf(event.getNumPeople());
+        String eventDate = event.getEventDate();
+        String eventImageUrl = event.getImage_url();
 
+        // Set values to TextViews
         eventNameTextView.setText(eventName);
+        eventDescriptionTextView.setText(eventDescription);
+        eventCapacityTextView.setText("Capacity: " + eventCapacity);
+        eventDateTextView.setText("Date: " + eventDate);
 
-        adminEvRemove = findViewById(R.id.admin_ev_remove);
+        // Load the poster image if URL is not null or empty
+        if (eventImageUrl != null && !eventImageUrl.isEmpty()) {
+            eventPosterImageView.setVisibility(View.VISIBLE);
+            Glide.with(this)
+                    .load(eventImageUrl)
+                    .placeholder(R.drawable.ic_profile_photo)  // Optional placeholder image
+                    .error(R.drawable.ic_profile_photo)        // Optional error image
+                    .into(eventPosterImageView);
+        } else {
+            eventPosterImageView.setVisibility(View.GONE);
+        }
 
+        // Set up the remove button
         adminEvRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 deleteEvent();
             }
         });
+
         db = FirebaseFirestore.getInstance();
     }
 
@@ -71,12 +98,12 @@ public class AdminViewEventsContent extends AppCompatActivity {
      * Deletes the event from the database and updates the UI.
      * Retrieves the event ID and hash from the intent and deletes the event document from Firestore.
      * If successful, navigates back to the event list and removes the event hash from the organizer.
-     *
      */
     private void deleteEvent() {
         CollectionReference eventsRef = db.collection("events");
         String eventId = getIntent().getStringExtra("eventId");
         String eventHash = getIntent().getStringExtra("eventHash");
+
         eventsRef.document(eventId).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -124,4 +151,3 @@ public class AdminViewEventsContent extends AppCompatActivity {
                 .addOnFailureListener(e -> Log.e("OrganizerEventHash", "Error querying organizers", e));
     }
 }
-

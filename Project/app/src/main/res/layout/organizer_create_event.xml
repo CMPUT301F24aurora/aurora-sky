@@ -103,13 +103,15 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <Button
-                android:id="@+id/buttonGenerateQRCode"
+                android:id="@+id/buttonRemovePoster"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:backgroundTint="@color/black"
-                android:text="+ Generate QR Code"
-                android:textColor="@color/white" />
+                android:text="Remove Poster"
+                android:textColor="@color/white"
+                android:visibility="gone" /> <!-- Initially hidden -->
+
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

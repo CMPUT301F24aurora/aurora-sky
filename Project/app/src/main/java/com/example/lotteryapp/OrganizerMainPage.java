@@ -145,6 +145,8 @@ public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdap
     public void onEventClick(Event event) {
         Intent eventDetailsIntent = new Intent(this, OrganizerEventDetailsActivity.class);
         eventDetailsIntent.putExtra("event_data", event);
+        eventDetailsIntent.putExtra("organizer_data", currentOrganizer);
+        eventDetailsIntent.putExtra("entrant_data", entrant);
         startActivity(eventDetailsIntent);
     }
 

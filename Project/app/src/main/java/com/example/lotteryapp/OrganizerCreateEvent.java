@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -25,12 +26,13 @@ public class OrganizerCreateEvent extends AppCompatActivity {
     private static final String TAG = "OrganizerCreateEvent";
 
     private EditText eventDateTime, eventName, eventNumberOfPeople, eventDescription;
-    private Button organizerCreateEvent;
+    private Button organizerCreateEvent, buttonRemovePoster;
     private ImageButton buttonUploadPoster;
     private Organizer organizer;
     private Entrant entrant;
     private DBManagerEvent dbManagerEvent;
     private Uri imageUri;
+    private Event event;
 
 
     @Override
@@ -41,29 +43,50 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         // Retrieve the Organizer object from the Intent
         organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
         entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
+        event = (Event) getIntent().getSerializableExtra("event_data");
+
 
         if (organizer == null) {
             Toast.makeText(this, "Error: Organizer data not found", Toast.LENGTH_SHORT).show();
             finish(); // Close the activity if organizer data is not available
             return;
         } else {
-            //Toast.makeText(this, "Error: Organizer found " + organizer.getName(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Error: Organizer found " + organizer.getName(), Toast.LENGTH_SHORT).show();
         }
 
         dbManagerEvent = new DBManagerEvent();
 
-        // Initialize EditText and Buttons
+//        // Initialize EditText and Buttons
         eventName = findViewById(R.id.editTextEventName);
         eventDateTime = findViewById(R.id.editTextDateTime);
         eventNumberOfPeople = findViewById(R.id.editNumberOfMembers);
         eventDescription = findViewById(R.id.editTextEventDescription);
         buttonUploadPoster = findViewById(R.id.buttonUploadPoster);
+        buttonRemovePoster = findViewById(R.id.buttonRemovePoster);
         organizerCreateEvent = findViewById(R.id.buttonCreateEvent);
 
-        // Set click listener for eventDateTime to open date and time picker
+        if (event != null) { // If event data exists, it's an edit operation
+            preloadEventData(event);
+        }
+
+//        // Set click listener for eventDateTime to open date and time picker
         eventDateTime.setOnClickListener(v -> openDateTimePicker());
         buttonUploadPoster.setOnClickListener(v->selectImage());
         organizerCreateEvent.setOnClickListener(v -> saveEventDetails());
+
+        buttonRemovePoster.setOnClickListener(v -> {
+            imageUri = null;  // Clear the image URI
+            buttonUploadPoster.setImageResource(R.drawable.ic_upload_icon);  // Reset upload icon
+            buttonRemovePoster.setVisibility(View.GONE);  // Hide the button after removal
+            Toast.makeText(this, "Poster removed", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void preloadEventData(Event event) {
+        eventName.setText(event.getEventName());
+        eventDateTime.setText(event.getEventDate());
+        eventNumberOfPeople.setText(String.valueOf(event.getNumPeople()));
+        eventDescription.setText(event.getDescription());
     }
 
     private void openDateTimePicker() {

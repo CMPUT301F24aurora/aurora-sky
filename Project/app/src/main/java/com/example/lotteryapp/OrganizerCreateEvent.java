@@ -2,12 +2,16 @@ package com.example.lotteryapp;
 
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -22,9 +26,11 @@ public class OrganizerCreateEvent extends AppCompatActivity {
 
     private EditText eventDateTime, eventName, eventNumberOfPeople, eventDescription;
     private Button organizerCreateEvent;
+    private ImageButton buttonUploadPoster;
     private Organizer organizer;
     private Entrant entrant;
     private DBManagerEvent dbManagerEvent;
+    private Uri imageUri;
 
 
     @Override
@@ -51,11 +57,12 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         eventDateTime = findViewById(R.id.editTextDateTime);
         eventNumberOfPeople = findViewById(R.id.editNumberOfMembers);
         eventDescription = findViewById(R.id.editTextEventDescription);
+        buttonUploadPoster = findViewById(R.id.buttonUploadPoster);
         organizerCreateEvent = findViewById(R.id.buttonCreateEvent);
 
         // Set click listener for eventDateTime to open date and time picker
         eventDateTime.setOnClickListener(v -> openDateTimePicker());
-
+        buttonUploadPoster.setOnClickListener(v->selectImage());
         organizerCreateEvent.setOnClickListener(v -> saveEventDetails());
     }
 
@@ -86,6 +93,24 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         });
     }
 
+    // Launcher for selecting an image
+    private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    imageUri = result.getData().getData();
+                    Toast.makeText(this, "Poster Selected: ", Toast.LENGTH_SHORT).show();
+                }
+            }
+    );
+
+
+    private void selectImage(){
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        imagePickerLauncher.launch(intent);
+    }
+
     private void saveEventDetails() {
         String name = eventName.getText().toString().trim();
         String dateTime = eventDateTime.getText().toString().trim();
@@ -106,20 +131,52 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         }
 
         Event event = new Event(name, dateTime, numPeople, description);
-        dbManagerEvent.addEventToDatabase(event);
-        organizer.addEventHash(event.getQR_code(), new Organizer.AddEventCallback() {
-            @Override
-            public void onEventAdded(String eventHash) {
-                Intent intent = new Intent(OrganizerCreateEvent.this, OrganizerMainPage.class);
-                intent.putExtra("organizer_data", organizer);
-                intent.putExtra("entrant_data", entrant);
-                startActivity(intent);
-            }
+        if(imageUri != null){
+            PosterImage posterImage = new PosterImage();
+            posterImage.uploadImage(event.getQR_code(), imageUri, new PosterImage.PosterUploadCallback(){
+                @Override
+                public void onSuccess(String imageUrl) {
+                    event.setImage_url(imageUrl); // Set the image URL to the event
+                    dbManagerEvent.addEventToDatabase(event);
+                    organizer.addEventHash(event.getQR_code(), new Organizer.AddEventCallback() {
+                        @Override
+                        public void onEventAdded(String eventHash) {
+                            Intent intent = new Intent(OrganizerCreateEvent.this, OrganizerMainPage.class);
+                            intent.putExtra("organizer_data", organizer);
+                            intent.putExtra("entrant_data", entrant);
+                            startActivity(intent);
+                        }
 
-            @Override
-            public void onError(Exception e) {
-                Log.d(TAG,"Event Hash adding error");
-            }
-        });
+                        @Override
+                        public void onError(Exception e) {
+                            Log.d(TAG,"Event Hash adding error");
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(OrganizerCreateEvent.this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+
+            });
+        } else {
+            dbManagerEvent.addEventToDatabase(event);
+            organizer.addEventHash(event.getQR_code(), new Organizer.AddEventCallback() {
+                @Override
+                public void onEventAdded(String eventHash) {
+                    Intent intent = new Intent(OrganizerCreateEvent.this, OrganizerMainPage.class);
+                    intent.putExtra("organizer_data", organizer);
+                    intent.putExtra("entrant_data", entrant);
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Log.d(TAG,"Event Hash adding error");
+                }
+            });
+        }
+
     }
 }

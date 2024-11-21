@@ -2,11 +2,15 @@ package com.example.lotteryapp;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
 
 public class EntrantEventDetailsActivity extends AppCompatActivity {
 
@@ -18,6 +22,7 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
     private Button leaveWaitingButton;
     private WaitingList waitingList;
     private boolean signUp;
+    private ImageView eventImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,7 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
         eventCapacity = findViewById(R.id.event_capacity);
         enterWaitingButton = findViewById(R.id.enter_waiting);
         leaveWaitingButton = findViewById(R.id.leave_waiting);
+        eventImageView = findViewById(R.id.event_poster);
     }
 
     private void getIntentData() {
@@ -59,6 +65,20 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
             eventDescription.setText(event.getDescription());
             eventDate.setText("Date: " + event.getEventDate());
             eventCapacity.setText("Capacity: " + event.getNumPeople());
+
+            // Check if image URL is available
+            if (event.getImage_url() != null && !event.getImage_url().isEmpty()) {
+                eventImageView.setVisibility(View.VISIBLE);
+                // Load the image using Glide
+                Glide.with(this)
+                        .load(event.getImage_url())
+                        .placeholder(R.drawable.ic_profile_photo) 
+                        .error(R.drawable.ic_profile_photo)
+                        .into(eventImageView);
+            } else {
+                // Hide ImageView if there's no image URL
+                eventImageView.setVisibility(View.GONE);
+            }
         } else {
             Toast.makeText(this, "Event data is missing", Toast.LENGTH_SHORT).show();
             finish();

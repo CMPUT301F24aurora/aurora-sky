@@ -61,24 +61,31 @@ public class ProfileImage {
     public void uploadImageToFirebase(String entrantId, Uri imageUri, String name, ProfileImageCallback callback) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference imageRef = storageRef.child("profile-images/" + entrantId + ".png");
+        StorageReference imageRef;
 
         if (imageUri != null) {
-            // Upload the selected image URI
-            imageRef.putFile(imageUri)
-                    .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        Log.d(TAG, "Image uploaded successfully: " + uri.toString());
-                        callback.onSuccess(uri.toString());
-                    }))
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "Image upload failed: " + e.getMessage());
-                        callback.onFailure(e);
-                    });
+            // Store user-uploaded images in the profile-images/ folder
+            imageRef = storageRef.child("profile-images/" + entrantId + ".png");
+            uploadImageFromUri(imageUri, imageRef, callback);
         } else {
-            // Generate and upload a default image
+            // Store generated images in the generated-images/ folder
+            imageRef = storageRef.child("generated-images/" + entrantId + ".png");
             Bitmap generatedBitmap = generateArbitraryPicture(name);
             uploadGeneratedImage(imageRef, generatedBitmap, callback);
         }
+    }
+
+    // Upload a user-selected URI image to Firebase Storage
+    private void uploadImageFromUri(Uri imageUri, StorageReference imageRef, ProfileImageCallback callback) {
+        imageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    Log.d(TAG, "Image uploaded successfully: " + uri.toString());
+                    callback.onSuccess(uri.toString());
+                }))
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Image upload failed: " + e.getMessage());
+                    callback.onFailure(e);
+                });
     }
 
     // Upload a generated Bitmap to Firebase Storage

@@ -1,11 +1,13 @@
 package com.example.lotteryapp;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -19,10 +21,13 @@ import java.util.Objects;
 public class EntrantProfileEditActivity extends AppCompatActivity {
 
     private static final String TAG = "EntrantProfileEditActivity";
+    private static final int PICK_IMAGE_REQUEST = 1;
 
     private EditText editName, editEmail, editPhone;
     private Button confirmChanges;
     private ImageView currentProfilePicture;
+    private ImageButton addProfilePictureButton;
+    private Uri selectedImageUri = null;
     private String currentUser;
 
     @Override
@@ -32,7 +37,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
 
         FirebaseApp.initializeApp(this);
 
-        // Initialize EditText and Buttons
+        // Initialize views
         Intent intent = getIntent();
         Entrant entrant = (Entrant) intent.getSerializableExtra("entrant_data");
         currentUser = intent.getStringExtra("userType");
@@ -40,7 +45,8 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         editName = findViewById(R.id.edit_name);
         editEmail = findViewById(R.id.edit_email);
         editPhone = findViewById(R.id.edit_phone);
-        currentProfilePicture = findViewById(R.id.profile_photo);  // If required for displaying an existing image
+        currentProfilePicture = findViewById(R.id.profile_photo);
+        addProfilePictureButton = findViewById(R.id.add_profile_picture_button);
         confirmChanges = findViewById(R.id.confirm_changes);
 
         if (entrant != null) {
@@ -49,21 +55,27 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             editPhone.setText(entrant.getPhone());
 
             if (entrant.getImage_url() != null && !entrant.getImage_url().isEmpty()) {
-                // Load the image from the URL
+                // Load image from URL
                 Glide.with(this)
                         .load(entrant.getImage_url())
-                        .placeholder(R.drawable.ic_profile_photo) // Optional: Placeholder image
-                        .error(R.drawable.ic_profile_photo) // Optional: Fallback image on error
-                        .circleCrop() // Circular cropping
+                        .placeholder(R.drawable.ic_profile_photo)
+                        .error(R.drawable.ic_profile_photo)
+                        .circleCrop()
                         .into(currentProfilePicture);
             } else {
-                // Fallback to default image
                 currentProfilePicture.setImageResource(R.drawable.ic_profile_photo);
             }
         }
 
         // Set up listeners
+        addProfilePictureButton.setOnClickListener(v -> openImagePicker());
         confirmChanges.setOnClickListener(v -> saveEntrantDetails());
+    }
+
+    private void openImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
     private void saveEntrantDetails() {
@@ -88,12 +100,11 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
 
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        // Create or update Organizer object
         Organizer organizer = new Organizer(deviceId, name, email, phone);
         DatabaseManager.saveOrganizer(organizer, new SaveOrganizerCallback() {
             @Override
             public void onSuccess() {
-                createOrUpdateEntrant(deviceId, name, email, phone, organizer);
+                uploadProfileImage(deviceId, name, email, phone, organizer);
             }
 
             @Override
@@ -104,36 +115,38 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         });
     }
 
-    private void createOrUpdateEntrant(String deviceId, String name, String email, String phone, Organizer organizer) {
-        Entrant entrant = new Entrant(deviceId, name, email, phone);
+    private void uploadProfileImage(String deviceId, String name, String email, String phone, Organizer organizer) {
         ProfileImage profileImage = new ProfileImage();
-
-        profileImage.ensureProfileImage(deviceId, name, new ProfileImage.ProfileImageCallback() {
+        profileImage.uploadImageToFirebase(deviceId, selectedImageUri, name, new ProfileImage.ProfileImageCallback() {
             @Override
             public void onSuccess(String imageUrl) {
-                entrant.setImage_url(imageUrl); // Save image URL in the entrant object
-                DatabaseManager.saveEntrant(entrant, new SaveEntrantCallback() {
-                    @Override
-                    public void onSuccess() {
-                        Toast.makeText(EntrantProfileEditActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-                        navigateToNextActivity(entrant, organizer);
-                    }
-
-                    @Override
-                    public void onFailure(Exception e) {
-                        Toast.makeText(EntrantProfileEditActivity.this, "Error saving profile", Toast.LENGTH_SHORT).show();
-                        Log.w(TAG, "Error writing document", e);
-                    }
-                });
+                Entrant entrant = new Entrant(deviceId, name, email, phone);
+                entrant.setImage_url(imageUrl);
+                saveEntrantToDatabase(entrant, organizer);
             }
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(EntrantProfileEditActivity.this, "Error generating profile image", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EntrantProfileEditActivity.this, "Error uploading profile image", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    private void saveEntrantToDatabase(Entrant entrant, Organizer organizer) {
+        DatabaseManager.saveEntrant(entrant, new SaveEntrantCallback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(EntrantProfileEditActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                navigateToNextActivity(entrant, organizer);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(EntrantProfileEditActivity.this, "Error saving entrant", Toast.LENGTH_SHORT).show();
+                Log.w(TAG, "Error writing entrant document", e);
+            }
+        });
+    }
 
     private void navigateToNextActivity(Entrant entrant, Organizer organizer) {
         Intent intent;
@@ -145,5 +158,20 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         intent.putExtra("entrant_data", entrant);
         intent.putExtra("organizer_data", organizer);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            selectedImageUri = data.getData();
+            Glide.with(this)
+                    .load(selectedImageUri)
+                    .placeholder(R.drawable.ic_profile_photo)
+                    .error(R.drawable.ic_profile_photo)
+                    .circleCrop()
+                    .into(currentProfilePicture);
+        }
     }
 }

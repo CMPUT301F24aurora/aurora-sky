@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -25,6 +26,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
 
     private EditText editName, editEmail, editPhone;
     private Button confirmChanges;
+    private Button removeProfilePicture;
     private ImageView currentProfilePicture;
     private ImageButton addProfilePictureButton;
     private Uri selectedImageUri = null;
@@ -47,6 +49,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         editPhone = findViewById(R.id.edit_phone);
         currentProfilePicture = findViewById(R.id.profile_photo);
         addProfilePictureButton = findViewById(R.id.add_profile_picture_button);
+        removeProfilePicture = findViewById(R.id.remove_profile_picture);
         confirmChanges = findViewById(R.id.confirm_changes);
 
         if (entrant != null) {
@@ -65,11 +68,25 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             } else {
                 currentProfilePicture.setImageResource(R.drawable.ic_profile_photo);
             }
+
+//            if (isUploadedImage(entrant.getImage_url())) {
+//                removeProfilePicture.setVisibility(Button.VISIBLE);
+//            } else {
+//                removeProfilePicture.setVisibility(Button.GONE);
+//            }
+        } else {
+            removeProfilePicture.setVisibility(Button.GONE);
         }
 
         // Set up listeners
         addProfilePictureButton.setOnClickListener(v -> openImagePicker());
+        removeProfilePicture.setOnClickListener(v->removeImage());
         confirmChanges.setOnClickListener(v -> saveEntrantDetails());
+    }
+
+    // Helper method to check if the image is uploaded or generated
+    private boolean isUploadedImage(String imageUrl) {
+        return !imageUrl.contains("generated");
     }
 
     private void openImagePicker() {
@@ -78,6 +95,14 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
+    private void removeImage() {
+        // Set the profile picture to the default drawable resource
+        currentProfilePicture.setImageResource(R.drawable.ic_profile_photo);
+        removeProfilePicture.setVisibility(View.GONE);
+
+        // Reset selectedImageUri to null since there's no custom image
+        selectedImageUri = null;
+    }
     private void saveEntrantDetails() {
         String name = editName.getText().toString().trim();
         String email = editEmail.getText().toString().trim();
@@ -172,6 +197,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
                     .error(R.drawable.ic_profile_photo)
                     .circleCrop()
                     .into(currentProfilePicture);
+            removeProfilePicture.setVisibility(View.VISIBLE);
         }
     }
 }

@@ -3,6 +3,7 @@ package com.example.lotteryapp;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,24 +21,28 @@ public class OrganizerFacilityActivity extends AppCompatActivity {
     private Facility facility;
     private boolean isEditing;
     private Organizer organizer;
+    private Entrant entrant;
+    private FacilityDatabase facilityDatabase;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer_facility);
 
-        organizer = (Organizer) getIntent().getSerializableExtra("organizer");
+        organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
+        entrant = (Entrant)  getIntent().getSerializableExtra("entrant_data");
         if (organizer == null) {
             Toast.makeText(this, "Error: Organizer data not found", Toast.LENGTH_SHORT).show();
             finish(); // Close the activity if organizer data is not available
             return;
         }
 
+        facilityDatabase = new FacilityDatabase();
+
         initializeViews();
         setupFacilityData();
         setupTimeButtons();
         setupSaveButton();
-        setupRemoveButton();
     }
 
     private void initializeViews() {
@@ -65,7 +70,7 @@ public class OrganizerFacilityActivity extends AppCompatActivity {
     }
 
     private void loadFacilityData(String facilityId) {
-        Facility.getFacilityById(facilityId, new Facility.GetFacilityCallback() {
+        facilityDatabase.getFacilityById(facilityId, new FacilityDatabase.GetFacilityCallback() {
             @Override
             public void onSuccess(Facility loadedFacility) {
                 facility = loadedFacility;
@@ -125,18 +130,27 @@ public class OrganizerFacilityActivity extends AppCompatActivity {
     }
 
     private boolean validateInputs() {
-        if(facility.getStartTime() == null || facility.getEndTime() == null){
-            facility.setStartTime("9:00");
-            facility.setEndTime("17:00");
-        }
-        if (nameField.getText().toString().trim().isEmpty() ||
-                facility.getStartTime() == null ||
-                facility.getEndTime() == null ||
-                locationField.getText().toString().trim().isEmpty() ||
-                emailField.getText().toString().trim().isEmpty()) {
-            Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
+        String name = nameField.getText().toString().trim();
+        String location = locationField.getText().toString().trim();
+        String email = emailField.getText().toString().trim();
+        String startTimeText = startTimeButton.getText().toString().replace("Start Time: ", "").trim();
+        String endTimeText = endTimeButton.getText().toString().replace("End Time: ", "").trim();
+
+        if (name.isEmpty() || location.isEmpty() || email.isEmpty()) {
+            Toast.makeText(this, "Name, location, and email are required.", Toast.LENGTH_SHORT).show();
             return false;
         }
+
+        if (startTimeText.isEmpty() || endTimeText.isEmpty()) {
+            Toast.makeText(this, "Start time and end time are required.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Invalid email format.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         return true;
     }
 
@@ -144,62 +158,43 @@ public class OrganizerFacilityActivity extends AppCompatActivity {
         facility.setName(nameField.getText().toString().trim());
         facility.setLocation(locationField.getText().toString().trim());
         facility.setEmail(emailField.getText().toString().trim());
+
+        String startTimeText = startTimeButton.getText().toString().replace("Start Time: ", "").trim();
+        String endTimeText = endTimeButton.getText().toString().replace("End Time: ", "").trim();
+
+        facility.setStartTime(startTimeText);
+        facility.setEndTime(endTimeText);
         facility.setOrganizerId(organizer.getId());
+
     }
 
     private void saveFacilityToFirestore() {
-        facility.saveToFirestore(new Facility.FacilityCallback() {
+        Log.d("FacilityUpdate", "Name: " + facility.getName());
+        Log.d("FacilityUpdate", "Location: " + facility.getLocation());
+        Log.d("FacilityUpdate", "Email: " + facility.getEmail());
+        Log.d("FacilityUpdate", "Start Time: " + facility.getStartTime());
+        Log.d("FacilityUpdate", "End Time: " + facility.getEndTime());
+        Log.d("FacilityUpdate", "Organizer ID: " + facility.getOrganizerId());
+        facilityDatabase.saveToFirestore(facility, new FacilityDatabase.FacilityCallback() {
             @Override
             public void onSuccess() {
-                if (!isEditing) {
-                    // If creating a new facility, update the organizer with the new facility ID
-                    organizer.setFacility_id(facility.getOrganizerId());
-                    organizer.saveToFirestore(new SaveOrganizerCallback() {
-                        @Override
-                        public void onSuccess() {
-                            Toast.makeText(OrganizerFacilityActivity.this, "Facility created and linked to organizer", Toast.LENGTH_SHORT).show();
-                            navigateToOrganizerMainPage();
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-                            Toast.makeText(OrganizerFacilityActivity.this, "Failed to update organizer", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else {
-                    Toast.makeText(OrganizerFacilityActivity.this, "Facility updated", Toast.LENGTH_SHORT).show();
-                    navigateToOrganizerMainPage();
-                }
+                Toast.makeText(OrganizerFacilityActivity.this, "Facility saved successfully", Toast.LENGTH_SHORT).show();
+                organizer.setFacility_id(facility.getOrganizerId());
+                navigateToOrganizerMainPage();
             }
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(OrganizerFacilityActivity.this, "Operation failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(OrganizerFacilityActivity.this, "Failed to save facility: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void setupRemoveButton() {
-        removeButton.setOnClickListener(v -> {
-            facility.deleteFromFirestore(new Facility.FacilityCallback() {
-                @Override
-                public void onSuccess() {
-                    Toast.makeText(OrganizerFacilityActivity.this, "Facility removed", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-
-                @Override
-                public void onFailure(Exception e) {
-                    Toast.makeText(OrganizerFacilityActivity.this,
-                            "Operation failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
-    }
 
     private void navigateToOrganizerMainPage() {
         Intent intent = new Intent(OrganizerFacilityActivity.this, OrganizerMainPage.class);
-        intent.putExtra("organizer", organizer);
+        intent.putExtra("organizer_data", organizer);
+        intent.putExtra("entrant_data", entrant);
         startActivity(intent);
         finish();
     }

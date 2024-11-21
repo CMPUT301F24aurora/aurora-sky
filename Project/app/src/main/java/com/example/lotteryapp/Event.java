@@ -34,6 +34,7 @@ public class Event implements Serializable {
     private String description;
     private String qr_code;
     private List<String> waitingList;
+    private String image_url;
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public Event() {
@@ -46,6 +47,7 @@ public class Event implements Serializable {
         this.numPeople = numPeople;
         this.description = description;
         this.qr_code = generateQRHash();
+
         this.waitingList = new ArrayList<>();  // Initialize waitingList as an empty list
     }
 
@@ -83,6 +85,14 @@ public class Event implements Serializable {
 
     public String getQR_code(){
         return this.qr_code;
+    }
+
+    public String getImage_url() {
+        return image_url;
+    }
+
+    public void setImage_url(String image_url) {
+        this.image_url = image_url;
     }
 
     public boolean getGeolocationRequirement() {
@@ -177,4 +187,6 @@ public class Event implements Serializable {
             return null;
         }
     }
+
+
 }

@@ -72,7 +72,7 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
                 // Load the image using Glide
                 Glide.with(this)
                         .load(event.getImage_url())
-                        .placeholder(R.drawable.ic_profile_photo) 
+                        .placeholder(R.drawable.ic_profile_photo)
                         .error(R.drawable.ic_profile_photo)
                         .into(eventImageView);
             } else {

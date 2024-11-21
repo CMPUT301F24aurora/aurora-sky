@@ -31,6 +31,10 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
     private ImageButton addProfilePictureButton;
     private Uri selectedImageUri = null;
     private String currentUser;
+    private boolean profilePictureChanged = false;
+    private boolean isInitialSignup = true;  // Set to true during signup, false during edits
+    private Entrant entrant;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +45,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
 
         // Initialize views
         Intent intent = getIntent();
-        Entrant entrant = (Entrant) intent.getSerializableExtra("entrant_data");
+        entrant = (Entrant) intent.getSerializableExtra("entrant_data");
         currentUser = intent.getStringExtra("userType");
 
         editName = findViewById(R.id.edit_name);
@@ -56,6 +60,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             editName.setText(entrant.getName());
             editEmail.setText(entrant.getEmail());
             editPhone.setText(entrant.getPhone());
+            isInitialSignup = false;
 
             if (entrant.getImage_url() != null && !entrant.getImage_url().isEmpty()) {
                 // Load image from URL
@@ -102,7 +107,9 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
 
         // Reset selectedImageUri to null since there's no custom image
         selectedImageUri = null;
+        profilePictureChanged = true;
     }
+
     private void saveEntrantDetails() {
         String name = editName.getText().toString().trim();
         String email = editEmail.getText().toString().trim();
@@ -126,10 +133,28 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         Organizer organizer = new Organizer(deviceId, name, email, phone);
+
+        // Save the organizer first
         DatabaseManager.saveOrganizer(organizer, new SaveOrganizerCallback() {
             @Override
             public void onSuccess() {
-                uploadProfileImage(deviceId, name, email, phone, organizer);
+                if (isInitialSignup) {
+                    // Case 1: Initial signup, upload the image first
+                    uploadProfileImage(deviceId, name, email, phone, organizer);
+                } else {
+                    String image_url = entrant.getImage_url();
+                    Log.d("","image url" + image_url);
+                    // Case 2: Not initial signup, check if profile picture changed
+                    if (profilePictureChanged) {
+                        // Case 3: Profile picture changed, upload the new image
+                        uploadProfileImage(deviceId, name, email, phone, organizer);
+                    } else {
+                        // Case 2: No profile picture change, just save the entrant
+                        entrant = new Entrant(deviceId, name, email, phone);
+                        entrant.setImage_url(image_url);
+                        saveEntrantToDatabase(entrant, organizer);
+                    }
+                }
             }
 
             @Override
@@ -139,6 +164,7 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void uploadProfileImage(String deviceId, String name, String email, String phone, Organizer organizer) {
         ProfileImage profileImage = new ProfileImage();
@@ -191,6 +217,8 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             selectedImageUri = data.getData();
+            profilePictureChanged = true;
+
             Glide.with(this)
                     .load(selectedImageUri)
                     .placeholder(R.drawable.ic_profile_photo)

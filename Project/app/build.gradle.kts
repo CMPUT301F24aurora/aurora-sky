@@ -67,5 +67,7 @@ dependencies {
     testImplementation("org.robolectric:robolectric:4.6.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.4.0")
+    implementation("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
 }
 

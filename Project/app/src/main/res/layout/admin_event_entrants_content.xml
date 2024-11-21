@@ -118,14 +118,24 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/admin_ent_img_remove"
+        android:layout_width="175dp"
+        android:layout_height="45dp"
+        android:backgroundTint="#152A6A"
+        android:text="Remove Image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phone_row" />
+
+    <Button
         android:id="@+id/admin_ev_ent_remove"
         android:layout_width="175dp"
         android:layout_height="45dp"
         android:backgroundTint="#6A1515"
-        android:text="Remove"
+        android:text="Remove Profile"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/phone_row" />
+        app:layout_constraintTop_toBottomOf="@id/admin_ent_img_remove"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

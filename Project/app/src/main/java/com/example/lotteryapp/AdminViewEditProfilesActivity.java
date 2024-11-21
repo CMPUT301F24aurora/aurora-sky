@@ -168,6 +168,7 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
         intent.putExtra("entrantId", entrant.getId());
         intent.putExtra("entrantEmail", entrant.getEmail());
         intent.putExtra("entrantPhone", entrant.getPhone());
+        intent.putExtra("entrantImage", entrant.getImage_url());
         startActivity(intent);
     }
 }

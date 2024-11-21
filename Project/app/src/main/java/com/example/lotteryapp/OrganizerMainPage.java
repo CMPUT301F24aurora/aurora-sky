@@ -66,6 +66,8 @@ public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdap
                 Toast.makeText(OrganizerMainPage.this, "You are on the Organizer page", Toast.LENGTH_SHORT).show();
             } else if (id == R.id.entrant_nav) {
                 Intent organizerIntent = new Intent(OrganizerMainPage.this, EntrantsEventsActivity.class);
+                organizerIntent.putExtra("entrant_data", entrant);
+                organizerIntent.putExtra("organizer_data", currentOrganizer);
                 startActivity(organizerIntent);
             } else if (id == R.id.map_nav) {
                 Intent organizerIntent = new Intent(OrganizerMainPage.this, MapActivity.class);

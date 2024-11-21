@@ -69,11 +69,11 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
                 currentProfilePicture.setImageResource(R.drawable.ic_profile_photo);
             }
 
-//            if (isUploadedImage(entrant.getImage_url())) {
-//                removeProfilePicture.setVisibility(Button.VISIBLE);
-//            } else {
-//                removeProfilePicture.setVisibility(Button.GONE);
-//            }
+            if (isUploadedImage(entrant.getImage_url())) {
+                removeProfilePicture.setVisibility(Button.VISIBLE);
+            } else {
+                removeProfilePicture.setVisibility(Button.GONE);
+            }
         } else {
             removeProfilePicture.setVisibility(Button.GONE);
         }

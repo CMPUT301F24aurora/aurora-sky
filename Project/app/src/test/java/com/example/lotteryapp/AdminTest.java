@@ -1,18 +1,13 @@
 package com.example.lotteryapp;
 
 import android.content.Context;
-import android.widget.Toast;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.DocumentReference;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import static org.mockito.Mockito.*;
 
 public class AdminTest {
 

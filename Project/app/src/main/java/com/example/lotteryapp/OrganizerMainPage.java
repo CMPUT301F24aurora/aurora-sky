@@ -4,14 +4,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OrganizerMainPage extends AppCompatActivity {
 
@@ -20,38 +26,34 @@ public class OrganizerMainPage extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private Organizer currentOrganizer;
+    private Entrant entrant;
+    private RecyclerView orgRecyclerView;
+    private OrgEventAdapter orgEventAdapter;
+    private List<Event> eventList;
+    private DBManagerEvent dbManagerEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.organizer_main_page);
 
+        currentOrganizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
+        entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
+
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         ImageButton menuButton = findViewById(R.id.menu_button);
 
         createEventButton = findViewById(R.id.create_event_button);
-        facilityButton = findViewById(R.id.create_facility_button); // Ensure this ID matches your XML
+        facilityButton = findViewById(R.id.create_facility_button);
+        setupFacilityButton();
 
-        // Fetch the current organizer based on device ID
-        String deviceId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
-        Organizer.getOrganizerByDeviceId(deviceId, new GetOrganizerCallback() {
-            @Override
-            public void onOrganizerFound(Organizer organizer) {
-                currentOrganizer = organizer;
-                setupFacilityButton(); // Call to setup the facility button here
-            }
-
-            @Override
-            public void onOrganizerNotFound() {
-                Toast.makeText(OrganizerMainPage.this, "Organizer not found.", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Toast.makeText(OrganizerMainPage.this, "Error fetching organizer.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // Initialize RecyclerView and Adapter
+        orgRecyclerView = findViewById(R.id.org_events_recycler_view);
+        orgRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        eventList = new ArrayList<>();
+        orgEventAdapter = new OrgEventAdapter(eventList);
+        orgRecyclerView.setAdapter(orgEventAdapter); // Set the adapter here
 
         // Open drawer when menu button is clicked
         menuButton.setOnClickListener(v -> drawerLayout.openDrawer(navigationView));
@@ -77,21 +79,26 @@ public class OrganizerMainPage extends AppCompatActivity {
 
         createEventButton.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerMainPage.this, OrganizerCreateEvent.class);
-            intent.putExtra("organizer", currentOrganizer);
+            intent.putExtra("organizer_data", currentOrganizer);
+            intent.putExtra("entrant_data", entrant);
             startActivity(intent);
         });
+
+        dbManagerEvent = new DBManagerEvent();
+        loadEvents();
     }
 
     private void setupFacilityButton() {
         if (currentOrganizer != null) { // Check if currentOrganizer is initialized
             Log.w("Yes", currentOrganizer.getName());
 
-            if (currentOrganizer.getFacility_id() == null || currentOrganizer.getFacility_id().isEmpty()) {
+            if (currentOrganizer.getFacility_id() == null) {
                 // Organizer does not have a facility, show "Create Facility"
                 facilityButton.setText("Create Facility");
                 facilityButton.setOnClickListener(v -> {
                     Intent intent = new Intent(OrganizerMainPage.this, OrganizerFacilityActivity.class);
-                    intent.putExtra("organizer", currentOrganizer);
+                    intent.putExtra("organizer_data", currentOrganizer);
+                    intent.putExtra("entrant_data", entrant);
                     startActivity(intent);
                 });
             } else {
@@ -99,7 +106,8 @@ public class OrganizerMainPage extends AppCompatActivity {
                 facilityButton.setText("Manage Facility");
                 facilityButton.setOnClickListener(v -> {
                     Intent intent = new Intent(OrganizerMainPage.this, OrganizerFacilityActivity.class);
-                    intent.putExtra("organizer", currentOrganizer);
+                    intent.putExtra("organizer_data", currentOrganizer);
+                    intent.putExtra("entrant_data", entrant);
                     intent.putExtra("facility_id", currentOrganizer.getFacility_id());
                     startActivity(intent);
                 });
@@ -109,11 +117,25 @@ public class OrganizerMainPage extends AppCompatActivity {
         }
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        if (currentOrganizer != null) {
-//            fetchCurrentOrganizer(); // Refresh organizer data
-//        }
-//    }
+    private void loadEvents() {
+        dbManagerEvent.getEventsByQRCodes(currentOrganizer.getEventHashes(), new GetEventsCallback() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                eventList.clear();
+                eventList.addAll(events);
+                if (eventList.isEmpty()) {
+                    orgRecyclerView.setVisibility(View.GONE);
+                } else {
+                    orgRecyclerView.setVisibility(View.VISIBLE);
+                }
+                orgEventAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                orgRecyclerView.setVisibility(View.GONE);
+            }
+        });
+        orgEventAdapter.notifyDataSetChanged(); // Refresh adapter to show added events
+    }
 }

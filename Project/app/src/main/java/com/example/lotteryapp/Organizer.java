@@ -1,7 +1,5 @@
 package com.example.lotteryapp;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -11,6 +9,18 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The {@code Organizer} class represents an organizer user type with unique functionalities
+ * for managing events. This class extends the {@code User} class and implements {@code Serializable}.
+ * It includes functionality for managing event hashes and saving organizer details to Firestore.
+ *
+ * @see User
+ * @see Serializable
+ * @see FirebaseFirestore
+ * @version v1
+ * @since v1
+ * @authored by Team Aurora
+ */
 public class Organizer extends User implements Serializable {
 
     private List<String> eventHashes;
@@ -35,10 +45,6 @@ public class Organizer extends User implements Serializable {
         System.out.println("Organizer Info: " + getName());
     }
 
-    public boolean hasOrganizerPermissions() {
-        return "organizer".equals(getRole());
-    }
-
     public void addEventHash(String eventHash, AddEventCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference organizerRef = db.collection("organizers").document(getId());
@@ -53,6 +59,11 @@ public class Organizer extends User implements Serializable {
                 });
     }
 
+    /**
+     * Removes an event hash from the organizer's list of events.
+     *
+     * @param eventHash the hash of the event to be removed
+     */
     public void removeEventHash(String eventHash) {
         eventHashes.remove(eventHash);
     }
@@ -73,6 +84,13 @@ public class Organizer extends User implements Serializable {
         this.facility_id = facility_id;
     }
 
+    /**
+     * Retrieves an organizer by device ID from Firestore.
+     *
+     * @param deviceId the device ID to query
+     * @param callback callback to handle the result of the query
+     * @see GetOrganizerCallback
+     */
     public static void getOrganizerByDeviceId(String deviceId, GetOrganizerCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query query = db.collection("organizers").whereEqualTo("id", deviceId);
@@ -103,15 +121,4 @@ public class Organizer extends User implements Serializable {
         void onEventAdded(String eventHash);
         void onError(Exception e);
     }
-
-//    public interface GetOrganizerCallback {
-//        void onOrganizerFound(Organizer organizer);
-//        void onOrganizerNotFound();
-//        void onError(Exception e);
-//    }
-//
-//    public interface SaveOrganizerCallback {
-//        void onSuccess();
-//        void onFailure(Exception e);
-//    }
 }

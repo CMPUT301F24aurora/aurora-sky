@@ -1,6 +1,5 @@
 package com.example.lotteryapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -9,88 +8,120 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-
 public class EntrantEventDetailsActivity extends AppCompatActivity {
 
     private TextView eventTitle, eventDescription, eventDate, eventCapacity;
-    private Button registerButton;
     private Event event;
-    private static final FirebaseFirestore db = FirebaseFirestore.getInstance(); // Add this line
-
+    private Entrant entrant;
+    private Organizer organizer;
+    private Button enterWaitingButton;
+    private Button leaveWaitingButton;
+    private WaitingList waitingList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrant_event_details);
 
-        // Initialize views
+        initializeViews();
+        getIntentData();
+        displayEventDetails();
+
+        // Initialize waiting list with the event QR code (as ID)
+        waitingList = new WaitingList(event.getQR_code());
+
+        setupEnterWaiting();
+        setupLeaveWaiting();
+    }
+
+    private void initializeViews() {
         eventTitle = findViewById(R.id.event_title);
         eventDescription = findViewById(R.id.event_description);
         eventDate = findViewById(R.id.event_date);
         eventCapacity = findViewById(R.id.event_capacity);
-        registerButton = findViewById(R.id.register_button);
+        enterWaitingButton = findViewById(R.id.enter_waiting);
+        leaveWaitingButton = findViewById(R.id.leave_waiting);
+    }
 
-        // Get the event data from the intent
-        Event event = (Event) getIntent().getSerializableExtra("event_data");
+    private void getIntentData() {
+        event = (Event) getIntent().getSerializableExtra("event_data");
+        entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
+        organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
+    }
 
-        // Assuming "entrant" is passed from a previous activity
-        Entrant entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
-
-        // Set event data to views
+    private void displayEventDetails() {
         if (event != null) {
-            eventTitle.setText(event.getName());
+            eventTitle.setText(event.getEventName());
             eventDescription.setText(event.getDescription());
             eventDate.setText("Date: " + event.getEventDate());
             eventCapacity.setText("Capacity: " + event.getNumPeople());
-
-            // Set up register button action
-            registerButton.setOnClickListener(v -> registerForEvent(entrant, event));
         } else {
             Toast.makeText(this, "Event data is missing", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void setupEnterWaiting() {
+        updateButtonStates();
 
-        if (event != null) {
-            String eventHash = event.getQR_code();
-            db.collection("events").document(eventHash).get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            event = documentSnapshot.toObject(Event.class);
+        enterWaitingButton.setOnClickListener(view -> {
+            if (event.getWaitingList().contains(entrant.getId())) {
+                Toast.makeText(this, "Already in the Waiting list", Toast.LENGTH_SHORT).show();
+            } else {
+                waitingList.addEntrant(entrant.getId(), event.getWaitingList(), new WaitingList.OnDatabaseUpdateListener() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(EntrantEventDetailsActivity.this, "Joined the Waiting list", Toast.LENGTH_SHORT).show();
+                        updateButtonStates();
+                    }
 
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        // Handle the error
-                        Toast.makeText(this, "Error fetching event data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        Log.e("EntrantEventDetails", "Error fetching event", e);
-                    });
-        }
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(EntrantEventDetailsActivity.this, "Failed to join the Waiting list", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
-    private void registerForEvent(Entrant entrant, Event event) {
-        if (entrant != null && event != null) {
-            event.addEntrantToWaitingList(entrant, new WaitingListCallback() {
-                @Override
-                public void onSuccess(String message) {
-                    Toast.makeText(EntrantEventDetailsActivity.this, message, Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(EntrantEventDetailsActivity.this, EntrantWaitingListActivity.class);
-                    intent.putExtra("event_data", event);
-                    intent.putExtra("entrant_data", entrant);
-                    startActivity(intent);
-                }
+    private void setupLeaveWaiting() {
+        updateButtonStates();
 
-                @Override
-                public void onFailure(Exception e) {
-                    Toast.makeText(EntrantEventDetailsActivity.this, "Failed to register: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+        leaveWaitingButton.setOnClickListener(view -> {
+            if (!event.getWaitingList().contains(entrant.getId())) {
+                Toast.makeText(this, "Not in the Waiting list", Toast.LENGTH_SHORT).show();
+            } else {
+                waitingList.removeEntrant(entrant.getId(), event.getWaitingList(), new WaitingList.OnDatabaseUpdateListener() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(EntrantEventDetailsActivity.this, "Left the Waiting list", Toast.LENGTH_SHORT).show();
+                        updateButtonStates();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(EntrantEventDetailsActivity.this, "Failed to leave the Waiting list", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * Updates the states of the Enter and Leave Waiting buttons
+     * based on whether the entrant is already in the waiting list.
+     */
+    private void updateButtonStates() {
+        if (event.getWaitingList().contains(entrant.getId())) {
+            enterWaitingButton.setEnabled(false);
+            enterWaitingButton.setText("Already in Waiting List");
+            leaveWaitingButton.setEnabled(true);
+            leaveWaitingButton.setText("Leave Waiting List");
         } else {
-            Toast.makeText(this, "Entrant data is missing", Toast.LENGTH_SHORT).show();
+            enterWaitingButton.setEnabled(true);
+            enterWaitingButton.setText("Join Waiting List");
+            leaveWaitingButton.setEnabled(false);
+            leaveWaitingButton.setText("Not in Waiting List");
         }
     }
 }

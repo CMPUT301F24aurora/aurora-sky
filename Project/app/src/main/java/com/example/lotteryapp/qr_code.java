@@ -35,6 +35,8 @@ public class qr_code extends AppCompatActivity {
 
         // Retrieve the Event object
         Event event = (Event) getIntent().getSerializableExtra("event_data");
+        Organizer organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
+        Entrant entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
 
         if (event != null) {
             // Generate and display the QR code bitmap

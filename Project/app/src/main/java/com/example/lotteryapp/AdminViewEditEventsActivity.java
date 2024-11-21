@@ -149,11 +149,7 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ad
     @Override
     public void onEventClick(Event event) {
         Intent intent = new Intent(this, AdminViewEventsContent.class);
-        intent.putExtra("eventName", event.getEventName());
-        intent.putExtra("eventDate", event.getEventDate());
-        intent.putExtra("eventDescription", event.getDescription());
-        intent.putExtra("eventId", event.getQR_code());
-        intent.putExtra("eventHash", event.getQR_code());
+        intent.putExtra("event_data", event);
         startActivity(intent);
     }
 }

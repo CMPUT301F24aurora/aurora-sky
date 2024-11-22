@@ -54,6 +54,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 entrantsIntent.putExtra("event_data", event);
                 //entrantsIntent.putExtra("event_data", selectedEvent);
                 entrantsIntent.putExtra("eventId", eventId);
+//                entrantsIntent.putExtra("eventId", entrant.get);
                 startActivity(entrantsIntent);
 
             });

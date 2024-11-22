@@ -3,11 +3,13 @@ package com.example.lotteryapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AdminViewProfilesContent extends AppCompatActivity {
@@ -18,6 +20,7 @@ public class AdminViewProfilesContent extends AppCompatActivity {
     private Button removeEntrantButton;
     private String entrantId; // This should be passed to the activity
     private FirebaseFirestore db;
+    private ImageView profilePicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,19 +39,33 @@ public class AdminViewProfilesContent extends AppCompatActivity {
         entrantPhoneTextView = findViewById(R.id.profile_phone_value);
         entrantEmailTextView = findViewById(R.id.profile_email_value);
         removeEntrantButton = findViewById(R.id.admin_ev_ent_remove);
+        profilePicture = findViewById(R.id.profile_picture);
 
         String entrantName = intent.getStringExtra("entrantName");
         String entrantPhone = intent.getStringExtra("entrantPhone");
         String entrantEmail = intent.getStringExtra("entrantEmail");
+        String entrantPhoto = intent.getStringExtra("entrantPhoto");
         entrantNameTextView.setText(entrantName);
         entrantEmailTextView.setText(entrantEmail);
         entrantPhoneTextView.setText(entrantPhone);
+        entrantPhoneTextView.setText(entrantPhoto);
 
         // Set up the remove button's click listener
         removeEntrantButton.setOnClickListener(view -> {
             // Delete the entrant from Firestore
             deleteEntrant();
         });
+
+        if (entrantPhoto != null && !entrantPhoto.isEmpty()) {
+            Glide.with(this)
+                    .load(entrantPhoto)
+                    .placeholder(R.drawable.ic_profile_photo) // Fallback placeholder image
+                    .error(R.drawable.ic_profile_photo) // Fallback error image
+                    .circleCrop() // Make image circular
+                    .into(profilePicture);
+        } else {
+            profilePicture.setImageResource(R.drawable.ic_profile_photo); // Default placeholder
+        }
     }
 
     private void deleteEntrant() {

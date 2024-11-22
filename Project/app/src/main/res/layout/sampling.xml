@@ -10,7 +10,7 @@
         android:id="@+id/selectedEntrantsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Selected Entrants will appear here"
+        android:text="Entrants in the waitlist"
         android:textSize="18sp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,6 +31,17 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/selectedEntrantsText" />
+
+    <TextView
+        android:id="@+id/selectedEntrants"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selected Entrants"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@+id/sample_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/after_sampling" />
 
 
     <androidx.recyclerview.widget.RecyclerView

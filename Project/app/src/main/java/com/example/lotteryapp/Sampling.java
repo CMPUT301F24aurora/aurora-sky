@@ -3,6 +3,7 @@ package com.example.lotteryapp;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,20 +19,23 @@ import java.util.List;
 public class Sampling extends AppCompatActivity {
 
     private RecyclerView entrantsRecyclerView;
-    //private RecyclerView sampledRecyclerView;
+    private RecyclerView sampledRecyclerView;
     private List<Entrant> entrantsList;
     private List<Entrant> sampledEntrants;
     private EntrantWaitlistAdapter adapter;
     private EntrantWaitlistAdapter sampledAdapter;
+    private Button sampleButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sampling);
 
-
         entrantsRecyclerView = findViewById(R.id.entrantsRecyclerView);
-        entrantsList = new ArrayList<>(); // Initialize with data
+        entrantsList = new ArrayList<>();
+        sampledRecyclerView = findViewById(R.id.after_sampling);
+        sampledEntrants = new ArrayList<>();
+        sampleButton = findViewById(R.id.sample_button);
 
         // Example: Populate entrantList with sample data
         String eventId = getIntent().getStringExtra("eventId");
@@ -41,6 +45,14 @@ public class Sampling extends AppCompatActivity {
         adapter = new EntrantWaitlistAdapter(this, entrantsList);
         entrantsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         entrantsRecyclerView.setAdapter(adapter);
+
+        // Set up RecyclerView for sampled entrants
+        sampledAdapter = new EntrantWaitlistAdapter(this, sampledEntrants);
+        sampledRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        sampledRecyclerView.setAdapter(sampledAdapter);
+
+        // Set up Sample button listener
+        sampleButton.setOnClickListener(v -> onSampleButtonClick());
     }
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -90,24 +102,28 @@ public class Sampling extends AppCompatActivity {
                 });
     }
 
+    private void onSampleButtonClick() {
+        if (entrantsList.size() > 0) {
+            // Retrieve the number of entrants and numPeople from the event document
+            int numPeople = 3;  // Replace with the actual value from the event document
+            if (entrantsList.size() > numPeople) {
+                // Randomly shuffle the entrants list and pick the first numPeople entrants
+                Collections.shuffle(entrantsList); // Shuffle the list
+                sampledEntrants.clear(); // Clear previous samples
+                sampledEntrants.addAll(entrantsList.subList(0, numPeople)); // Add the first numPeople entrants
+                sampledAdapter.notifyDataSetChanged(); // Refresh the RecyclerView
+                Log.d("Sampling", "Sampled Entrants: " + sampledEntrants.toString());
+            }
+        } else {
+            Toast.makeText(this, "No entrants available to sample.", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
 
-//    private void loadEntrants() {
-//        db.collection("events")
-//                .get()
-//                .addOnSuccessListener(queryDocumentSnapshots -> {
-//                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
-//                        Entrant entrant = doc.toObject(Entrant.class);
-//                        entrantsList.add(entrant);
-//                    }
-//                    adapter.notifyDataSetChanged(); // Refresh RecyclerView
-//                })
-//                .addOnFailureListener(e -> {
-//                    Toast.makeText(this, "Failed to load entrants.", Toast.LENGTH_SHORT).show();
-//                });
-//    }
 
-        //sampledRecyclerView = findViewById(R.id.after_sampling);
-        //sampledEntrants = new ArrayList<>();
+
+
+
 
         // Add sample entrants to the list
 //        entrantsList.add(new Entrant("Entrant donn"));
@@ -161,4 +177,20 @@ public class Sampling extends AppCompatActivity {
 //        Collections.shuffle(entrants); // Randomize the list
 //        return new ArrayList<>(entrants.subList(0, sampleSize)); // Get a sublist of sampled entrants
 //    }
-}
+
+
+
+//    private void loadEntrants() {
+//        db.collection("events")
+//                .get()
+//                .addOnSuccessListener(queryDocumentSnapshots -> {
+//                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+//                        Entrant entrant = doc.toObject(Entrant.class);
+//                        entrantsList.add(entrant);
+//                    }
+//                    adapter.notifyDataSetChanged(); // Refresh RecyclerView
+//                })
+//                .addOnFailureListener(e -> {
+//                    Toast.makeText(this, "Failed to load entrants.", Toast.LENGTH_SHORT).show();
+//                });
+//    }

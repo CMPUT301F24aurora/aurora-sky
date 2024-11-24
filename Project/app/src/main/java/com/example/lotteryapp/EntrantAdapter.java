@@ -36,12 +36,12 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
 
     @Override
     public int getItemCount() {
-        return filteredEntrantList.size();
+        return entrantList.size();
     }
 
     @Override
     public void onBindViewHolder(@NonNull EntrantViewHolder holder, int position) {
-        Entrant entrant = filteredEntrantList.get(position);
+        Entrant entrant = entrantList.get(position);
         Log.d("EntrantAdapter", "Displaying: " + entrant.getName());
         holder.entrantName.setText(entrant.getName());
         holder.itemView.setOnClickListener(v -> clickListener.onEntrantClick(entrant));

@@ -101,15 +101,14 @@ public class AdminViewEventsContent extends AppCompatActivity {
      */
     private void deleteEvent() {
         CollectionReference eventsRef = db.collection("events");
-        String eventId = getIntent().getStringExtra("eventId");
-        String eventHash = getIntent().getStringExtra("eventHash");
+        String eventId = event.getQR_code();
 
         eventsRef.document(eventId).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     adminEvRemove.setVisibility(View.GONE);
-                    removeEventHashFromOrganizer(eventHash);
+                    removeEventHashFromOrganizer(eventId);
                     Toast.makeText(AdminViewEventsContent.this, "Event deleted successfully", Toast.LENGTH_SHORT).show();
 
                     // Navigate back to Events List

@@ -12,37 +12,24 @@
         android:layout_height="wrap_content"
         android:text="Entrants in the waitlist"
         android:textSize="18sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/entrantsRecyclerView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/sample_button"
-        android:layout_marginBottom="20dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Sample Button -->
-
     <Button
         android:id="@+id/sample_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="260dp"
+        android:layout_marginBottom="20dp"
         android:onClick="onSampleButtonClick"
         android:text="Sample"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/selectedEntrantsText" />
-
-    <TextView
-        android:id="@+id/selectedEntrants"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Selected Entrants"
-        android:textSize="18sp"
-        app:layout_constraintTop_toBottomOf="@+id/sample_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/after_sampling" />
-
+        app:layout_constraintTop_toBottomOf="@id/entrantsRecyclerView" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/entrantsRecyclerView"
@@ -59,9 +46,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scrollbars="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/sample_button"
+        app:layout_constraintBottom_toTopOf="@+id/sample_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/selectedEntrantsText" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

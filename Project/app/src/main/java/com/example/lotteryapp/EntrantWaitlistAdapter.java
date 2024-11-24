@@ -1,5 +1,5 @@
 package com.example.lotteryapp;
-
+import android.widget.CheckBox;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide; // To load images
 import com.example.lotteryapp.Entrant;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EntrantWaitlistAdapter extends RecyclerView.Adapter<EntrantWaitlistAdapter.EntrantViewHolder> {
 
     private Context context;
     private List<Entrant> entrantList;
+    private final List<Entrant> selectedEntrants = new ArrayList<>();
 
     public EntrantWaitlistAdapter(Context context, List<Entrant> entrantList) {
         this.context = context;
@@ -37,6 +39,10 @@ public class EntrantWaitlistAdapter extends RecyclerView.Adapter<EntrantWaitlist
         Glide.with(context).load(entrant.getImage_url()).into(holder.photoImageView);
     }
 
+    // Add a method to get the selected entrants
+    public List<Entrant> getSelectedEntrants() {
+        return new ArrayList<>(selectedEntrants); // Return a copy of the selected entrants list
+    }
 
     @Override
     public int getItemCount() {
@@ -51,6 +57,7 @@ public class EntrantWaitlistAdapter extends RecyclerView.Adapter<EntrantWaitlist
             super(itemView);
             nameTextView = itemView.findViewById(R.id.entrant_name);
             photoImageView = itemView.findViewById(R.id.entrant_photo);
+
         }
     }
 }

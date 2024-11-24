@@ -1,10 +1,12 @@
 package com.example.lotteryapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +28,7 @@ public class Sampling extends AppCompatActivity {
     private EntrantWaitlistAdapter adapter;
     private EntrantWaitlistAdapter sampledAdapter;
     private Button sampleButton;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +56,12 @@ public class Sampling extends AppCompatActivity {
         sampledRecyclerView.setAdapter(sampledAdapter);
 
         // Set up Sample button listener
-        sampleButton.setOnClickListener(v -> onSampleButtonClick());
-    }
+        String eventCapacityStr = getIntent().getStringExtra("eventCapacity");
+        Log.d("Sampling", "Retrieved eventCapacity from Intent: " + eventCapacityStr);
+        int eventCapacity = eventCapacityStr != null ? Integer.parseInt(eventCapacityStr) : 0;
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+        sampleButton.setOnClickListener(v -> onSampleButtonClick(eventCapacity));
+    }
 
     private void loadEntrants(String eventId) {
         db.collection("events")
@@ -63,14 +69,7 @@ public class Sampling extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(eventDoc -> {
                     if (eventDoc.exists()) {
-                        // Retrieve the event details
-                        String eventName = eventDoc.getString("eventName");
-                        String eventDate = eventDoc.getString("eventDate");
-                        int numPeople = eventDoc.getLong("numPeople").intValue();
                         List<String> waitingList = (List<String>) eventDoc.get("waitingList");
-
-                        // Log event details
-                        Log.d("EventDetails", "Event Name: " + eventName + ", Event Date: " + eventDate + ", Number of People: " + numPeople);
 
                         if (waitingList != null && !waitingList.isEmpty()) {
                             entrantsList.clear(); // Clear the current entrants list
@@ -84,6 +83,7 @@ public class Sampling extends AppCompatActivity {
                                             if (entrant != null) {
                                                 entrantsList.add(entrant); // Add entrant to the list
                                                 adapter.notifyDataSetChanged(); // Notify the adapter to refresh the RecyclerView
+                                                Log.d("Sampling", "Entrants list size after loading: " + entrantsList.size());
                                             }
                                         })
                                         .addOnFailureListener(e -> {
@@ -102,30 +102,51 @@ public class Sampling extends AppCompatActivity {
                 });
     }
 
-    private void onSampleButtonClick() {
+    private void onSampleButtonClick(int numPeople) {
         if (entrantsList.size() > 0) {
-            // Retrieve the number of entrants and numPeople from the event document
-            int numPeople = 3;  // Replace with the actual value from the event document
+            List<Entrant> selectedEntrants = new ArrayList<>();
+            List<Entrant> cancelledEntrants = new ArrayList<>();
+
             if (entrantsList.size() > numPeople) {
-                // Randomly shuffle the entrants list and pick the first numPeople entrants
-                Collections.shuffle(entrantsList); // Shuffle the list
-                sampledEntrants.clear(); // Clear previous samples
-                sampledEntrants.addAll(entrantsList.subList(0, numPeople)); // Add the first numPeople entrants
-                sampledAdapter.notifyDataSetChanged(); // Refresh the RecyclerView
-                Log.d("Sampling", "Sampled Entrants: " + sampledEntrants.toString());
+                // Perform random sampling
+                Collections.shuffle(entrantsList);
+                selectedEntrants.addAll(entrantsList.subList(0, numPeople));
+                cancelledEntrants.addAll(entrantsList.subList(numPeople, entrantsList.size()));
+            } else {
+                // Show all entrants as selected
+                selectedEntrants.addAll(entrantsList);
             }
+
+            // Update Firebase with the selected entrants
+            String qrCode = getIntent().getStringExtra("eventQrCode"); // Retrieve the event's QR code from the Intent
+            if (qrCode == null || qrCode.isEmpty()) {
+                Toast.makeText(this, "Event QR code is missing.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            for (Entrant entrant : selectedEntrants) {
+                db.collection("entrants")
+                        .document(entrant.getId()) // Assuming each Entrant has a unique ID
+                        .update("selected_event", qrCode) // Update the selected_event field
+                        .addOnSuccessListener(aVoid -> Log.d("Sampling", "Updated entrant: " + entrant.getId()))
+                        .addOnFailureListener(e -> Log.e("Sampling", "Failed to update entrant: " + entrant.getId(), e));
+            }
+
+            // Pass data to SamplingResultsActivity
+            Intent intent = new Intent(Sampling.this, SamplingResultsActivity.class);
+            intent.putExtra("selectedEntrants", (Serializable) selectedEntrants);
+            intent.putExtra("cancelledEntrants", (Serializable) cancelledEntrants);
+            startActivity(intent);
         } else {
             Toast.makeText(this, "No entrants available to sample.", Toast.LENGTH_SHORT).show();
         }
+        Toast.makeText(this, "Sampling completed.", Toast.LENGTH_SHORT).show();
     }
+
 }
 
 
-
-
-
-
-        // Add sample entrants to the list
+// Add sample entrants to the list
 //        entrantsList.add(new Entrant("Entrant donn"));
 //        entrantsList.add(new Entrant("Entrant 2"));
 //        entrantsList.add(new Entrant("Entrant 3"));
@@ -143,18 +164,15 @@ public class Sampling extends AppCompatActivity {
 //        });
 //        entrantsRecyclerView.setAdapter(entrantAdapter);
 
-        // Set up RecyclerView for sampled entrants
-        //sampledRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+// Set up RecyclerView for sampled entrants
+//sampledRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 //        sampledAdapter = new EntrantWaitlistAdapter(sampledEntrants, entrant -> {
 //            Toast.makeText(Sampling.this, "Sampled Click: " + entrant.getName(), Toast.LENGTH_SHORT).show();
 //        });
-        //sampledRecyclerView.setAdapter(sampledAdapter);
+//sampledRecyclerView.setAdapter(sampledAdapter);
 
 
-
-
-
-    // Called when the "Sample" button is pressed
+// Called when the "Sample" button is pressed
 //    public void onSampleButtonClick(View view) {
 //        sampledEntrants.clear(); // Clear previous samples
 //        List<Entrant> newSamples = sampleEntrants(entrantsList, 1);
@@ -169,7 +187,7 @@ public class Sampling extends AppCompatActivity {
 //        }
 //    }
 
-    // Sample a specified number of entrants from the list
+// Sample a specified number of entrants from the list
 //    private List<Entrant> sampleEntrants(List<Entrant> entrants, int sampleSize) {
 //        if (entrants.size() < sampleSize) {
 //            return null; // Not enough entrants to sample
@@ -177,7 +195,6 @@ public class Sampling extends AppCompatActivity {
 //        Collections.shuffle(entrants); // Randomize the list
 //        return new ArrayList<>(entrants.subList(0, sampleSize)); // Get a sublist of sampled entrants
 //    }
-
 
 
 //    private void loadEntrants() {

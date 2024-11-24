@@ -42,6 +42,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
         Event selectedEvent = (Event) getIntent().getSerializableExtra("event_data");
         String eventId = selectedEvent.getQR_code();
+        Integer eventCapacity = selectedEvent.getNumPeople();
+        String eventQrCode = selectedEvent.getQR_code();
 
         if (event != null) {
             // Populate views with event details
@@ -52,9 +54,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             viewEntrantsButton.setOnClickListener(v -> {
                 Intent entrantsIntent = new Intent(OrganizerEventDetailsActivity.this, Sampling.class);
                 entrantsIntent.putExtra("event_data", event);
-                //entrantsIntent.putExtra("event_data", selectedEvent);
+                entrantsIntent.putExtra("event_data", selectedEvent);
                 entrantsIntent.putExtra("eventId", eventId);
-//                entrantsIntent.putExtra("eventId", entrant.get);
+                entrantsIntent.putExtra("eventQrCode", eventQrCode);
+                entrantsIntent.putExtra("eventCapacity", String.valueOf(eventCapacity));
                 startActivity(entrantsIntent);
 
             });

@@ -17,7 +17,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentReference;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SamplingResultsActivity extends AppCompatActivity {
 
@@ -26,11 +34,16 @@ public class SamplingResultsActivity extends AppCompatActivity {
     private EntrantWaitlistAdapter selectedAdapter;
     private EntrantWaitlistAdapter cancelledAdapter;
     private Button sendNotificationsButton;
+    // Initialize Firestore
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.after_sampling);
+
+
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -88,8 +101,8 @@ public class SamplingResultsActivity extends AppCompatActivity {
                     if (deviceId != null && !deviceId.isEmpty()) {
                         // Send a personalized notification
                         String title = "Congratulations, " + name + "!";
-                        String message = "You have been selected in the lottery. Check your app for details.";
-                        makeNotification(deviceId, title, message);
+                        String message = "You have been selected in the lottery. Check your invitations for details.";
+                        addNotificationToEntrant(deviceId, title, message);
                     } else {
                         Log.e("Notification", "Device ID is null or empty for entrant: " + name);
                     }
@@ -106,7 +119,7 @@ public class SamplingResultsActivity extends AppCompatActivity {
                         // Send a personalized notification
                         String title = "Oops " + name + "!";
                         String message = "You weren't selected in the lottery. Check your app for details.";
-                        makeNotification(deviceId, title, message);
+                        addNotificationToEntrant(deviceId, title, message);
                     } else {
                         Log.e("Notification", "Device ID is null or empty for entrant: " + name);
                     }
@@ -119,52 +132,76 @@ public class SamplingResultsActivity extends AppCompatActivity {
 
     }
 
-    public void makeNotification(String deviceId, String title, String message) {
-        // Create a notification channel if running on Android O or later
-        String channelID = "CHANNEL_ID_NOTIFICATION";
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            if (notificationManager != null) {
-                NotificationChannel notificationChannel = notificationManager.getNotificationChannel(channelID);
-                if (notificationChannel == null) {
-                    int importance = NotificationManager.IMPORTANCE_HIGH;
-                    notificationChannel = new NotificationChannel(channelID, "Notification Channel", importance);
-                    notificationChannel.setLightColor(Color.GREEN);
-                    notificationChannel.enableVibration(true);
-                    notificationManager.createNotificationChannel(notificationChannel);
-                }
-            }
-        }
+//    public void makeNotification(String deviceId, String title, String message) {
+//        // Create a notification channel if running on Android O or later
+//        String channelID = "CHANNEL_ID_NOTIFICATION";
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//            if (notificationManager != null) {
+//                NotificationChannel notificationChannel = notificationManager.getNotificationChannel(channelID);
+//                if (notificationChannel == null) {
+//                    int importance = NotificationManager.IMPORTANCE_HIGH;
+//                    notificationChannel = new NotificationChannel(channelID, "Notification Channel", importance);
+//                    notificationChannel.setLightColor(Color.GREEN);
+//                    notificationChannel.enableVibration(true);
+//                    notificationManager.createNotificationChannel(notificationChannel);
+//                }
+//            }
+//        }
+//
+//        // Build the notification
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelID)
+//                .setSmallIcon(R.drawable.notifications)
+//                .setContentTitle(title)  // Use the passed-in title
+//                .setContentText(message) // Use the passed-in message
+//                .setAutoCancel(true)
+//                .setPriority(NotificationCompat.PRIORITY_HIGH);
+//
+//        // Set up a pending intent (optional)
+//        Intent intent = new Intent(this, NotificationMessaging.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        intent.putExtra("data", "some value");
+//        PendingIntent pendingIntent = PendingIntent.getActivity(
+//                this,
+//                0,
+//                intent,
+//                PendingIntent.FLAG_MUTABLE
+//        );
+//        builder.setContentIntent(pendingIntent);
+//
+//        // Show the notification
+//        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        if (notificationManager != null) {
+//            notificationManager.notify((int) System.currentTimeMillis(), builder.build());
+//            Log.d("NotificationActivity", "Notification sent to device: " + deviceId);
+//
+//            // Now add the notification to Firestore for the respective entrant
+//            addNotificationToEntrant(deviceId, title, message);
+//        } else {
+//            Log.e("NotificationActivity", "NotificationManager is null");
+//        }
+//    }
 
-        // Build the notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelID)
-                .setSmallIcon(R.drawable.notifications)
-                .setContentTitle(title)  // Use the passed-in title
-                .setContentText(message) // Use the passed-in message
-                .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
+    public void addNotificationToEntrant(String deviceId, String title, String message) {
+        // Get the reference to the document based on deviceId (assuming deviceId is the entrant's unique ID)
+        DocumentReference entrantDocRef = db.collection("entrants").document(deviceId);
 
-        // Set up a pending intent (optional)
-        Intent intent = new Intent(this, NotificationMessaging.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("data", "some value");
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                intent,
-                PendingIntent.FLAG_MUTABLE
-        );
-        builder.setContentIntent(pendingIntent);
+        // Create the notification object
+        Map<String, String> notification = new HashMap<>();
+        notification.put("title", title);
+        notification.put("message", message);
+        notification.put("timestamp", String.valueOf(System.currentTimeMillis()));
 
-        // Show the notification
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (notificationManager != null) {
-            notificationManager.notify((int) System.currentTimeMillis(), builder.build());
-            Log.d("NotificationActivity", "Notification sent to device: " + deviceId);
-        } else {
-            Log.e("NotificationActivity", "NotificationManager is null");
-        }
+        // Add notification to the "notifications" list field in the Firestore document
+        entrantDocRef.update("notifications", FieldValue.arrayUnion(notification))
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firestore", "Notification added to entrant: " + deviceId);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error adding notification: " + e.getMessage());
+                });
     }
+
 
 
 //    public void makeNotification(String deviceId, String title, String message) {

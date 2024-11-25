@@ -83,6 +83,7 @@ public class SamplingResultsActivity extends AppCompatActivity {
             if (selectedEntrants != null && !selectedEntrants.isEmpty()) {
                 for (Entrant entrant : selectedEntrants) {
                     String deviceId = entrant.getId(); // Assume this is the device ID (FCM token)
+                    Log.d("Notification", "selectedEntrant deviceId: "+ deviceId);
                     String name = entrant.getName();  // Entrant's name for personalization
                     if (deviceId != null && !deviceId.isEmpty()) {
                         // Send a personalized notification
@@ -137,7 +138,7 @@ public class SamplingResultsActivity extends AppCompatActivity {
 
         // Build the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelID)
-                .setSmallIcon(R.drawable.ic_notification)
+                .setSmallIcon(R.drawable.notifications)
                 .setContentTitle(title)  // Use the passed-in title
                 .setContentText(message) // Use the passed-in message
                 .setAutoCancel(true)
@@ -209,4 +210,3 @@ public class SamplingResultsActivity extends AppCompatActivity {
 //
 //    }
 }
-

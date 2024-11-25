@@ -74,7 +74,13 @@
         <activity android:name=".qr_code" />
         <activity android:name=".QRScannerActivity" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".InvitationActivity" />
+        <activity android:name=".AcceptDeclineActivity" />
+        <activity
+            android:name=".InvitationActivity"
+            android:exported="true">
+        </activity>
+
+
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

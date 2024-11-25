@@ -117,20 +117,49 @@ public class Sampling extends AppCompatActivity {
                 selectedEntrants.addAll(entrantsList);
             }
 
-            // Update Firebase with the selected entrants
+            // Retrieve event ID and QR code from the Intent
+            String eventId = getIntent().getStringExtra("eventId");
             String qrCode = getIntent().getStringExtra("eventQrCode"); // Retrieve the event's QR code from the Intent
             if (qrCode == null || qrCode.isEmpty()) {
                 Toast.makeText(this, "Event QR code is missing.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            // Update Firebase with the selected and canceled entrants
+            List<String> selectedEntrantIds = new ArrayList<>();
             for (Entrant entrant : selectedEntrants) {
+                selectedEntrantIds.add(entrant.getId());
                 db.collection("entrants")
                         .document(entrant.getId()) // Assuming each Entrant has a unique ID
-                        .update("selected_event", qrCode) // Update the selected_event field
+                        .update("selected_event", qrCode)
                         .addOnSuccessListener(aVoid -> Log.d("Sampling", "Updated entrant: " + entrant.getId()))
                         .addOnFailureListener(e -> Log.e("Sampling", "Failed to update entrant: " + entrant.getId(), e));
             }
+
+            List<String> cancelledEntrantIds = new ArrayList<>();
+            for (Entrant entrant : cancelledEntrants) {
+                cancelledEntrantIds.add(entrant.getId());
+                db.collection("entrants")
+                        .document(entrant.getId())
+                        .update("cancelled_event", qrCode)
+                        .addOnSuccessListener(aVoid -> Log.d("Sampling", "Updated entrant: " + entrant.getId()))
+                        .addOnFailureListener(e -> Log.e("Sampling", "Failed to update entrant: " + entrant.getId(), e));
+            }
+
+            db.collection("events")
+                    .document(eventId)
+                    .update(
+                            "selectedEntrants", selectedEntrantIds,
+                            "cancelledEntrants", cancelledEntrantIds
+                    )
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("Sampling", "Updated event with selected and cancelled entrants.");
+                        Toast.makeText(Sampling.this, "Sampling results saved successfully.", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Sampling", "Failed to update event document.", e);
+                        Toast.makeText(Sampling.this, "Failed to save sampling results.", Toast.LENGTH_SHORT).show();
+                    });
 
             // Pass data to SamplingResultsActivity
             Intent intent = new Intent(Sampling.this, SamplingResultsActivity.class);

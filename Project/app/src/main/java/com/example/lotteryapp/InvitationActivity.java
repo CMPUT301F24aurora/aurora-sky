@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +49,8 @@ public class InvitationActivity extends AppCompatActivity implements EventAdapte
         navigationView = findViewById(R.id.nav_view);
         ImageButton menuButton = findViewById(R.id.menu_button);
         noEventsText = findViewById(R.id.no_events_text);
+        refreshDataManager = new RefreshDataManager(this);
+        dbManagerEvent = new DBManagerEvent();
 
         // Retrieve Entrant data
         Intent oldIntent = getIntent();
@@ -74,10 +78,10 @@ public class InvitationActivity extends AppCompatActivity implements EventAdapte
                 qrScannerIntent.putExtra("organizer_data", organizer);
                 startActivity(qrScannerIntent);
             } else if (id == R.id.entrant_nav) {
-                Intent qrScannerIntent = new Intent(InvitationActivity.this, EntrantEventDetailsActivity.class);
-                qrScannerIntent.putExtra("entrant_data", entrant);
-                qrScannerIntent.putExtra("organizer_data", organizer);
-                startActivity(qrScannerIntent);
+                Intent entrantIntent = new Intent(InvitationActivity.this, EntrantsEventsActivity.class);
+                entrantIntent.putExtra("entrant_data", entrant);
+                entrantIntent.putExtra("organizer_data", organizer);
+                startActivity(entrantIntent);
             }
             drawerLayout.closeDrawers();
             return true;
@@ -99,29 +103,71 @@ public class InvitationActivity extends AppCompatActivity implements EventAdapte
     }
 
     private void loadEvents() {
-        dbManagerEvent.getEventsFromFirestore(new GetEventsCallback() {
-            @Override
-            public void onSuccess(List<Event> events) {
-                eventList.clear();
-                eventList.addAll(events);
-                if (eventList.isEmpty()) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Step 1: Fetch entrant's selected event
+        db.collection("entrants")
+                .whereEqualTo("email", entrant.getEmail()) // Replace with dynamically obtained email for the logged-in entrant
+                .get()
+                .addOnSuccessListener(entrantQuerySnapshot -> {
+                    if (!entrantQuerySnapshot.isEmpty()) {
+                        DocumentSnapshot entrantDoc = entrantQuerySnapshot.getDocuments().get(0);
+                        String selectedEventQrCode = entrantDoc.getString("selected_event");
+
+                        if (selectedEventQrCode == null || selectedEventQrCode.isEmpty()) {
+                            noEventsText.setVisibility(View.VISIBLE);
+                            eventsRecyclerView.setVisibility(View.GONE);
+                            noEventsText.setText("No event selected.");
+                            return;
+                        }
+
+                        // Step 2: Fetch event details based on the selected event's QR code
+                        db.collection("events")
+                                .whereEqualTo("qr_code", selectedEventQrCode)
+                                .get()
+                                .addOnSuccessListener(eventQuerySnapshot -> {
+                                    List<Event> matchedEvents = new ArrayList<>();
+                                    for (DocumentSnapshot eventDoc : eventQuerySnapshot.getDocuments()) {
+                                        Event event = eventDoc.toObject(Event.class); // Assuming you have an Event model
+                                        if (event != null) {
+                                            matchedEvents.add(event);
+                                        }
+                                    }
+
+                                    // Step 3: Update UI with the matched event
+                                    eventList.clear();
+                                    eventList.addAll(matchedEvents);
+
+                                    if (eventList.isEmpty()) {
+                                        noEventsText.setVisibility(View.VISIBLE);
+                                        eventsRecyclerView.setVisibility(View.GONE);
+                                        noEventsText.setText("No matching event found.");
+                                    } else {
+                                        noEventsText.setVisibility(View.GONE);
+                                        eventsRecyclerView.setVisibility(View.VISIBLE);
+                                    }
+
+                                    eventAdapter.notifyDataSetChanged();
+                                })
+                                .addOnFailureListener(e -> {
+                                    noEventsText.setVisibility(View.VISIBLE);
+                                    eventsRecyclerView.setVisibility(View.GONE);
+                                    noEventsText.setText("Failed to load event details. Please try again.");
+                                });
+                    } else {
+                        noEventsText.setVisibility(View.VISIBLE);
+                        eventsRecyclerView.setVisibility(View.GONE);
+                        noEventsText.setText("Entrant not found.");
+                    }
+                })
+                .addOnFailureListener(e -> {
                     noEventsText.setVisibility(View.VISIBLE);
                     eventsRecyclerView.setVisibility(View.GONE);
-                } else {
-                    noEventsText.setVisibility(View.GONE);
-                    eventsRecyclerView.setVisibility(View.VISIBLE);
-                }
-                eventAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                noEventsText.setVisibility(View.VISIBLE);
-                eventsRecyclerView.setVisibility(View.GONE);
-                noEventsText.setText("Failed to load events. Please try again.");
-            }
-        });
+                    noEventsText.setText("Failed to load entrant details. Please try again.");
+                });
     }
+
+
 
     private void setupProfileIcon() {
         if (profileIcon != null && entrant != null && entrant.getImage_url() != null) {
@@ -133,11 +179,21 @@ public class InvitationActivity extends AppCompatActivity implements EventAdapte
                     .into(profileIcon);
 
             profileIcon.setOnClickListener(v -> {
-                Intent profileIntent = new Intent(EntrantsEventsActivity.this, EntrantProfileActivity.class);
+                Intent profileIntent = new Intent(InvitationActivity.this, EntrantProfileActivity.class);
                 profileIntent.putExtra("entrant_data", entrant);
                 profileIntent.putExtra("organizer_data", organizer);
                 startActivity(profileIntent);
             });
         }
+    }
+
+    @Override
+    public void onEventClick(Event event) {
+        Intent eventDetailsIntent = new Intent(InvitationActivity.this, AcceptDeclineActivity.class);
+        eventDetailsIntent.putExtra("event_data", event);
+        eventDetailsIntent.putExtra("entrant_data", entrant);
+        eventDetailsIntent.putExtra("organizer_data", organizer);
+        eventDetailsIntent.putExtra("sign_up", false);
+        startActivity(eventDetailsIntent);
     }
 }

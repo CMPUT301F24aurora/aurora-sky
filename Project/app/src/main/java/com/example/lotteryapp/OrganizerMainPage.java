@@ -75,6 +75,12 @@ public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdap
             } else if (id == R.id.qr_code_nav) {
                 Intent organizerIntent = new Intent(OrganizerMainPage.this, QRScannerActivity.class);
                 startActivity(organizerIntent);
+            } else if (id == R.id.invitation_nav) {
+                Intent organizerIntent = new Intent(OrganizerMainPage.this, InvitationActivity.class);
+                organizerIntent.putExtra("entrant_data", entrant);
+                organizerIntent.putExtra("entrant_id", entrant.getId());
+                organizerIntent.putExtra("organizer_data", currentOrganizer);
+                startActivity(organizerIntent);
             }
             drawerLayout.closeDrawers(); // Close drawer after selection
             return true;

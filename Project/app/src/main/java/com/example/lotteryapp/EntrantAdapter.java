@@ -1,5 +1,6 @@
 package com.example.lotteryapp;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,17 +35,16 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
     }
 
     @Override
-    public void onBindViewHolder(@NonNull EntrantViewHolder holder, int position) {
-        //Entrant entrant = filteredEntrantList.get(position);
-        Entrant entrant = entrantList.get(position);
-        holder.entrantName.setText(entrant.getName());
-        holder.itemView.setOnClickListener(v -> clickListener.onEntrantClick(entrant));
+    public int getItemCount() {
+        return entrantList.size();
     }
 
     @Override
-    public int getItemCount() {
-        //return filteredEntrantList.size();
-        return entrantList.size();
+    public void onBindViewHolder(@NonNull EntrantViewHolder holder, int position) {
+        Entrant entrant = entrantList.get(position);
+        Log.d("EntrantAdapter", "Displaying: " + entrant.getName());
+        holder.entrantName.setText(entrant.getName());
+        holder.itemView.setOnClickListener(v -> clickListener.onEntrantClick(entrant));
     }
 
     public List<Entrant> filter(String query) {
@@ -60,9 +60,8 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
     public void updateList(List<Entrant> newEntrantList) {
         entrantList.clear();
         entrantList.addAll(newEntrantList);
-        filteredEntrantList = new ArrayList<>(entrantList); // Ensure proper copy
-        notifyDataSetChanged(); // Show all entrants initially
-        }
+        notifyDataSetChanged(); // Notify the adapter to refresh the RecyclerView
+    }
 
     public static class EntrantViewHolder extends RecyclerView.ViewHolder {
         TextView entrantName;

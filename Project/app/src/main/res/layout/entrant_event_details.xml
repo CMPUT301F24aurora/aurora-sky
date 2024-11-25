@@ -21,15 +21,27 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:textAlignment="center" />
 
+    <!-- Event Poster -->
+    <ImageView
+        android:id="@+id/event_poster"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        android:scaleType="centerCrop"
+        android:contentDescription="Event Poster"
+        app:layout_constraintTop_toBottomOf="@id/event_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <!-- Event Date -->
     <TextView
         android:id="@+id/event_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="Date: MM/DD/YYYY"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/event_title"
+        app:layout_constraintTop_toBottomOf="@id/event_poster"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:textAlignment="center" />

@@ -5,6 +5,13 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <TextView
+        android:id="@+id/facility_name_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Facility Name"
+        android:textSize="16sp"
+        android:layout_marginBottom="4dp" />
     <EditText
         android:id="@+id/name_field"
         android:layout_width="match_parent"
@@ -25,6 +32,14 @@
         android:layout_height="wrap_content"
         android:text="Select End Time" />
 
+    <TextView
+        android:id="@+id/location_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Location"
+        android:textSize="16sp"
+        android:layout_marginBottom="4dp" />
+
     <EditText
         android:id="@+id/location_field"
         android:layout_width="match_parent"
@@ -32,7 +47,13 @@
         android:hint="Location"
         android:minHeight="48dp"
         android:padding="8dp" />
-
+    <TextView
+        android:id="@+id/email_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:textSize="16sp"
+        android:layout_marginBottom="4dp" />
     <EditText
         android:id="@+id/email_field"
         android:layout_width="match_parent"

@@ -9,10 +9,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class OrgEventAdapter extends RecyclerView.Adapter<OrgEventAdapter.EventViewHolder> {
-
+    private final OnEventClickListener eventClickListener;
     private final List<Event> eventList;
 
-    public OrgEventAdapter(List<Event> eventList) {
+    // Interface for handling clicks
+    public interface OnEventClickListener {
+        void onEventClick(Event event);
+    }
+
+
+    public OrgEventAdapter(List<Event> eventList, OnEventClickListener listener) {
+        this.eventClickListener = listener;
         this.eventList = eventList;
     }
 
@@ -29,6 +36,8 @@ public class OrgEventAdapter extends RecyclerView.Adapter<OrgEventAdapter.EventV
         holder.eventName.setText(event.getEventName());
         holder.eventDate.setText(event.getEventDate());
         holder.eventDescription.setText(event.getDescription());
+
+        holder.itemView.setOnClickListener(v -> eventClickListener.onEventClick(event));
     }
 
     @Override

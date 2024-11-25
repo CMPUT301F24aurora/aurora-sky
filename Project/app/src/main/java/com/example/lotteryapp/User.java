@@ -7,6 +7,7 @@ public abstract class User implements Serializable {
     private String name;
     private String email;
     private String phone;
+    private String image_url;
 
     // Default constructor required for Firestore
     public User() {

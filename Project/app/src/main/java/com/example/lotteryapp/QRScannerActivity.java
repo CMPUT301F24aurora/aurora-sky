@@ -37,6 +37,7 @@ public class QRScannerActivity extends AppCompatActivity {
     private Button signUpButton, viewEventButton;
 
     private Entrant currentEntrant;
+    private Organizer organizer;
 
 
     @Override
@@ -44,6 +45,7 @@ public class QRScannerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrscanner);
         currentEntrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
+        organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
         Toast.makeText(this, "Entrant Name: " + currentEntrant.getName(), Toast.LENGTH_SHORT).show();
 
         Button scanEventButton = findViewById(R.id.scan_event_button);
@@ -137,6 +139,7 @@ public class QRScannerActivity extends AppCompatActivity {
         Intent intent = new Intent(QRScannerActivity.this, EntrantEventDetailsActivity.class);
         intent.putExtra("event_data", event);
         intent.putExtra("entrant_data", currentEntrant);
+        intent.putExtra("organizer_data", organizer);
         intent.putExtra("sign_up", true);
         startActivity(intent);
     }
@@ -145,6 +148,8 @@ public class QRScannerActivity extends AppCompatActivity {
         Intent intent = new Intent(QRScannerActivity.this, EntrantEventDetailsActivity.class);
         intent.putExtra("event_data", event);
         intent.putExtra("entrant_data", currentEntrant);
+        intent.putExtra("organizer_data", organizer);
+        intent.putExtra("sign_up", false);
         startActivity(intent);
     }
 }

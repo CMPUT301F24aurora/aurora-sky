@@ -2,6 +2,7 @@ package com.example.lotteryapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -65,15 +66,16 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
 
         loadEntrants();
 
+        /*
         // Set up SearchView
         SearchView searchView = findViewById(R.id.entrants_search_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            /**
+            //
              * Called when a query is submitted in the SearchView.
              *
              * @param query the search query
              * @return false to indicate the query has been handled
-             */
+             //
             @Override
             public boolean onQueryTextSubmit(String query) {
                 //recyclerViewEntrants.setAdapter();
@@ -84,12 +86,12 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
                 return false;
             }
 
-            /**
+            //
              * Called when the query text is changed in the SearchView.
              *
              * @param newText the new text in the SearchView
              * @return false to indicate the query text change has been handled
-             */
+             //
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText != null && !newText.trim().isEmpty()) {
@@ -104,6 +106,7 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
                 return false;
             }
         });
+         */
     }
 
     /**
@@ -123,6 +126,7 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
                 if (task.isSuccessful()) {
                     for (DocumentSnapshot document : task.getResult()) {
                         Entrant entrant = document.toObject(Entrant.class);
+                        Log.i("Entrant: ", entrant.getId());
                         entrantList.add(entrant);
                     }
                     //entrantAdapter.updateList(entrantList);
@@ -168,6 +172,7 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
         intent.putExtra("entrantId", entrant.getId());
         intent.putExtra("entrantEmail", entrant.getEmail());
         intent.putExtra("entrantPhone", entrant.getPhone());
+        intent.putExtra("entrantPhoto", entrant.getImage_url());
         startActivity(intent);
     }
 }

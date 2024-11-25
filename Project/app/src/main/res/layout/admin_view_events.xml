@@ -19,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <SearchView
+    <!--<SearchView
         android:id="@+id/admin_search_ev"
         android:layout_width="392dp"
         android:layout_height="51dp"
@@ -27,7 +27,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.473"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/admin_v_ev_txt" />
+        app:layout_constraintTop_toBottomOf="@+id/admin_v_ev_txt" />-->
 
     <RelativeLayout
         android:id="@+id/rel_layout_events_admin"
@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/admin_search_ev"
+        app:layout_constraintTop_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
     </RelativeLayout>
@@ -50,6 +50,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/admin_search_ev"></androidx.recyclerview.widget.RecyclerView>
+        app:layout_constraintTop_toBottomOf="@+id/admin_v_ev_txt">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

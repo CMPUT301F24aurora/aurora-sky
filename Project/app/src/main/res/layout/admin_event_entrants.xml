@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <SearchView
+    <!--<SearchView
         android:id="@+id/entrants_search_view"
         android:layout_width="379dp"
         android:layout_height="40dp"
@@ -24,23 +24,26 @@
         android:queryHint="Search Entrants"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ev_ent_text_title" />
+        app:layout_constraintTop_toBottomOf="@+id/ev_ent_text_title" />-->
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/ev_entrants_lv"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="460dp"
         android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/entrants_search_view">
+        app:layout_constraintTop_toBottomOf="@id/ev_ent_text_title">
 
     </androidx.recyclerview.widget.RecyclerView>
 

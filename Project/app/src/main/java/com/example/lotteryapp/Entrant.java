@@ -15,10 +15,16 @@ import java.util.Objects;
  */
 public class Entrant extends User implements Serializable {
     private String image_url;
+    private String name;
     /**
      * Default constructor required for Firestore.
      */
     public Entrant() {}
+
+    public Entrant(String name) {
+        super(); // Calls the default User constructor
+        this.setName(name);
+    }
 
     /**
      * Constructor with three parameters.
@@ -62,6 +68,7 @@ public class Entrant extends User implements Serializable {
         System.out.println("Entrant Email: " + getEmail());
     }
 
+
     /**
      * Checks if this Entrant is equal to another object.
      * Equality is based on the ID of the Entrant.
@@ -77,6 +84,10 @@ public class Entrant extends User implements Serializable {
         return Objects.equals(getId(), entrant.getId());
     }
 
+    @Override
+    public String toString() {
+        return name; // This will display only the name in the log or RecyclerView
+    }
     /**
      * Returns the hash code of this Entrant.
      * The hash code is based on the ID of the Entrant.

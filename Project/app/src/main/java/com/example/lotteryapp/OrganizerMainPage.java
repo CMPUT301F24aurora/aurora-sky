@@ -19,7 +19,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrganizerMainPage extends AppCompatActivity {
+public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdapter.OnEventClickListener {
 
     private Button createEventButton;
     private Button facilityButton; // Ensure this is declared
@@ -52,8 +52,9 @@ public class OrganizerMainPage extends AppCompatActivity {
         orgRecyclerView = findViewById(R.id.org_events_recycler_view);
         orgRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         eventList = new ArrayList<>();
-        orgEventAdapter = new OrgEventAdapter(eventList);
-        orgRecyclerView.setAdapter(orgEventAdapter); // Set the adapter here
+        orgEventAdapter = new OrgEventAdapter(eventList, this); // Pass 'this' as the listener
+        orgRecyclerView.setAdapter(orgEventAdapter);
+        // Set the adapter here
 
         // Open drawer when menu button is clicked
         menuButton.setOnClickListener(v -> drawerLayout.openDrawer(navigationView));
@@ -65,12 +66,20 @@ public class OrganizerMainPage extends AppCompatActivity {
                 Toast.makeText(OrganizerMainPage.this, "You are on the Organizer page", Toast.LENGTH_SHORT).show();
             } else if (id == R.id.entrant_nav) {
                 Intent organizerIntent = new Intent(OrganizerMainPage.this, EntrantsEventsActivity.class);
+                organizerIntent.putExtra("entrant_data", entrant);
+                organizerIntent.putExtra("organizer_data", currentOrganizer);
                 startActivity(organizerIntent);
             } else if (id == R.id.map_nav) {
                 Intent organizerIntent = new Intent(OrganizerMainPage.this, MapActivity.class);
                 startActivity(organizerIntent);
             } else if (id == R.id.qr_code_nav) {
                 Intent organizerIntent = new Intent(OrganizerMainPage.this, QRScannerActivity.class);
+                startActivity(organizerIntent);
+            } else if (id == R.id.invitation_nav) {
+                Intent organizerIntent = new Intent(OrganizerMainPage.this, InvitationActivity.class);
+                organizerIntent.putExtra("entrant_data", entrant);
+                organizerIntent.putExtra("entrant_id", entrant.getId());
+                organizerIntent.putExtra("organizer_data", currentOrganizer);
                 startActivity(organizerIntent);
             }
             drawerLayout.closeDrawers(); // Close drawer after selection
@@ -138,4 +147,13 @@ public class OrganizerMainPage extends AppCompatActivity {
         });
         orgEventAdapter.notifyDataSetChanged(); // Refresh adapter to show added events
     }
+
+    public void onEventClick(Event event) {
+        Intent eventDetailsIntent = new Intent(this, OrganizerEventDetailsActivity.class);
+        eventDetailsIntent.putExtra("event_data", event);
+        eventDetailsIntent.putExtra("organizer_data", currentOrganizer);
+        eventDetailsIntent.putExtra("entrant_data", entrant);
+        startActivity(eventDetailsIntent);
+    }
+
 }

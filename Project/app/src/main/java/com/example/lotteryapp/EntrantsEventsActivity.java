@@ -72,6 +72,11 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
                 qrScannerIntent.putExtra("entrant_data", entrant);
                 qrScannerIntent.putExtra("organizer_data", organizer);
                 startActivity(qrScannerIntent);
+            } else if (id == R.id.invitation_nav) {
+                Intent qrScannerIntent = new Intent(EntrantsEventsActivity.this, InvitationActivity.class);
+                qrScannerIntent.putExtra("entrant_data", entrant);
+                qrScannerIntent.putExtra("organizer_data", organizer);
+                startActivity(qrScannerIntent);
             }
             drawerLayout.closeDrawers();
             return true;
@@ -175,6 +180,7 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
         eventDetailsIntent.putExtra("event_data", event);
         eventDetailsIntent.putExtra("entrant_data", entrant);
         eventDetailsIntent.putExtra("organizer_data", organizer);
+        eventDetailsIntent.putExtra("sign_up", false);
         startActivity(eventDetailsIntent);
     }
 

@@ -9,13 +9,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -27,12 +31,14 @@ public class OrganizerCreateEvent extends AppCompatActivity {
 
     private EditText eventDateTime, eventName, eventNumberOfPeople, eventDescription, registrationDeadline, waitlistCap;
     private Button organizerCreateEvent, buttonRemovePoster;
+    private SwitchCompat geo_toggle;
     private ImageButton buttonUploadPoster;
     private Organizer organizer;
     private Entrant entrant;
     private DBManagerEvent dbManagerEvent;
     private Uri imageUri;
     private Event event;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +71,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         organizerCreateEvent = findViewById(R.id.buttonCreateEvent);
         waitlistCap = findViewById(R.id.editTextWaitlistCap);
         registrationDeadline = findViewById(R.id.editTextRegistrationDeadline);
+        geo_toggle = findViewById(R.id.geo_toggle);
 
         if (event != null) { // If event data exists, it's an edit operation
             preloadEventData(event);
@@ -77,12 +84,21 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         organizerCreateEvent.setOnClickListener(v -> saveEventDetails());
 
         buttonRemovePoster.setOnClickListener(v -> {
-            imageUri = null;  // Clear the image URI
+            imageUri = null;  // Clear local reference
             buttonUploadPoster.setImageResource(R.drawable.ic_upload_icon);  // Reset upload icon
-            buttonRemovePoster.setVisibility(View.GONE);  // Hide the button after removal
+            buttonRemovePoster.setVisibility(View.GONE);  // Hide remove button
+            buttonRemovePoster.setEnabled(false);
             Toast.makeText(this, "Poster removed", Toast.LENGTH_SHORT).show();
         });
     }
+
+    private void deletePosterImage(String imageUrl) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
+        storageRef.delete()
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Poster deleted successfully"))
+                .addOnFailureListener(e -> Log.e(TAG, "Failed to delete poster", e));
+    }
+
 
     private void preloadEventData(Event event) {
         eventName.setText(event.getEventName());
@@ -91,6 +107,12 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         eventDescription.setText(event.getDescription());
         registrationDeadline.setText(event.getRegistrationDeadline());
         waitlistCap.setText(event.getWaitlistCap());
+        geo_toggle.setChecked(event.getGeolocationRequired());
+        if (event.getImage_url() != null){
+            buttonRemovePoster.setVisibility(View.VISIBLE);
+            buttonRemovePoster.setEnabled(true);
+        }
+        organizerCreateEvent.setText("Save Event");
     }
 
     private void openDateTimePicker(EditText targetEditText) {
@@ -120,7 +142,6 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         });
     }
 
-
     // Launcher for selecting an image
     private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -128,6 +149,8 @@ public class OrganizerCreateEvent extends AppCompatActivity {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                     imageUri = result.getData().getData();
                     Toast.makeText(this, "Poster Selected: ", Toast.LENGTH_SHORT).show();
+                    buttonRemovePoster.setEnabled(true);
+                    buttonRemovePoster.setVisibility(View.VISIBLE);
                 }
             }
     );
@@ -146,6 +169,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         String description = eventDescription.getText().toString().trim();
         String registrationDeadlineText = registrationDeadline.getText().toString().trim();
         String waitlistCapText = waitlistCap.getText().toString().trim();
+        Boolean geolocation = geo_toggle.isChecked();
 
 
         if (name.isEmpty() || dateTime.isEmpty() || numofPeople.isEmpty() || registrationDeadlineText.isEmpty() ||description.isEmpty()) {
@@ -170,28 +194,30 @@ public class OrganizerCreateEvent extends AppCompatActivity {
             return;
         }
 
-        Event event = new Event(name, dateTime, numPeople, description, waitlistCapValue, registrationDeadlineText);
-        if(imageUri != null){
+
+
+        // Use the existing event if editing
+        if (event != null) {
+            event.setEventName(name);
+            event.setEventDate(dateTime);
+            event.setNumPeople(numPeople);
+            event.setDescription(description);
+            event.setGeolocationRequired(geolocation);
+            event.setRegistrationDeadline(registrationDeadlineText);
+            event.setWaitlistCap(waitlistCapValue);
+        } else {
+            // Create a new event only if it's not an edit operation
+            event = new Event(name, dateTime, numPeople, description, waitlistCapValue, registrationDeadlineText, geolocation);
+        }
+
+        // Check if there is an image to upload
+        if (imageUri != null) {
             PosterImage posterImage = new PosterImage();
-            posterImage.uploadImage(event.getQR_code(), imageUri, new PosterImage.PosterUploadCallback(){
+            posterImage.uploadImage(event.getQR_code(), imageUri, new PosterImage.PosterUploadCallback() {
                 @Override
                 public void onSuccess(String imageUrl) {
-                    event.setImage_url(imageUrl); // Set the image URL to the event
-                    dbManagerEvent.addEventToDatabase(event);
-                    organizer.addEventHash(event.getQR_code(), new Organizer.AddEventCallback() {
-                        @Override
-                        public void onEventAdded(String eventHash) {
-                            Intent intent = new Intent(OrganizerCreateEvent.this, OrganizerMainPage.class);
-                            intent.putExtra("organizer_data", organizer);
-                            intent.putExtra("entrant_data", entrant);
-                            startActivity(intent);
-                        }
-
-                        @Override
-                        public void onError(Exception e) {
-                            Log.d(TAG,"Event Hash adding error");
-                        }
-                    });
+                    event.setImage_url(imageUrl);
+                    updateOrCreateEventInDatabase(event);  // Call method to update or create event
                 }
 
                 @Override
@@ -201,22 +227,42 @@ public class OrganizerCreateEvent extends AppCompatActivity {
 
             });
         } else {
-            dbManagerEvent.addEventToDatabase(event);
+            if (imageUri == null && event.getImage_url() != null) {
+                // Delete image from storage and remove URL from the event object
+                deletePosterImage(event.getImage_url());
+                event.setImage_url(null);
+            }
+            updateOrCreateEventInDatabase(event);  // Call method to update or create event without image
+        }
+    }
+
+    // Helper method to handle database operations for both new and edited events
+    private void updateOrCreateEventInDatabase(Event event) {
+        dbManagerEvent.addEventToDatabase(event);  // Assuming this method handles both update and create logic
+
+        // Skip adding event hash if editing an existing event
+        if (getIntent().getSerializableExtra("event_data") == null) {  // Only add hash for new events
             organizer.addEventHash(event.getQR_code(), new Organizer.AddEventCallback() {
                 @Override
                 public void onEventAdded(String eventHash) {
-                    Intent intent = new Intent(OrganizerCreateEvent.this, OrganizerMainPage.class);
-                    intent.putExtra("organizer_data", organizer);
-                    intent.putExtra("entrant_data", entrant);
-                    startActivity(intent);
+                    navigateToMainPage();
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    Log.d(TAG,"Event Hash adding error");
+                    Log.d(TAG, "Event Hash adding error");
                 }
             });
+        } else {
+            navigateToMainPage();  // Navigate directly for edits
         }
-
     }
+
+    private void navigateToMainPage() {
+        Intent intent = new Intent(OrganizerCreateEvent.this, OrganizerMainPage.class);
+        intent.putExtra("organizer_data", organizer);
+        intent.putExtra("entrant_data", entrant);
+        startActivity(intent);
+    }
+
 }

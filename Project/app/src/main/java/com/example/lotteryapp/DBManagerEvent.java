@@ -29,6 +29,7 @@ public class DBManagerEvent {
         eventData.put("qr_code", eventId);  // Store QR code as the ID field
         eventData.put("waitingList", event.getWaitingList());  // Store waiting list IDs
         eventData.put("image_url", event.getImage_url());
+        eventData.put("geolocationRequired", event.getGeolocationRequired());
 
         // Add event to "events" collection in Firestore
         DocumentReference eventRef = db.collection("events").document(eventId);

@@ -9,11 +9,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.firebase.storage.FirebaseStorage;
@@ -29,6 +31,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
 
     private EditText eventDateTime, eventName, eventNumberOfPeople, eventDescription;
     private Button organizerCreateEvent, buttonRemovePoster;
+    private SwitchCompat geo_toggle;
     private ImageButton buttonUploadPoster;
     private Organizer organizer;
     private Entrant entrant;
@@ -66,6 +69,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         buttonUploadPoster = findViewById(R.id.buttonUploadPoster);
         buttonRemovePoster = findViewById(R.id.buttonRemovePoster);
         organizerCreateEvent = findViewById(R.id.buttonCreateEvent);
+        geo_toggle = findViewById(R.id.geo_toggle);
 
         if (event != null) { // If event data exists, it's an edit operation
             preloadEventData(event);
@@ -99,6 +103,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         eventDateTime.setText(event.getEventDate());
         eventNumberOfPeople.setText(String.valueOf(event.getNumPeople()));
         eventDescription.setText(event.getDescription());
+        geo_toggle.setChecked(event.getGeolocationRequired());
         if (event.getImage_url() != null){
             buttonRemovePoster.setVisibility(View.VISIBLE);
             buttonRemovePoster.setEnabled(true);
@@ -158,6 +163,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         String dateTime = eventDateTime.getText().toString().trim();
         String numofPeople = eventNumberOfPeople.getText().toString().trim();
         String description = eventDescription.getText().toString().trim();
+        Boolean geolocation = geo_toggle.isChecked();
 
         if (name.isEmpty() || dateTime.isEmpty() || numofPeople.isEmpty() || description.isEmpty()) {
             Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
@@ -178,9 +184,10 @@ public class OrganizerCreateEvent extends AppCompatActivity {
             event.setEventDate(dateTime);
             event.setNumPeople(numPeople);
             event.setDescription(description);
+            event.setGeolocationRequired(geolocation);
         } else {
             // Create a new event only if it's not an edit operation
-            event = new Event(name, dateTime, numPeople, description);
+            event = new Event(name, dateTime, numPeople, description, geolocation);
         }
 
         // Check if there is an image to upload

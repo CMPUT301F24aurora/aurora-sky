@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -106,23 +107,61 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
 
     private void setupEnterWaiting() {
         updateButtonStates();
-
         enterWaitingButton.setOnClickListener(view -> {
             if (event.getWaitingList().contains(entrant.getId())) {
                 Toast.makeText(this, "Already in the Waiting list", Toast.LENGTH_SHORT).show();
             } else {
-                waitingList.addEntrant(entrant.getId(), event.getWaitingList(), new WaitingList.OnDatabaseUpdateListener() {
-                    @Override
-                    public void onSuccess() {
-                        Toast.makeText(EntrantEventDetailsActivity.this, "Joined the Waiting list", Toast.LENGTH_SHORT).show();
-                        updateButtonStates();
-                    }
+                if(event.getGeolocationRequired()){
+                    showJoinConfirmationDialog();
+                } else{
+                    joinWaitingList();
+                }
+            }
+        });
+    }
 
-                    @Override
-                    public void onFailure(Exception e) {
-                        Toast.makeText(EntrantEventDetailsActivity.this, "Failed to join the Waiting list", Toast.LENGTH_SHORT).show();
-                    }
-                });
+    private void showJoinConfirmationDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Join Waiting List")
+                .setMessage("Are you sure you want to join the waiting list for this event?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    joinWaitingList();
+                })
+                .setNegativeButton("No", (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .create()
+                .show();
+    }
+
+    private void joinWaitingList() {
+        waitingList.addEntrant(entrant.getId(), event.getWaitingList(), new WaitingList.OnDatabaseUpdateListener() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(EntrantEventDetailsActivity.this, "Joined the Waiting list", Toast.LENGTH_SHORT).show();
+                addLocation();
+                updateButtonStates();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(EntrantEventDetailsActivity.this, "Failed to join the Waiting list", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void addLocation(){
+        locationHelper.getCurrentLocation(new LocationHelper.LocationCallback() {
+            @Override
+            public void onLocationResult(double latitude, double longitude) {
+                // Save the location data to Firestore using DatabaseHelper
+                databaseHelper.saveEventEntrantLocation(event.getQR_code(), entrant.getId(), latitude, longitude);
+                Log.d("Location", "Location saved: Lat = " + latitude + ", Long = " + longitude);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.e("Location", "Error retrieving location: " + errorMessage);
             }
         });
     }

@@ -44,7 +44,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final int FINE_PERMISSION_CODE = 1;
     private static final String TAG = "MapActivity";
     private DatabaseHelper databaseHelper;
-    private String eventId = "4cb08adef7a2fd2bc33987052ca402621b865abe38839237d4ee70751bdc73af";
+    private Event event;
+    private String eventId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +54,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         databaseHelper = new DatabaseHelper(this);
+        event = (Event) getIntent().getSerializableExtra("event_data");
+        eventId = event.getQR_code();
 
         // Check and request location permissions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

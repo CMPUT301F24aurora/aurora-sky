@@ -86,21 +86,12 @@
                 android:layout_marginBottom="16dp"/>
 
             <TextView
+                android:id="@+id/uploadPosterGeolocationText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Upload Poster"
+                android:text="Upload Poster                                             Geolocation"
                 android:textColor="@color/black"
                 android:layout_marginBottom="4dp" />
-
-            <ImageButton
-                android:id="@+id/buttonUploadPoster"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@null"
-                android:contentDescription="Menu"
-                android:src="@drawable/ic_upload_icon"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
 
             <Button
                 android:id="@+id/buttonRemovePoster"
@@ -110,7 +101,30 @@
                 android:backgroundTint="@color/black"
                 android:text="Remove Poster"
                 android:textColor="@color/white"
-                android:visibility="gone" /> <!-- Initially hidden -->
+                android:visibility="gone" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageButton
+                    android:id="@+id/buttonUploadPoster"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@null"
+                    android:contentDescription="Upload Poster"
+                    android:src="@drawable/ic_upload_icon"
+                    android:layout_marginEnd="110dp" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/geo_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="110dp" />
+            </LinearLayout>
 
 
         </LinearLayout>

@@ -12,5 +12,8 @@
     <item
         android:id="@+id/qr_code_nav"
         android:title="Scan Qr Code" />
+    <item
+        android:id="@+id/invitation_nav"
+        android:title="Invitations" />
 
 </menu>

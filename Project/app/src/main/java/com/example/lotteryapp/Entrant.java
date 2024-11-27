@@ -1,103 +1,66 @@
 package com.example.lotteryapp;
 
-import android.content.Context;
-import android.provider.Settings;
-
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * The Entrant class represents an entrant user in the application.
+ * This class extends the User class and implements Serializable for data storage and retrieval.
+ *
+ * @see User
+ * @see Serializable
+ * @version v1
+ *
+ * Author: Team Aurora
+ */
 public class Entrant extends User implements Serializable {
+    private String image_url;
+    private String name;
+    /**
+     * Default constructor required for Firestore.
+     */
+    public Entrant() {}
 
-    private static FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private String profileImageUrl;
-
-    public Entrant(){}
-    // Default constructor required for Firestore
-    public Entrant(String id, String name, String email) {}
-
-    // Constructor with three parameters, calls main constructor with a default phone value
-    public Entrant(String id, String name, String email, String profileImageUrl) {
-        this(id, name, email, null, profileImageUrl);
+    public Entrant(String name) {
+        super(); // Calls the default User constructor
+        this.setName(name);
     }
 
-    // Main constructor with four parameters
-    public Entrant(String id, String name, String email, String phone, String profileImageUrl) {
+    /**
+     * Constructor with three parameters.
+     *
+     * @param id the ID of the entrant
+     * @param name the name of the entrant
+     * @param email the email of the entrant
+     */
+    public Entrant(String id, String name, String email) {
+        super(id, name, email);
+    }
+
+    /**
+     * Constructor with four parameters.
+     *
+     * @param id the ID of the entrant
+     * @param name the name of the entrant
+     * @param email the email of the entrant
+     * @param phone the phone number of the entrant
+     */
+    public Entrant(String id, String name, String email, String phone) {
         super(id, name, email, phone);
-        this.profileImageUrl = profileImageUrl;
     }
 
-    public String getProfileImageUrl() {
-        return profileImageUrl;
+    public String getImage_url() {
+        return image_url;
     }
 
-    public void setProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
+    public void setImage_url(String image_url) {
+        this.image_url = image_url;
     }
 
-    // Method to remove profile picture
-    public void removeProfileImage() {
-        this.profileImageUrl = null;
-    }
-
-    // Method to inject Firestore instance for testing or alternative setups
-    public static void setDatabase(FirebaseFirestore firestore) {
-        db = firestore;
-    }
-
-    // Method to retrieve the device ID
-    private static String getDeviceId(Context context) {
-        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-    }
-
-    // Method to check if an entrant exists in Firestore
-    public static void checkEntrantExists(String deviceId, EntrantCheckCallback callback) {
-        if (callback == null) return;
-
-        db.collection("entrants").document(deviceId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Entrant entrant = documentSnapshot.toObject(Entrant.class);
-                        callback.onEntrantExists(entrant);
-                    } else {
-                        callback.onEntrantNotFound();
-                    }
-                })
-                .addOnFailureListener(callback::onError);
-    }
-
-    // Retrieve Entrant by device ID from Firestore
-    public static void getEntrant(Context context, GetEntrantCallback callback) {
-        if (callback == null) return;
-
-        String deviceId = getDeviceId(context); // Get device ID
-
-        db.collection("entrants").document(deviceId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Entrant entrant = documentSnapshot.toObject(Entrant.class);
-                        callback.onEntrantFound(entrant);
-                    } else {
-                        callback.onEntrantNotFound(new Exception("Entrant not found"));
-                    }
-                })
-                .addOnFailureListener(callback::onError);
-    }
-
-    // Save Entrant object to Firestore
-    public void saveToFirestore(SaveEntrantCallback callback) {
-        if (callback == null) return;
-
-        db.collection("entrants").document(this.getId())
-                .set(this)
-                .addOnSuccessListener(aVoid -> callback.onSuccess())
-                .addOnFailureListener(callback::onFailure);
-    }
-
-
+    /**
+     * Displays the user's information.
+     * This method is overridden from the User class.
+     */
     @Override
     public void displayUserInfo() {
         System.out.println("Entrant ID: " + getId());
@@ -105,7 +68,14 @@ public class Entrant extends User implements Serializable {
         System.out.println("Entrant Email: " + getEmail());
     }
 
-    // Override equals to check equality based on ID
+
+    /**
+     * Checks if this Entrant is equal to another object.
+     * Equality is based on the ID of the Entrant.
+     *
+     * @param o the object to compare to
+     * @return true if the objects are equal, false otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -114,9 +84,20 @@ public class Entrant extends User implements Serializable {
         return Objects.equals(getId(), entrant.getId());
     }
 
-    // Override hashCode based on ID
+    @Override
+    public String toString() {
+        return name; // This will display only the name in the log or RecyclerView
+    }
+    /**
+     * Returns the hash code of this Entrant.
+     * The hash code is based on the ID of the Entrant.
+     *
+     * @return the hash code of this Entrant
+     */
     @Override
     public int hashCode() {
         return Objects.hash(getId());
     }
+
+
 }

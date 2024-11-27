@@ -29,7 +29,18 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.UUID;
-
+/**
+ * The {@code ProfilePicture} class handles the user's profile picture selection and upload functionality.
+ * It allows the user to pick an image from the device, display it, and upload it to Firebase Storage.
+ * This class extends {@code AppCompatActivity}.
+ *
+ * @see AppCompatActivity
+ * @see FirebaseStorage
+ * @see ActivityResultLauncher
+ * @version v1
+ * @since v1
+ * @author Team Aurora
+ */
 public class ProfilePicture extends AppCompatActivity {
     StorageReference storageReference;
     LinearProgressIndicator progressIndicator;
@@ -52,6 +63,12 @@ public class ProfilePicture extends AppCompatActivity {
         }
     });
 
+    /**
+     * Initializes the activity, sets up Firebase Storage reference, and sets listeners for the select
+     * and upload image buttons.
+     *
+     * @param savedInstanceState the saved instance state of the activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +98,12 @@ public class ProfilePicture extends AppCompatActivity {
         });
     }
 
+    /**
+     * Uploads the selected image to Firebase Storage and handles upload success, failure,
+     * and progress updates.
+     *
+     * @param file the {@code Uri} of the file to upload
+     */
     private void uploadImage(Uri file) {
         StorageReference ref = storageReference.child("images/" + UUID.randomUUID().toString());
         ref.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {

@@ -1,22 +1,42 @@
 package com.example.lotteryapp;
 
-import android.content.Intent;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.bumptech.glide.Glide;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationResult;
+
+import java.util.List;
 
 public class EntrantEventDetailsActivity extends AppCompatActivity {
 
+    private static final String TAG = "EntrantEventDetails";
+
     private TextView eventTitle, eventDescription, eventDate, eventCapacity;
-    private Button registerButton;
     private Event event;
-    private static final FirebaseFirestore db = FirebaseFirestore.getInstance(); // Add this line
+    private Entrant entrant;
+    private Organizer organizer;
+    private Button enterWaitingButton;
+    private Button leaveWaitingButton;
+    private WaitingList waitingList;
+    private boolean signUp;
+    private ImageView eventImageView;
+    private LocationHelper locationHelper;
+    private DatabaseHelper databaseHelper;
 
 
     @Override
@@ -24,73 +44,185 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrant_event_details);
 
-        // Initialize views
+        locationHelper = new LocationHelper(this);
+        databaseHelper = new DatabaseHelper(this);
+
+
+
+        getIntentData();
+        // Log user's current location
+        //logCurrentLocation();
+
+        initializeViews();
+        displayEventDetails();
+
+        // Initialize waiting list with the event QR code (as ID)
+        waitingList = new WaitingList(event.getQR_code());
+
+        setupEnterWaiting();
+        setupLeaveWaiting();
+        autoRegisterIfSignUpTrue();
+    }
+
+    private void initializeViews() {
         eventTitle = findViewById(R.id.event_title);
         eventDescription = findViewById(R.id.event_description);
         eventDate = findViewById(R.id.event_date);
         eventCapacity = findViewById(R.id.event_capacity);
-        registerButton = findViewById(R.id.register_button);
+        enterWaitingButton = findViewById(R.id.enter_waiting);
+        leaveWaitingButton = findViewById(R.id.leave_waiting);
+        eventImageView = findViewById(R.id.event_poster);
+    }
 
-        // Get the event data from the intent
-        Event event = (Event) getIntent().getSerializableExtra("event_data");
+    private void getIntentData() {
+        event = (Event) getIntent().getSerializableExtra("event_data");
+        entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
+        organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
+        signUp = getIntent().getBooleanExtra("sign_up", false);
+    }
 
-        // Assuming "entrant" is passed from a previous activity
-        Entrant entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
-
-        // Set event data to views
+    private void displayEventDetails() {
         if (event != null) {
-            eventTitle.setText(event.getName());
+            eventTitle.setText(event.getEventName());
             eventDescription.setText(event.getDescription());
             eventDate.setText("Date: " + event.getEventDate());
             eventCapacity.setText("Capacity: " + event.getNumPeople());
 
-            // Set up register button action
-            registerButton.setOnClickListener(v -> registerForEvent(entrant, event));
+            // Load event image using Glide
+            if (event.getImage_url() != null && !event.getImage_url().isEmpty()) {
+                eventImageView.setVisibility(View.VISIBLE);
+                Glide.with(this)
+                        .load(event.getImage_url())
+                        .placeholder(R.drawable.ic_profile_photo)
+                        .error(R.drawable.ic_profile_photo)
+                        .into(eventImageView);
+            } else {
+                eventImageView.setVisibility(View.GONE);
+            }
         } else {
             Toast.makeText(this, "Event data is missing", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (event != null) {
-            String eventHash = event.getQR_code();
-            db.collection("events").document(eventHash).get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            event = documentSnapshot.toObject(Event.class);
-
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        // Handle the error
-                        Toast.makeText(this, "Error fetching event data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        Log.e("EntrantEventDetails", "Error fetching event", e);
-                    });
-        }
+    private void setupEnterWaiting() {
+        updateButtonStates();
+        enterWaitingButton.setOnClickListener(view -> {
+            if (event.getWaitingList().contains(entrant.getId())) {
+                Toast.makeText(this, "Already in the Waiting list", Toast.LENGTH_SHORT).show();
+            } else {
+                if(event.getGeolocationRequired()){
+                    showJoinConfirmationDialog();
+                } else{
+                    joinWaitingList();
+                }
+            }
+        });
     }
 
-    private void registerForEvent(Entrant entrant, Event event) {
-        if (entrant != null && event != null) {
-            event.addEntrantToWaitingList(entrant, new WaitingListCallback() {
-                @Override
-                public void onSuccess(String message) {
-                    Toast.makeText(EntrantEventDetailsActivity.this, message, Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(EntrantEventDetailsActivity.this, EntrantWaitingListActivity.class);
-                    intent.putExtra("event_data", event);
-                    intent.putExtra("entrant_data", entrant);
-                    startActivity(intent);
-                }
+    private void showJoinConfirmationDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Join Waiting List")
+                .setMessage("Are you sure you want to join the waiting list for this event?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    joinWaitingList();
+                })
+                .setNegativeButton("No", (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .create()
+                .show();
+    }
 
-                @Override
-                public void onFailure(Exception e) {
-                    Toast.makeText(EntrantEventDetailsActivity.this, "Failed to register: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+    private void joinWaitingList() {
+        waitingList.addEntrant(entrant.getId(), event.getWaitingList(), new WaitingList.OnDatabaseUpdateListener() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(EntrantEventDetailsActivity.this, "Joined the Waiting list", Toast.LENGTH_SHORT).show();
+                addLocation();
+                updateButtonStates();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(EntrantEventDetailsActivity.this, "Failed to join the Waiting list", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void addLocation(){
+        locationHelper.getCurrentLocation(new LocationHelper.LocationCallback() {
+            @Override
+            public void onLocationResult(double latitude, double longitude) {
+                // Save the location data to Firestore using DatabaseHelper
+                databaseHelper.saveEventEntrantLocation(event.getQR_code(), entrant.getId(), latitude, longitude);
+                Log.d("Location", "Location saved: Lat = " + latitude + ", Long = " + longitude);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.e("Location", "Error retrieving location: " + errorMessage);
+            }
+        });
+    }
+
+    private void setupLeaveWaiting() {
+        updateButtonStates();
+
+        leaveWaitingButton.setOnClickListener(view -> {
+            if (!event.getWaitingList().contains(entrant.getId())) {
+                Toast.makeText(this, "Not in the Waiting list", Toast.LENGTH_SHORT).show();
+            } else {
+                waitingList.removeEntrant(entrant.getId(), event.getWaitingList(), new WaitingList.OnDatabaseUpdateListener() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(EntrantEventDetailsActivity.this, "Left the Waiting list", Toast.LENGTH_SHORT).show();
+                        updateButtonStates();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(EntrantEventDetailsActivity.this, "Failed to leave the Waiting list", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+
+    private void updateButtonStates() {
+        if (event.getWaitingList().contains(entrant.getId())) {
+            enterWaitingButton.setEnabled(false);
+            enterWaitingButton.setText("Already in Waiting List");
+            leaveWaitingButton.setEnabled(true);
+            leaveWaitingButton.setText("Leave Waiting List");
         } else {
-            Toast.makeText(this, "Entrant data is missing", Toast.LENGTH_SHORT).show();
+            enterWaitingButton.setEnabled(true);
+            enterWaitingButton.setText("Join Waiting List");
+            leaveWaitingButton.setEnabled(false);
+            leaveWaitingButton.setText("Not in Waiting List");
         }
     }
+
+    private void autoRegisterIfSignUpTrue() {
+        if (signUp) {
+            if (!event.getWaitingList().contains(entrant.getId())) {
+                waitingList.addEntrant(entrant.getId(), event.getWaitingList(), new WaitingList.OnDatabaseUpdateListener() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(EntrantEventDetailsActivity.this, "Automatically joined the Waiting list", Toast.LENGTH_SHORT).show();
+                        updateButtonStates();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(EntrantEventDetailsActivity.this, "Failed to automatically join the Waiting list", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                Log.d(TAG, "Entrant already in the waiting list, no need to auto-register.");
+            }
+        }
+    }
+
+
 }

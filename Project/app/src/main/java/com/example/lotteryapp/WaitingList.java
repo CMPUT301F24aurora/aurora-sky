@@ -1,38 +1,50 @@
 package com.example.lotteryapp;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class WaitingList {
-    private List<Entrant> waitingList;
-    private int capacity; // Maximum number of entrants allowed in the waiting list
+    private String eventId;  // The ID of the event this waiting list belongs to
+    private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public WaitingList(int capacity) {
-        this.waitingList = new ArrayList<>();
-        this.capacity = capacity;
+    public WaitingList(String eventId){
+        this.eventId = eventId;
     }
-
-    // Method to add an entrant to the waiting list
-    public boolean addEntrant(Entrant entrant) {
-        if (waitingList.size() < capacity) {
-            waitingList.add(entrant);
-            return true; // Successfully added
+    // Add or remove methods remain unchanged, but include callbacks for database operations
+    public boolean addEntrant(String entrantId, List<String> waitingListIds, OnDatabaseUpdateListener listener) {
+        if (waitingListIds.isEmpty()){
+            waitingListIds.add(entrantId);
+            updateDatabase(waitingListIds, listener);
+        } else if(!waitingListIds.isEmpty() && !waitingListIds.contains(entrantId)){
+            waitingListIds.add(entrantId);
+            updateDatabase(waitingListIds, listener);
         }
-        return false; // Waiting list is full
+        return false;
     }
 
-    // Method to remove an entrant from the waiting list
-    public boolean removeEntrant(Entrant entrant) {
-        return waitingList.remove(entrant); // Returns true if the entrant was found and removed
+    public boolean removeEntrant(String entrantId, List<String> waitingListIds, OnDatabaseUpdateListener listener) {
+        if (waitingListIds.contains(entrantId)) {
+            waitingListIds.remove(entrantId);
+            updateDatabase( waitingListIds, listener); // Update Firestore with a callback
+            return true;
+        }
+        return false;
     }
 
-    // Get the current list of entrants
-    public List<Entrant> getWaitingList() {
-        return waitingList;
+    // Updated database with callback to notify success/failure
+    private void updateDatabase(List<String> waitingListIds, OnDatabaseUpdateListener listener) {
+        db.collection("events").document(eventId)
+                .update("waitingList", waitingListIds)
+                .addOnSuccessListener(aVoid -> listener.onSuccess())
+                .addOnFailureListener(e -> listener.onFailure(e));
     }
 
-    // Get the capacity of the waiting list
-    public int getCapacity() {
-        return capacity;
+    // Define callback interface for database update events
+    public interface OnDatabaseUpdateListener {
+        void onSuccess();
+        void onFailure(Exception e);
     }
 }

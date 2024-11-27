@@ -1,5 +1,6 @@
 package com.example.lotteryapp;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantViewHolder> {
 
-    private final List<Entrant> entrantList;
+    private List<Entrant> entrantList;
     private List<Entrant> filteredEntrantList;
     private final EntrantClickListener clickListener;
 
@@ -34,30 +35,32 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
     }
 
     @Override
+    public int getItemCount() {
+        return entrantList.size();
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull EntrantViewHolder holder, int position) {
-        Entrant entrant = filteredEntrantList.get(position);
+        Entrant entrant = entrantList.get(position);
+        Log.d("EntrantAdapter", "Displaying: " + entrant.getName());
         holder.entrantName.setText(entrant.getName());
         holder.itemView.setOnClickListener(v -> clickListener.onEntrantClick(entrant));
     }
 
-    @Override
-    public int getItemCount() {
-        return filteredEntrantList.size();
-    }
-
-    public void filter(String query) {
+    public List<Entrant> filter(String query) {
         filteredEntrantList.clear();
-        if (query.isEmpty()) {
-            filteredEntrantList.addAll(entrantList);
-        }
-        else {
-            for (Entrant entrant : entrantList) {
-                if (entrant.getName().toLowerCase().contains(query.toLowerCase())) {
-                    filteredEntrantList.add(entrant);
-                }
+        for (Entrant entrant : entrantList) {
+            if (entrant.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredEntrantList.add(entrant);
             }
         }
-        notifyDataSetChanged();
+        return filteredEntrantList;
+    }
+
+    public void updateList(List<Entrant> newEntrantList) {
+        entrantList.clear();
+        entrantList.addAll(newEntrantList);
+        notifyDataSetChanged(); // Notify the adapter to refresh the RecyclerView
     }
 
     public static class EntrantViewHolder extends RecyclerView.ViewHolder {

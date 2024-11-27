@@ -23,7 +23,10 @@ public class DBManagerEvent {
         String eventId = event.getQR_code();  // Use QR code as event ID
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("eventName", event.getEventName());
-        eventData.put("eventDate", event.getEventDate());
+        eventData.put("eventStartDate", event.getEventStartDate());
+        eventData.put("eventEndDate", event.getEventEndDate());
+        eventData.put("registrationDeadline", event.getRegistrationDeadline());
+        eventData.put("eventPrice", event.getEventPrice());
         eventData.put("numPeople", event.getNumPeople());
         eventData.put("description", event.getDescription());
         eventData.put("qr_code", eventId);  // Store QR code as the ID field

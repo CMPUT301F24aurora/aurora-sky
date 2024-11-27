@@ -62,7 +62,7 @@ public class AdminViewEventsContent extends AppCompatActivity {
         String eventName = event.getEventName();
         String eventDescription = event.getDescription();
         String eventCapacity = String.valueOf(event.getNumPeople());
-        String eventDate = event.getEventDate();
+        String eventDate = event.getEventStartDate();
         String eventImageUrl = event.getImage_url();
 
         // Set values to TextViews

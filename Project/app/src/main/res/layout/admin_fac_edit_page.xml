@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="#191F36">
 
     <EditText
         android:id="@+id/editText3"
         android:layout_width="363dp"
         android:layout_height="38dp"
         android:layout_marginTop="16dp"
+        android:backgroundTint="#FFFFFF"
         android:hint="example@123.com"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.562"
@@ -21,9 +23,10 @@
         android:layout_width="337dp"
         android:layout_height="44dp"
         android:layout_marginTop="12dp"
+        android:backgroundTint="#FAFAFA"
         android:hint="Example Address"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.364"
+        app:layout_constraintHorizontal_bias="0.324"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6e" />
 
@@ -32,6 +35,7 @@
         android:layout_width="134dp"
         android:layout_height="46dp"
         android:layout_marginTop="16dp"
+        android:backgroundTint="#FFFFFF"
         android:hint="0:00 to 0:00"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.097"
@@ -42,17 +46,23 @@
         android:id="@+id/textView7e"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
         android:text="Email"
-        android:textColor="#575656"
+        android:textAlignment="viewStart"
+        android:textColor="#FFFFFF"
         android:textSize="20sp"
-        tools:layout_editor_absoluteX="27dp"
-        tools:layout_editor_absoluteY="421dp" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.074"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText2" />
 
     <EditText
         android:id="@+id/admin_fac_e_name"
         android:layout_width="337dp"
         android:layout_height="44dp"
         android:layout_marginTop="8dp"
+        android:backgroundTint="#FFFFFF"
         android:hint="Example Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.364"
@@ -62,49 +72,65 @@
     <TextView
         android:id="@+id/admin_fac_profile_txt_e"
         android:layout_width="262dp"
-        android:layout_height="44dp"
-        android:fontFamily="sans-serif-medium"
+        android:layout_height="47dp"
+        android:layout_marginTop="36dp"
+        android:fontFamily="sans-serif-smallcaps"
         android:text="Facility Profile"
+        android:textColor="#FFFFFF"
         android:textSize="34sp"
-        tools:layout_editor_absoluteX="27dp"
-        tools:layout_editor_absoluteY="16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView3e"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
         android:text="Name"
-        android:textColor="#575656"
+        android:textColor="#FBFBFB"
         android:textSize="20sp"
-        tools:layout_editor_absoluteX="27dp"
-        tools:layout_editor_absoluteY="104dp" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.075"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/admin_fac_profile_txt_e" />
 
     <TextView
         android:id="@+id/textView5e"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
         android:text="Time"
-        android:textColor="#575656"
+        android:textColor="#FFFFFF"
         android:textSize="20sp"
-        tools:layout_editor_absoluteX="27dp"
-        tools:layout_editor_absoluteY="201dp" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.065"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/admin_fac_e_name" />
 
     <TextView
         android:id="@+id/textView6e"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
         android:text="Location"
-        android:textColor="#575656"
+        android:textColor="#FFFFFF"
         android:textSize="20sp"
-        tools:layout_editor_absoluteX="27dp"
-        tools:layout_editor_absoluteY="304dp" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.072"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="218dp"
         android:layout_height="64dp"
         android:layout_marginTop="68dp"
-        android:backgroundTint="#0B0B0B"
+        android:backgroundTint="#0A4753"
         android:text="Confirm"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"

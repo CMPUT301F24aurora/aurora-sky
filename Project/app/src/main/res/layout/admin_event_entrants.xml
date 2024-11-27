@@ -3,18 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <Button
-        android:id="@+id/admin_ev_ent_remove"
-        android:layout_width="175dp"
-        android:layout_height="45dp"
-        android:backgroundTint="#6A1515"
-        android:text="Remove"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ev_entrants_lv" />
+    android:layout_height="match_parent"
+    android:background="#191F36">
 
     <TextView
         android:id="@+id/ev_ent_text_title"
@@ -22,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Event Entrants"
+        android:textColor="#A09797"
         android:textSize="48sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,27 +23,56 @@
         android:layout_width="379dp"
         android:layout_height="40dp"
         android:layout_marginTop="16dp"
+        android:background="#F4F0F0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ev_ent_text_title" />
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-    </RelativeLayout>
-
-    <ListView
-        android:id="@+id/ev_entrants_lv"
-        android:layout_width="wrap_content"
-        android:layout_height="460dp"
-        android:layout_marginTop="32dp"
+        android:id="@+id/relativeLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/admin_ev_ent_remove"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/entrants_search_view">
 
-    </ListView>
+        <ListView
+            android:id="@+id/ev_entrants_lv"
+            android:layout_width="wrap_content"
+            android:layout_height="460dp"
+            android:layout_marginTop="32dp"
+            android:background="#47A7CAC0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent">
+
+        </ListView>
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/admin_ev_ent_remove"
+        android:layout_width="175dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#3B6064"
+        android:text="Remove"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/admin_ev_ent_back"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/admin_ev_ent_back"
+        android:layout_width="175dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="#0A4753"
+        android:text="Back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2"
+        app:layout_constraintVertical_bias="0.448" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

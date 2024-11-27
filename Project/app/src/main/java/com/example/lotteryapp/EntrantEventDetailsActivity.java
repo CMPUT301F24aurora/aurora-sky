@@ -85,7 +85,7 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
         if (event != null) {
             eventTitle.setText(event.getEventName());
             eventDescription.setText(event.getDescription());
-            eventDate.setText("Date: " + event.getEventDate());
+            eventDate.setText("Date: " + event.getEventStartDate());
             eventCapacity.setText("Capacity: " + event.getNumPeople());
 
             // Load event image using Glide

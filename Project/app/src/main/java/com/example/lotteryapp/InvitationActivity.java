@@ -107,7 +107,7 @@ public class InvitationActivity extends AppCompatActivity implements EventAdapte
 
         // Step 1: Fetch entrant's selected event
         db.collection("entrants")
-                .whereEqualTo("email", entrant.getEmail()) // Replace with dynamically obtained email for the logged-in entrant
+                .whereEqualTo("id", entrant.getId())
                 .get()
                 .addOnSuccessListener(entrantQuerySnapshot -> {
                     if (!entrantQuerySnapshot.isEmpty()) {

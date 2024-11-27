@@ -227,8 +227,8 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
 
-//                            // Optionally clear the notifications array after processing
-//                            document.getReference().update("notifications", new ArrayList<>());
+                            // Optionally clear the notifications array after processing
+                            document.getReference().update("notifications", new ArrayList<>());
                         }
                     } else {
                         Log.d(TAG, "No entrant found or notifications field is empty.");

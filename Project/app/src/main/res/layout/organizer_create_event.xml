@@ -56,6 +56,22 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Registration Deadline"
+                android:textColor="@color/black"
+                android:layout_marginBottom="4dp" />
+            <EditText
+                android:id="@+id/editTextRegistrationDeadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Select date and time"
+                android:focusable="false"
+                android:inputType="none"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Number of Members (NL-No Limit)"
                 android:textColor="@color/black"
                 android:layout_marginBottom="4dp" />
@@ -66,6 +82,23 @@
                 android:layout_height="wrap_content"
                 android:hint="Enter number of members"
                 android:inputType="number"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Waitlist Cap (Optional)"
+                android:textColor="@color/black"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/editTextWaitlistCap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Select a waitlist cap"
+                android:focusable="false"
+                android:inputType="none"
                 android:padding="12dp"
                 android:layout_marginBottom="16dp"/>
 

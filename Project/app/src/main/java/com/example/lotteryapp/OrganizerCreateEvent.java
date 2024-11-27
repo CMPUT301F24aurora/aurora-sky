@@ -25,7 +25,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
 
     private static final String TAG = "OrganizerCreateEvent";
 
-    private EditText eventDateTime, eventName, eventNumberOfPeople, eventDescription;
+    private EditText eventDateTime, eventName, eventNumberOfPeople, eventDescription, registrationDeadline, waitlistCap;
     private Button organizerCreateEvent, buttonRemovePoster;
     private ImageButton buttonUploadPoster;
     private Organizer organizer;
@@ -33,7 +33,6 @@ public class OrganizerCreateEvent extends AppCompatActivity {
     private DBManagerEvent dbManagerEvent;
     private Uri imageUri;
     private Event event;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,13 +63,16 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         buttonUploadPoster = findViewById(R.id.buttonUploadPoster);
         buttonRemovePoster = findViewById(R.id.buttonRemovePoster);
         organizerCreateEvent = findViewById(R.id.buttonCreateEvent);
+        waitlistCap = findViewById(R.id.editTextWaitlistCap);
+        registrationDeadline = findViewById(R.id.editTextRegistrationDeadline);
 
         if (event != null) { // If event data exists, it's an edit operation
             preloadEventData(event);
         }
 
 //        // Set click listener for eventDateTime to open date and time picker
-        eventDateTime.setOnClickListener(v -> openDateTimePicker());
+        eventDateTime.setOnClickListener(v -> openDateTimePicker(eventDateTime));
+        registrationDeadline.setOnClickListener(v -> openDateTimePicker(registrationDeadline));
         buttonUploadPoster.setOnClickListener(v->selectImage());
         organizerCreateEvent.setOnClickListener(v -> saveEventDetails());
 
@@ -87,11 +89,13 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         eventDateTime.setText(event.getEventDate());
         eventNumberOfPeople.setText(String.valueOf(event.getNumPeople()));
         eventDescription.setText(event.getDescription());
+        registrationDeadline.setText(event.getRegistrationDeadline());
+        waitlistCap.setText(event.getWaitlistCap());
     }
 
-    private void openDateTimePicker() {
+    private void openDateTimePicker(EditText targetEditText) {
         MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select Event Date")
+                .setTitleText("Select Date")
                 .build();
 
         datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
@@ -106,7 +110,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
                         calendar.set(Calendar.MINUTE, minute);
 
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-                        eventDateTime.setText(sdf.format(calendar.getTime()));
+                        targetEditText.setText(sdf.format(calendar.getTime()));
                     },
                     calendar.get(Calendar.HOUR_OF_DAY),
                     calendar.get(Calendar.MINUTE),
@@ -115,6 +119,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
             timePickerDialog.show();
         });
     }
+
 
     // Launcher for selecting an image
     private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
@@ -139,8 +144,11 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         String dateTime = eventDateTime.getText().toString().trim();
         String numofPeople = eventNumberOfPeople.getText().toString().trim();
         String description = eventDescription.getText().toString().trim();
+        String registrationDeadlineText = registrationDeadline.getText().toString().trim();
+        String waitlistCapText = waitlistCap.getText().toString().trim();
 
-        if (name.isEmpty() || dateTime.isEmpty() || numofPeople.isEmpty() || description.isEmpty()) {
+
+        if (name.isEmpty() || dateTime.isEmpty() || numofPeople.isEmpty() || registrationDeadlineText.isEmpty() ||description.isEmpty()) {
             Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -153,7 +161,16 @@ public class OrganizerCreateEvent extends AppCompatActivity {
             return;
         }
 
-        Event event = new Event(name, dateTime, numPeople, description);
+        int waitlistCapValue;
+        // Parse waitlist cap
+        try {
+            waitlistCapValue = Integer.parseInt(waitlistCapText);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid waitlist cap value", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Event event = new Event(name, dateTime, numPeople, description, waitlistCapValue, registrationDeadlineText);
         if(imageUri != null){
             PosterImage posterImage = new PosterImage();
             posterImage.uploadImage(event.getQR_code(), imageUri, new PosterImage.PosterUploadCallback(){

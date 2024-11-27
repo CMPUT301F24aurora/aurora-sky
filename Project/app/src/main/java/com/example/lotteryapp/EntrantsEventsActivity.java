@@ -177,8 +177,8 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
     @Override
     public void onEventClick(Event event) {
         Intent eventDetailsIntent = new Intent(EntrantsEventsActivity.this, EntrantEventDetailsActivity.class);
-        eventDetailsIntent.putExtra("event_data", event);
-        eventDetailsIntent.putExtra("entrant_data", entrant);
+        eventDetailsIntent.putExtra("eventId", event.getQR_code());
+        eventDetailsIntent.putExtra("entrantId", entrant.getId());
         eventDetailsIntent.putExtra("organizer_data", organizer);
         eventDetailsIntent.putExtra("sign_up", false);
         startActivity(eventDetailsIntent);

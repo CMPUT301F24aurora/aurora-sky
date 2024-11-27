@@ -31,6 +31,8 @@ public class Event implements Serializable {
     private String eventDate;
     private Boolean geolocationRequired = Boolean.FALSE;
     private Integer numPeople;
+    private Integer waitlistCap;
+    private String registrationDeadline;
     private String description;
     private String qr_code;
     private List<String> waitingList;
@@ -41,11 +43,29 @@ public class Event implements Serializable {
         // Empty constructor for Firebase
     }
 
-    public Event(String eventName, String eventDate, Integer numPeople, String description) {
+    public Integer getWaitlistCap() {
+        return waitlistCap;
+    }
+
+    public void setWaitlistCap(Integer waitlistCap) {
+        this.waitlistCap = waitlistCap;
+    }
+
+    public String getRegistrationDeadline() {
+        return registrationDeadline;
+    }
+
+    public void setRegistrationDeadline(String registrationDeadline) {
+        this.registrationDeadline = registrationDeadline;
+    }
+
+    public Event(String eventName, String eventDate, Integer numPeople, String description, Integer waitlistCap, String registrationDeadline) {
         this.eventName = eventName;
         this.eventDate = eventDate;
         this.numPeople = numPeople;
         this.description = description;
+        this.waitlistCap = waitlistCap;
+        this.registrationDeadline = registrationDeadline;
         this.qr_code = generateQRHash();
 
         this.waitingList = new ArrayList<>();  // Initialize waitingList as an empty list

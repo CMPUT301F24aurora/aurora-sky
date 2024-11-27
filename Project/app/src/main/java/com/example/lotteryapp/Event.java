@@ -29,7 +29,7 @@ public class Event implements Serializable {
     private String posterImage;
     private String eventName;
     private String eventDate;
-    private Boolean geolocationRequired = Boolean.FALSE;
+    private Boolean geolocationRequired;
     private Integer numPeople;
     private String description;
     private String qr_code;
@@ -41,13 +41,13 @@ public class Event implements Serializable {
         // Empty constructor for Firebase
     }
 
-    public Event(String eventName, String eventDate, Integer numPeople, String description) {
+    public Event(String eventName, String eventDate, Integer numPeople, String description, Boolean geolocationRequired) {
         this.eventName = eventName;
         this.eventDate = eventDate;
         this.numPeople = numPeople;
         this.description = description;
         this.qr_code = generateQRHash();
-
+        this.geolocationRequired = geolocationRequired;
         this.waitingList = new ArrayList<>();  // Initialize waitingList as an empty list
     }
 
@@ -95,7 +95,7 @@ public class Event implements Serializable {
         this.image_url = image_url;
     }
 
-    public boolean getGeolocationRequirement() {
+    public Boolean getGeolocationRequired() {
         return geolocationRequired;
     }
 
@@ -187,6 +187,5 @@ public class Event implements Serializable {
             return null;
         }
     }
-
 
 }

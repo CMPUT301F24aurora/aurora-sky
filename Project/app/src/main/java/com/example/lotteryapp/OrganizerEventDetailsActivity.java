@@ -3,6 +3,7 @@ package com.example.lotteryapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private Button viewEntrantsButton;
     private Button viewQrCodeButton;
     private Button editEvent;
+    private Button viewEntrantsLocation;
     private ImageView eventPosterView;
     private Organizer organizer;
     private Entrant entrant;
@@ -34,6 +36,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         viewQrCodeButton = findViewById(R.id.view_qr_code_button);
         editEvent = findViewById(R.id.edit_event_button);
         eventPosterView = findViewById(R.id.poster);
+        viewEntrantsLocation = findViewById(R.id.view_location);
 
 
         // Get event data from the intent
@@ -46,6 +49,13 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         String eventQrCode = selectedEvent.getQR_code();
 
         if (event != null) {
+            if (event.getGeolocationRequired()){
+                viewEntrantsLocation.setVisibility(View.VISIBLE);
+                viewEntrantsLocation.setEnabled(true);
+            } else {
+                viewEntrantsLocation.setVisibility(View.GONE);
+                viewEntrantsLocation.setEnabled(false);
+            }
             // Populate views with event details
             eventTitleTextView.setText(event.getEventName());
             eventDateTextView.setText("Date: " + event.getEventDate());
@@ -76,6 +86,15 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 intent.putExtra("organizer_data", organizer);
                 startActivity(intent);
             });
+
+            viewEntrantsLocation.setOnClickListener(v->{
+                Intent intent = new Intent(OrganizerEventDetailsActivity.this, MapActivity.class);
+                intent.putExtra("event_data", event);
+                intent.putExtra("entrant_data", entrant);
+                intent.putExtra("organizer_data", organizer);
+                startActivity(intent);
+            });
+
         } else {
             // Log error or show a message
             Log.e("OrganizerEventDetails", "Selected event is null!");

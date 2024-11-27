@@ -97,17 +97,6 @@
         tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml" />
 
     <Button
-        android:id="@+id/generate_qr_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="116dp"
-        android:backgroundTint="#000000"
-        android:text="+ Generate QR Code"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="594dp"
-        tools:ignore="MissingConstraints" />
-
-    <Button
         android:id="@+id/create_event_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

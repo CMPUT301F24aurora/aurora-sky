@@ -77,7 +77,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
             preloadEventData(event);
         }
 
-//        // Set click listener for eventDateTime to open date and time picker
+        // Set click listener for eventDateTime to open date and time picker
         eventDateTime.setOnClickListener(v -> openDateTimePicker(eventDateTime));
         registrationDeadline.setOnClickListener(v -> openDateTimePicker(registrationDeadline));
         buttonUploadPoster.setOnClickListener(v->selectImage());

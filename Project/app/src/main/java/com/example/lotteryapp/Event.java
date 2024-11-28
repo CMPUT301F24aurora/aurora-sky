@@ -36,15 +36,17 @@ public class Event implements Serializable {
     private Float eventPrice;
     private String description;
     private String qr_code;
+    private Integer waitlistCap;
     private List<String> waitingList;
     private String image_url;
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
 
     public Event() {
         // Empty constructor for Firebase
     }
 
-    public Event(String eventName, Integer numPeople, String description, Boolean geolocationRequired, String registrationDeadline, String eventStartDate, String eventEndDate, Float eventPrice) {
+    public Event(String eventName, Integer numPeople, String description, Boolean geolocationRequired, String registrationDeadline, String eventStartDate, String eventEndDate, Float eventPrice, Integer waitlistCap) {
         this.eventName = eventName;
         this.numPeople = numPeople;
         this.description = description;
@@ -52,9 +54,18 @@ public class Event implements Serializable {
         this.registrationDeadline = registrationDeadline;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
+        this.waitlistCap = waitlistCap;
         this.eventPrice = eventPrice;
         this.qr_code = generateQRHash();
         this.waitingList = new ArrayList<>();  // Initialize waitingList as an empty list
+    }
+
+    public Integer getWaitlistCap() {
+        return waitlistCap;
+    }
+
+    public void setWaitlistCap(Integer waitlistCap) {
+        this.waitlistCap = waitlistCap;
     }
 
     public String getEventName() {
@@ -120,7 +131,7 @@ public class Event implements Serializable {
         return waitingList.remove(entrantId);
     }
 
-    // Check if the waiting list is full (assuming some arbitrary limit for the waiting list)
+    // Check if the waiting list is full
     public boolean isWaitingListFull() {
         return waitingList.size() >= numPeople; // For example, using numPeople as capacity limit
     }

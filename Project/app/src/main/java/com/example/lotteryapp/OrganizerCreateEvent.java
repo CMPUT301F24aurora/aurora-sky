@@ -39,6 +39,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
     private DBManagerEvent dbManagerEvent;
     private Uri imageUri;
     private Event event;
+    private EditText editWaitlistCap;
 
 
     @Override
@@ -74,6 +75,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         eventPrice = findViewById(R.id.eventPrice);
         registrationDeadline = findViewById(R.id.registrationDeadline);
         geo_toggle = findViewById(R.id.geo_toggle);
+        editWaitlistCap = findViewById(R.id.editWaitlistCap);
 
         if (event != null) { // If event data exists, it's an edit operation
             preloadEventData(event);
@@ -112,6 +114,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         eventNumberOfPeople.setText(String.valueOf(event.getNumPeople()));
         eventPrice.setText(String.valueOf(event.getEventPrice()));
         eventDescription.setText(event.getDescription());
+        editWaitlistCap.setText(event.getWaitlistCap());
         geo_toggle.setChecked(event.getGeolocationRequired());
         if (event.getImage_url() != null){
             buttonRemovePoster.setVisibility(View.VISIBLE);
@@ -170,9 +173,38 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         String numofPeople = eventNumberOfPeople.getText().toString().trim();
         String description = eventDescription.getText().toString().trim();
         Boolean geolocation = geo_toggle.isChecked();
+        String waitlistCapInput = editWaitlistCap.getText().toString().trim();
 
         if (name.isEmpty() || eventStart.isEmpty() || eventEnd.isEmpty() || registration.isEmpty() || price.isEmpty() || numofPeople.isEmpty() || description.isEmpty()) {
             Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Parse and validate dates
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        try {
+            // Parse the dates
+            Calendar startDate = Calendar.getInstance();
+            startDate.setTime(sdf.parse(eventStart));
+
+            Calendar endDate = Calendar.getInstance();
+            endDate.setTime(sdf.parse(eventEnd));
+
+            Calendar registrationDate = Calendar.getInstance();
+            registrationDate.setTime(sdf.parse(registration));
+
+            // Validate date logic
+            if (!registrationDate.before(startDate)) {
+                Toast.makeText(this, "Registration deadline must be before the start date", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!startDate.before(endDate)) {
+                Toast.makeText(this, "Start date must be earlier than the end date", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Invalid date format. Please use yyyy-MM-dd", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -186,6 +218,21 @@ public class OrganizerCreateEvent extends AppCompatActivity {
             return;
         }
 
+        Integer waitlistCap = null;
+
+        if (!waitlistCapInput.isEmpty()) {
+            try {
+                waitlistCap = Integer.parseInt(waitlistCapInput);
+                if (waitlistCap <= 0) {
+                    Toast.makeText(this, "Waitlist cap must be greater than 0", Toast.LENGTH_SHORT).show();
+                    return; // Exit early if invalid
+                }
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Invalid waitlist cap", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
         // Use the existing event if editing
         if (event != null) {
             event.setEventName(name);
@@ -196,9 +243,10 @@ public class OrganizerCreateEvent extends AppCompatActivity {
             event.setNumPeople(numPeople);
             event.setDescription(description);
             event.setGeolocationRequired(geolocation);
+            event.setWaitlistCap(waitlistCap);
         } else {
             // Create a new event only if it's not an edit operation
-            event = new Event(name, numPeople, description, geolocation, registration, eventStart, eventEnd, priceOf);
+            event = new Event(name, numPeople, description, geolocation, registration, eventStart, eventEnd, priceOf, waitlistCap);
         }
 
         // Check if there is an image to upload

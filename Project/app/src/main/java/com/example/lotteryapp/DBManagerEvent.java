@@ -28,6 +28,7 @@ public class DBManagerEvent {
         eventData.put("registrationDeadline", event.getRegistrationDeadline());
         eventData.put("eventPrice", event.getEventPrice());
         eventData.put("numPeople", event.getNumPeople());
+        eventData.put("waitlistCap", event.getWaitlistCap());
         eventData.put("description", event.getDescription());
         eventData.put("qr_code", eventId);  // Store QR code as the ID field
         eventData.put("waitingList", event.getWaitingList());  // Store waiting list IDs

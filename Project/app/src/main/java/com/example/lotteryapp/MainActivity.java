@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         });
         // Admin status check
         String deviceId = getDeviceId(this);
+        Log.i("Device Id: ", deviceId);
         checkAdminAndDisplayPage(deviceId);
     }
 

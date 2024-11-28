@@ -58,7 +58,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             }
             // Populate views with event details
             eventTitleTextView.setText(event.getEventName());
-            eventDateTextView.setText("Date: " + event.getEventDate());
+            eventDateTextView.setText("Date: " + event.getEventStartDate());
             eventDescriptionTextView.setText(event.getDescription());
 
             viewEntrantsButton.setOnClickListener(v -> {

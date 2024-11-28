@@ -28,11 +28,12 @@ public class Event implements Serializable {
 
     private String posterImage;
     private String eventName;
-    private String eventDate;
+    private String eventStartDate;
+    private String eventEndDate;
+    private String registrationDeadline;
     private Boolean geolocationRequired;
     private Integer numPeople;
-    private Integer waitlistCap;
-    private String registrationDeadline;
+    private Float eventPrice;
     private String description;
     private String qr_code;
     private List<String> waitingList;
@@ -43,31 +44,16 @@ public class Event implements Serializable {
         // Empty constructor for Firebase
     }
 
-    public Integer getWaitlistCap() {
-        return waitlistCap;
-    }
-
-    public void setWaitlistCap(Integer waitlistCap) {
-        this.waitlistCap = waitlistCap;
-    }
-
-    public String getRegistrationDeadline() {
-        return registrationDeadline;
-    }
-
-    public void setRegistrationDeadline(String registrationDeadline) {
-        this.registrationDeadline = registrationDeadline;
-    }
-
-    public Event(String eventName, String eventDate, Integer numPeople, String description, Integer waitlistCap, String registrationDeadline, Boolean geolocationRequired) {
+    public Event(String eventName, Integer numPeople, String description, Boolean geolocationRequired, String registrationDeadline, String eventStartDate, String eventEndDate, Float eventPrice) {
         this.eventName = eventName;
-        this.eventDate = eventDate;
         this.numPeople = numPeople;
         this.description = description;
-        this.waitlistCap = waitlistCap;
-        this.registrationDeadline = registrationDeadline;
-        this.qr_code = generateQRHash();
         this.geolocationRequired = geolocationRequired;
+        this.registrationDeadline = registrationDeadline;
+        this.eventStartDate = eventStartDate;
+        this.eventEndDate = eventEndDate;
+        this.eventPrice = eventPrice;
+        this.qr_code = generateQRHash();
         this.waitingList = new ArrayList<>();  // Initialize waitingList as an empty list
     }
 
@@ -77,14 +63,6 @@ public class Event implements Serializable {
 
     public void setEventName(String eventName) {
         this.eventName = eventName;
-    }
-
-    public String getEventDate() {
-        return this.eventDate;
-    }
-
-    public void setEventDate(String eventDate) {
-        this.eventDate = eventDate;
     }
 
     public int getNumPeople() {
@@ -153,7 +131,7 @@ public class Event implements Serializable {
      * @return the QR code bitmap
      */
     public String generateQRHash() {
-        String uniqueIdentifier = eventName + eventDate + System.currentTimeMillis();
+        String uniqueIdentifier = eventName + eventStartDate + eventEndDate + System.currentTimeMillis();
         String firebaseUrl = "https://yourfirebaseproject.firebaseio.com/events/" + uniqueIdentifier;
 
         QRCodeWriter writer = new QRCodeWriter();
@@ -208,5 +186,35 @@ public class Event implements Serializable {
         }
     }
 
+    public String getEventStartDate() {
+        return eventStartDate;
+    }
 
+    public void setEventStartDate(String eventStartDate) {
+        this.eventStartDate = eventStartDate;
+    }
+
+    public String getEventEndDate() {
+        return eventEndDate;
+    }
+
+    public void setEventEndDate(String eventEndDate) {
+        this.eventEndDate = eventEndDate;
+    }
+
+    public String getRegistrationDeadline() {
+        return registrationDeadline;
+    }
+
+    public void setRegistrationDeadline(String registrationDeadline) {
+        this.registrationDeadline = registrationDeadline;
+    }
+
+    public Float getEventPrice() {
+        return eventPrice;
+    }
+
+    public void setEventPrice(Float eventPrice) {
+        this.eventPrice = eventPrice;
+    }
 }

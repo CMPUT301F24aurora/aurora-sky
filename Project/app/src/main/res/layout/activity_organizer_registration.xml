@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#191F36"
     android:padding="16dp">
 
     <!-- Subheading for Name -->
@@ -20,7 +21,12 @@
         android:id="@+id/organizer_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
+        android:backgroundTint="@color/white"
+        android:hint="Name"
+=======
         android:hint="Enter your name"
+>>>>>>> main
         android:minHeight="48dp"
         android:padding="12dp" />
 
@@ -39,7 +45,12 @@
         android:id="@+id/organizer_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
+        android:backgroundTint="@color/white"
+        android:hint="Email"
+=======
         android:hint="Enter your email"
+>>>>>>> main
         android:inputType="textEmailAddress"
         android:minHeight="48dp"
         android:padding="12dp" />
@@ -59,7 +70,12 @@
         android:id="@+id/organizer_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
+        android:backgroundTint="@color/white"
+        android:hint="Password"
+=======
         android:hint="Enter your password"
+>>>>>>> main
         android:inputType="textPassword"
         android:minHeight="48dp"
         android:padding="12dp" />
@@ -79,7 +95,12 @@
         android:id="@+id/organizer_phone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
+        android:backgroundTint="@color/white"
+        android:hint="Phone"
+=======
         android:hint="Enter your phone number"
+>>>>>>> main
         android:inputType="phone"
         android:minHeight="48dp"
         android:padding="12dp" />
@@ -99,6 +120,7 @@
         android:id="@+id/register_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="#0A4753"
         android:text="Register"
         android:minHeight="48dp" />
 </LinearLayout>

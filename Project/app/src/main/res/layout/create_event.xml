@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#191F36"
     tools:context=".Organizer">
 
 
@@ -15,12 +16,12 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="100dp"
         android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/white"
         android:hint="Event Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
 
     <EditText
@@ -29,12 +30,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/white"
         android:hint="Number of members(NL-No Limit)"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="267dp"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteY="267dp" />
 
     <EditText
         android:id="@+id/event_description"
@@ -42,14 +44,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/white"
         android:hint="Event Description"
         android:inputType="textMultiLine"
         android:minHeight="100dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="346dp"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteY="346dp" />
 
     <EditText
         android:id="@+id/event_date_time"
@@ -57,12 +60,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/white"
         android:hint="Date and Time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="185dp"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteY="185dp" />
 
     <ImageButton
         android:id="@+id/upload_poster_button"
@@ -81,10 +85,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:text="Upload Poster"
+        android:textColor="@color/white"
         android:textSize="16sp"
+        tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="529dp"
-        tools:ignore="MissingConstraints" />
+        tools:layout_editor_absoluteY="529dp" />
 
     <Switch
         android:id="@+id/geo_toggle"
@@ -92,9 +97,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:text="Enable / Disable Geolocation"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteY="551dp"
-        tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml" />
+        tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml"
+        tools:layout_editor_absoluteY="551dp" />
 
     <Button
         android:id="@+id/create_event_button"
@@ -102,7 +108,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:backgroundTint="#000000"
+        android:backgroundTint="#0A4753"
         android:text="Create Event"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

@@ -3,12 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#191F36"
     android:padding="16dp">
 
     <EditText
         android:id="@+id/name_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
         android:hint="Facility Name"
         android:minHeight="48dp"
         android:padding="8dp" />
@@ -17,18 +19,21 @@
         android:id="@+id/start_time_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="#0A4753"
         android:text="Select Start Time" />
 
     <Button
         android:id="@+id/end_time_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="#0A4753"
         android:text="Select End Time" />
 
     <EditText
         android:id="@+id/location_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
         android:hint="Location"
         android:minHeight="48dp"
         android:padding="8dp" />
@@ -37,6 +42,7 @@
         android:id="@+id/email_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
         android:hint="Contact Email"
         android:minHeight="48dp"
         android:padding="8dp" />
@@ -46,6 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:backgroundTint="#0A4753"
         android:text="Save Facility" />
 
     <Button

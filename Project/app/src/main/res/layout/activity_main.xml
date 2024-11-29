@@ -1,56 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="#191F36"
     android:gravity="center"
+    android:orientation="vertical"
     android:padding="16dp"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Aurora Events"
-        android:textAlignment="center"
-        android:textColor="@android:color/black"
-        android:textSize="96sp"
-        android:textStyle="bold" />
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="411dp"
+        android:layout_height="291dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/aurora" />
 
     <Button
         android:id="@+id/entrantButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#000000"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#3B6064"
         android:text="I am an Entrant"
         android:textColor="@android:color/white"
-        android:layout_marginTop="16dp" />
+        android:layout_marginBottom="20dp"/>
 
-
-    <Button
-        android:id="@+id/organizerButton"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#000000"
-        android:text="I am an Organizer"
-        android:textColor="@android:color/white" />
+        android:text="**SignUp/Login if you are an Organizer**"
+        android:textColor="#5D408A"
+        android:textSize="15dp"></TextView>
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="match_parent"
+
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:orientation="horizontal"
+        android:layout_marginBottom="30dp">
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="132dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:backgroundTint="#352E48"
+            android:text="Button" />
+
+        <Button
+            android:id="@+id/organizerButton"
+            android:layout_width="129dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:backgroundTint="#352E48"
+
+            android:text="Login"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/admin_link"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:backgroundTint="#191F36"
         android:text="Admin?"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="20sp" />
+        android:textColor="#FFC107"
+        android:textSize="20sp"
+        />
 
 </LinearLayout>

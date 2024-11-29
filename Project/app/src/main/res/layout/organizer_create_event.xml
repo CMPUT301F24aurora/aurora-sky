@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#FFFFFF">
+    android:background="#191F36">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -21,19 +21,20 @@
             app:cardElevation="4dp"
             app:cardBackgroundColor="#F4EDED">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#4AA7CAC0"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-                <!-- Event Name -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:text="Event Name"
-                    android:textColor="@color/black" />
+            <!-- Event Name -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Event Name"
+                android:textColor="@color/black" />
 
                 <EditText
                     android:id="@+id/editTextEventName"
@@ -70,67 +71,67 @@
                     android:text="Event End Date and Time"
                     android:textColor="@color/black" />
 
-                <EditText
-                    android:id="@+id/eventEndTime"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:focusable="false"
-                    android:hint="Select end date and time"
-                    android:inputType="none"
-                    android:padding="12dp" />
+            <EditText
+                android:id="@+id/eventEndTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:focusable="false"
+                android:hint="Select end date and time"
+                android:inputType="none"
+                android:padding="12dp" />
 
-                <!-- Registration End Time -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:text="Registration End Date and Time"
-                    android:textColor="@color/black" />
+            <!-- Registration End Time -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Registration End Date and Time"
+                android:textColor="@color/black" />
 
-                <EditText
-                    android:id="@+id/registrationDeadline"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:focusable="false"
-                    android:hint="Select registration end date and time"
-                    android:inputType="none"
-                    android:padding="12dp" />
+            <EditText
+                android:id="@+id/registrationDeadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:focusable="false"
+                android:hint="Select registration end date and time"
+                android:inputType="none"
+                android:padding="12dp" />
 
-                <!-- Price Field -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:text="Event Price"
-                    android:textColor="@color/black" />
+            <!-- Price Field -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Event Price"
+                android:textColor="@color/black" />
 
-                <EditText
-                    android:id="@+id/eventPrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Enter event price"
-                    android:inputType="numberDecimal"
-                    android:padding="12dp" />
+            <EditText
+                android:id="@+id/eventPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Enter event price"
+                android:inputType="numberDecimal"
+                android:padding="12dp" />
 
-                <!-- Number of Members -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:text="Number of Members (NL-No Limit)"
-                    android:textColor="@color/black" />
+            <!-- Number of Members -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Number of Members (NL-No Limit)"
+                android:textColor="@color/black" />
 
-                <EditText
-                    android:id="@+id/editNumberOfMembers"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Enter number of members"
-                    android:inputType="number"
-                    android:padding="12dp" />
+            <EditText
+                android:id="@+id/editNumberOfMembers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Enter number of members"
+                android:inputType="number"
+                android:padding="12dp" />
 
                 <!-- Number of Members -->
                 <TextView
@@ -156,47 +157,64 @@
                     android:text="Event Description"
                     android:textColor="@color/black" />
 
-                <EditText
-                    android:id="@+id/editTextEventDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Enter event description"
-                    android:inputType="textMultiLine"
-                    android:padding="12dp" />
+            <EditText
+                android:id="@+id/editTextEventDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Enter event description"
+                android:inputType="textMultiLine"
+                android:padding="12dp" />
 
-                <!-- Upload Poster and Geolocation -->
-                <TextView
-                    android:id="@+id/uploadPosterGeolocationText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:text="Upload Poster                                             Geolocation"
-                    android:textColor="@color/black" />
+            <!-- Upload Poster and Geolocation -->
+            <TextView
+                android:id="@+id/uploadPosterGeolocationText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Upload Poster                                             Geolocation"
+                android:textColor="@color/black" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
+            <Button
+                android:id="@+id/buttonRemovePoster"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/black"
+                android:text="Remove Poster"
+                android:textColor="@color/white"
+                android:visibility="gone" />
 
-                    <ImageButton
-                        android:id="@+id/buttonUploadPoster"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="110dp"
-                        android:background="@null"
-                        android:contentDescription="Upload Poster"
-                        android:src="@drawable/ic_upload_icon" />
 
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/geo_toggle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="110dp" />
-                </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/buttonUploadPoster"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="110dp"
+                    android:background="@null"
+                    android:contentDescription="Upload Poster"
+                    android:src="@drawable/ic_upload_icon" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/geo_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="110dp" />
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
     </ScrollView>
 
     <Button
@@ -204,18 +222,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Create Event"
-        android:backgroundTint="@color/black"
+        android:backgroundTint="#0A4753"
         android:textColor="@color/white"
         android:layout_marginBottom="16dp" />
-
-    <!-- Remove Poster Button -->
-    <Button
-        android:id="@+id/buttonRemovePoster"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Remove Poster"
-        android:backgroundTint="@color/black"
-        android:textColor="@color/white"
-        android:visibility="gone" />
 
 </LinearLayout>

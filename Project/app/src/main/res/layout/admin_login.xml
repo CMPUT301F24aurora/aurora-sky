@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="#191F36"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,51 +10,77 @@
         android:id="@+id/textView"
         android:layout_width="159dp"
         android:layout_height="40dp"
+        android:layout_marginTop="60dp"
         android:fontFamily="sans-serif-medium"
         android:text="Admin Login"
         android:textAlignment="center"
-        android:textColor="#3E3C3C"
+        android:textColor="@color/white"
         android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.06"
+        app:layout_constraintHorizontal_bias="0.059"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.13999999" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/admin_user_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Enter your username"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/admin_user"
+        app:layout_constraintTop_toBottomOf="@id/textView"
+        app:layout_constraintVertical_bias="1.0"
+        tools:layout_editor_absoluteX="28dp"
+        tools:ignore="MissingConstraints" />
 
     <EditText
         android:id="@+id/admin_user"
-        android:layout_width="364dp"
-        android:layout_height="72dp"
+        android:layout_width="362dp"
+        android:layout_height="63dp"
+        android:backgroundTint="@color/white"
         android:hint="Username"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.241" />
 
+    <TextView
+        android:id="@+id/admin_pass_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Enter your password"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/admin_user"
+        tools:layout_editor_absoluteX="28dp"
+        tools:ignore="MissingConstraints" />
+
     <EditText
         android:id="@+id/admin_pass"
-        android:layout_width="365dp"
-        android:layout_height="69dp"
+        android:layout_width="362dp"
+        android:layout_height="63dp"
+        android:backgroundTint="@color/white"
         android:hint="Password"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintHorizontal_bias="0.489"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/admin_user"
-        app:layout_constraintVertical_bias="0.060000002" />
+        app:layout_constraintVertical_bias="0.097" />
 
     <Button
         android:id="@+id/admin_signIn"
         android:layout_width="132dp"
         android:layout_height="48dp"
-        android:backgroundTint="#000000"
+        android:backgroundTint="#0A4753"
         android:text="Login"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

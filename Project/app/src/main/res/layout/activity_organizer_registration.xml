@@ -1,50 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#191F36"
     android:padding="16dp">
 
+    <!-- Subheading for Name -->
+    <TextView
+        android:id="@+id/name_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:textSize="16sp"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Name Input -->
     <EditText
         android:id="@+id/organizer_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         android:backgroundTint="@color/white"
         android:hint="Name"
+=======
+        android:hint="Enter your name"
+>>>>>>> main
         android:minHeight="48dp"
         android:padding="12dp" />
 
+    <!-- Subheading for Email -->
+    <TextView
+        android:id="@+id/email_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Email Input -->
     <EditText
         android:id="@+id/organizer_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         android:backgroundTint="@color/white"
         android:hint="Email"
+=======
+        android:hint="Enter your email"
+>>>>>>> main
         android:inputType="textEmailAddress"
         android:minHeight="48dp"
         android:padding="12dp" />
 
+    <!-- Subheading for Password -->
+    <TextView
+        android:id="@+id/password_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Password"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Password Input -->
     <EditText
         android:id="@+id/organizer_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         android:backgroundTint="@color/white"
         android:hint="Password"
+=======
+        android:hint="Enter your password"
+>>>>>>> main
         android:inputType="textPassword"
         android:minHeight="48dp"
         android:padding="12dp" />
 
+    <!-- Subheading for Phone -->
+    <TextView
+        android:id="@+id/phone_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Phone"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Phone Input -->
     <EditText
         android:id="@+id/organizer_phone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         android:backgroundTint="@color/white"
         android:hint="Phone"
+=======
+        android:hint="Enter your phone number"
+>>>>>>> main
         android:inputType="phone"
         android:minHeight="48dp"
         android:padding="12dp" />
 
+    <!-- Subheading for Register Button -->
+    <TextView
+        android:id="@+id/register_button_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit your details"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Register Button -->
     <Button
         android:id="@+id/register_button"
         android:layout_width="match_parent"

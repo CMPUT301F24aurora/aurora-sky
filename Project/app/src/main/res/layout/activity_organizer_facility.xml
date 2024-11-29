@@ -6,11 +6,24 @@
     android:background="#191F36"
     android:padding="16dp">
 
+    <TextView
+        android:id="@+id/facility_name_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="Facility Name"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
     <EditText
         android:id="@+id/name_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         android:backgroundTint="@color/white"
+=======
+        android:backgroundTint="#FFFFFF"
+>>>>>>> main
         android:hint="Facility Name"
         android:minHeight="48dp"
         android:padding="8dp" />
@@ -29,21 +42,39 @@
         android:backgroundTint="#0A4753"
         android:text="Select End Time" />
 
+    <TextView
+        android:id="@+id/location_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Location"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:layout_marginBottom="4dp" />
+
     <EditText
         android:id="@+id/location_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/white"
         android:hint="Location"
+        android:backgroundTint="#FFFFFF"
         android:minHeight="48dp"
         android:padding="8dp" />
-
+    <TextView
+        android:id="@+id/email_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:layout_marginBottom="4dp" />
     <EditText
         android:id="@+id/email_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/white"
         android:hint="Contact Email"
+        android:backgroundTint="#FFFFFF"
         android:minHeight="48dp"
         android:padding="8dp" />
 
@@ -52,7 +83,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+<<<<<<< HEAD
         android:backgroundTint="#0A4753"
+=======
+        android:backgroundTint="#0A4754"
+>>>>>>> main
         android:text="Save Facility" />
 
     <Button

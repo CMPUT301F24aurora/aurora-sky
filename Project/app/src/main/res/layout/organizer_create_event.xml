@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#FFFFFF">
+    android:background="#191F36">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -19,79 +19,82 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#4AA7CAC0"
             android:orientation="vertical"
             android:padding="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
                 android:text="Event Name"
-                android:textColor="@color/black"
-                android:layout_marginBottom="4dp" />
+                android:textColor="@color/black" />
+
             <EditText
                 android:id="@+id/editTextEventName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:hint="Enter event name"
                 android:inputType="text"
-                android:padding="12dp"
-                android:layout_marginBottom="16dp"/>
+                android:padding="12dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
                 android:text="Date and Time"
-                android:textColor="@color/black"
-                android:layout_marginBottom="4dp" />
+                android:textColor="@color/black" />
+
             <EditText
                 android:id="@+id/editTextDateTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Select date and time"
+                android:layout_marginBottom="16dp"
                 android:focusable="false"
+                android:hint="Select date and time"
                 android:inputType="none"
-                android:padding="12dp"
-                android:layout_marginBottom="16dp"/>
+                android:padding="12dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
                 android:text="Number of Members (NL-No Limit)"
-                android:textColor="@color/black"
-                android:layout_marginBottom="4dp" />
+                android:textColor="@color/black" />
 
             <EditText
                 android:id="@+id/editNumberOfMembers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:hint="Enter number of members"
                 android:inputType="number"
-                android:padding="12dp"
-                android:layout_marginBottom="16dp"/>
+                android:padding="12dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
                 android:text="Event Description"
-                android:textColor="@color/black"
-                android:layout_marginBottom="4dp" />
+                android:textColor="@color/black" />
 
             <EditText
                 android:id="@+id/editTextEventDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:hint="Enter event description"
                 android:inputType="textMultiLine"
-                android:padding="12dp"
-                android:layout_marginBottom="16dp"/>
+                android:padding="12dp" />
 
             <TextView
                 android:id="@+id/uploadPosterGeolocationText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
                 android:text="Upload Poster                                             Geolocation"
-                android:textColor="@color/black"
-                android:layout_marginBottom="4dp" />
+                android:textColor="@color/black" />
 
             <Button
                 android:id="@+id/buttonRemovePoster"
@@ -107,17 +110,17 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/buttonUploadPoster"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
+                    android:layout_marginEnd="110dp"
                     android:background="@null"
                     android:contentDescription="Upload Poster"
-                    android:src="@drawable/ic_upload_icon"
-                    android:layout_marginEnd="110dp" />
+                    android:src="@drawable/ic_upload_icon" />
 
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/geo_toggle"
@@ -135,7 +138,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Create Event"
-        android:backgroundTint="@color/black"
+        android:backgroundTint="#0A4753"
         android:textColor="@color/white"/>
 
 </LinearLayout>

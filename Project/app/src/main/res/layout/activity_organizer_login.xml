@@ -10,9 +10,10 @@
         android:id="@+id/email_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:text="Email"
-        android:textSize="16sp"
-        android:layout_marginBottom="4dp" />
+        android:textColor="@color/white"
+        android:textSize="16sp" />
     <EditText
         android:id="@+id/email"
         android:layout_width="match_parent"
@@ -27,9 +28,10 @@
         android:id="@+id/password_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:text="Password"
-        android:textSize="16sp"
-        android:layout_marginBottom="4dp" />
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 
     <EditText
         android:id="@+id/password"

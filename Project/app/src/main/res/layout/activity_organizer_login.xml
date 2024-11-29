@@ -5,6 +5,13 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <TextView
+        android:id="@+id/email_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:textSize="16sp"
+        android:layout_marginBottom="4dp" />
     <EditText
         android:id="@+id/email"
         android:layout_width="match_parent"
@@ -13,6 +20,14 @@
         android:inputType="textEmailAddress"
         android:minHeight="48dp"
         android:padding="12dp" />
+
+    <TextView
+        android:id="@+id/password_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Password"
+        android:textSize="16sp"
+        android:layout_marginBottom="4dp" />
 
     <EditText
         android:id="@+id/password"

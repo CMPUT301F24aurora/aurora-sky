@@ -10,11 +10,8 @@ import android.widget.Button;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-<<<<<<< HEAD
-=======
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.NotificationCompat;
->>>>>>> main
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;

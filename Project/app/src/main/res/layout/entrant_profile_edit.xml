@@ -6,9 +6,10 @@
     android:id="@+id/entrant_profile_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#191F36"
     tools:context=".EntrantProfileEditActivity">
 
-    <!-- FrameLayout for profile picture with + button overlay -->
+
     <FrameLayout
         android:id="@+id/profile_picture_frame"
         android:layout_width="100dp"
@@ -45,6 +46,7 @@
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="16dp"
         android:text="Name"
+        android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_picture_frame" />
@@ -54,11 +56,12 @@
         android:id="@+id/edit_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:backgroundTint="@color/white"
         android:hint="Enter your name"
-        app:layout_constraintTop_toBottomOf="@id/name_label"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="32dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/name_label" />
 
     <!-- Subheading for Email -->
     <TextView
@@ -68,6 +71,7 @@
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="16dp"
         android:text="Email"
+        android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/edit_name" />
@@ -77,11 +81,12 @@
         android:id="@+id/edit_email"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:backgroundTint="@color/white"
         android:hint="Enter your email"
-        app:layout_constraintTop_toBottomOf="@id/email_label"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="32dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/email_label" />
 
     <!-- Subheading for Phone -->
     <TextView
@@ -91,6 +96,7 @@
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="16dp"
         android:text="Phone Number (Optional)"
+        android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/edit_email" />
@@ -100,11 +106,12 @@
         android:id="@+id/edit_phone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:backgroundTint="@color/white"
         android:hint="Enter your phone number"
-        app:layout_constraintTop_toBottomOf="@id/phone_label"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="32dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/phone_label" />
 
     <Button
         android:id="@+id/remove_profile_picture"
@@ -122,7 +129,7 @@
         android:id="@+id/confirm_changes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#000000"
+        android:backgroundTint="#0A4753"
         android:text="Confirm Changes"
         app:layout_constraintTop_toBottomOf="@id/remove_profile_picture"
         app:layout_constraintBottom_toBottomOf="parent"

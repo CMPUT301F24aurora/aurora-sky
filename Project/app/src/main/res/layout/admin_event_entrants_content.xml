@@ -59,9 +59,10 @@
             android:id="@+id/profile_name_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:text="John Doe"
-            android:textSize="16sp"
-            android:layout_marginStart="8dp"/>
+            android:textColor="@color/white"
+            android:textSize="16sp" />
     </LinearLayout>
 
     <!-- Email Row -->
@@ -88,9 +89,10 @@
             android:id="@+id/profile_email_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:text="john.doe@example.com"
-            android:textSize="16sp"
-            android:layout_marginStart="8dp"/>
+            android:textColor="@color/white"
+            android:textSize="16sp" />
     </LinearLayout>
 
     <!-- Phone Row -->
@@ -117,9 +119,10 @@
             android:id="@+id/profile_phone_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:text="(123) 456-7890"
-            android:textSize="16sp"
-            android:layout_marginStart="8dp"/>
+            android:textColor="@color/white"
+            android:textSize="16sp" />
     </LinearLayout>
 
     <Button

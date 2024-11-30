@@ -129,21 +129,23 @@
         android:id="@+id/admin_ent_img_remove"
         android:layout_width="175dp"
         android:layout_height="45dp"
-        android:backgroundTint="#3B6064"
+        android:backgroundTint="#0A4753"
         android:text="Remove Image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/phone_row" />
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteY="378dp" />
 
     <Button
         android:id="@+id/admin_ev_ent_remove"
         android:layout_width="175dp"
         android:layout_height="45dp"
+        android:layout_marginTop="28dp"
         android:backgroundTint="#3B6064"
         android:text="Remove Profile"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/admin_ent_img_remove"/>
+        app:layout_constraintTop_toBottomOf="@+id/admin_ent_img_remove"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

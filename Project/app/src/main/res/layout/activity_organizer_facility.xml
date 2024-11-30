@@ -6,6 +6,13 @@
     android:background="#191F36"
     android:padding="16dp">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="487dp"
+        android:background="#4AA7CAC0"
+        android:orientation="vertical"
+        android:padding="16dp">
+
     <TextView
         android:id="@+id/facility_name_label"
         android:layout_width="match_parent"
@@ -87,5 +94,6 @@
         android:layout_marginTop="8dp"
         android:text="Remove Facility"
         android:visibility="gone" />
+    </LinearLayout>
 
 </LinearLayout>

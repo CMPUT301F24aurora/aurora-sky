@@ -85,6 +85,10 @@ public class Event implements Serializable {
         return this.qr_code;
     }
 
+    public void setQR_code(String qrHash){
+        this.qr_code = qrHash;
+    }
+
     public String getImage_url() {
         return image_url;
     }

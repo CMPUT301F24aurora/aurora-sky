@@ -213,6 +213,7 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
 
     // Proceed to join the waiting list and add location if required
     private void proceedToJoinWaitingList() {
+        Log.e("", event.getWaitingList().toString());
         waitingList.addEntrant(entrant.getId(), event.getWaitingList(), new WaitingList.OnDatabaseUpdateListener() {
             @Override
             public void onSuccess() {

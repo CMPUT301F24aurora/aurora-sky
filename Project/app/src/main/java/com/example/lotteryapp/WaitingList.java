@@ -30,7 +30,7 @@ public class WaitingList {
 
     // Add or remove methods remain unchanged, but include callbacks for database operations
     public boolean addEntrant(String entrantId, List<String> waitingListIds, OnDatabaseUpdateListener listener) {
-        if (waitlistCap != null && waitingListIds.size() >= waitlistCap) {
+        if (waitlistCap != -1 && waitingListIds.size() >= waitlistCap) {
             // Waitlist is full
             listener.onFailure(new Exception("Waitlist is full"));
             return false;

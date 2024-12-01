@@ -1,9 +1,12 @@
 package com.example.lotteryapp;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -121,6 +124,27 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
                 .show();
     }
 
+//    private void joinWaitingList() {
+//        // Check if geolocation is required
+//        if (event.getGeolocationRequired()) {
+//            // Check if location services are enabled before proceeding
+//            if (locationHelper.isLocationEnabled()) {
+//                // If permission is granted, get the location
+//                if (locationHelper.isLocationPermissionGranted()) {
+//                    proceedToJoinWaitingList();
+//                } else {
+//                    // Request permission if not granted yet
+//                    locationHelper.requestLocationPermission();
+//                }
+//            } else {
+//                promptEnableLocation(); // If location is not enabled, prompt user
+//            }
+//        } else {
+//            // If no geolocation is required, directly proceed to join the list
+//            proceedToJoinWaitingList();
+//        }
+//    }
+
     private void joinWaitingList() {
         // Check if geolocation is required
         if (event.getGeolocationRequired()) {
@@ -131,7 +155,25 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
                     proceedToJoinWaitingList();
                 } else {
                     // Request permission if not granted yet
-                    locationHelper.requestLocationPermission();
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                        // Show explanation before asking again
+                        new AlertDialog.Builder(this)
+                                .setTitle("Location Permission")
+                                .setMessage("We need access to your location to add you to the waiting list for this event.")
+                                .setPositiveButton("OK", (dialog, which) -> locationHelper.requestLocationPermission())
+                                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                                .create()
+                                .show();
+                    } else {
+                        // User has denied permission and selected "Don't ask again", show a different message
+                        new AlertDialog.Builder(this)
+                                .setTitle("Location Permission Denied")
+                                .setMessage("Location permission is required to join the waiting list. Please enable it in the app settings.")
+                                .setPositiveButton("Go to Settings", (dialog, which) -> openAppSettings())
+                                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                                .create()
+                                .show();
+                    }
                 }
             } else {
                 promptEnableLocation(); // If location is not enabled, prompt user
@@ -141,6 +183,14 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
             proceedToJoinWaitingList();
         }
     }
+
+    private void openAppSettings() {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        intent.setData(uri);
+        startActivity(intent);
+    }
+
 
 
     // Proceed to join the waiting list and add location if required

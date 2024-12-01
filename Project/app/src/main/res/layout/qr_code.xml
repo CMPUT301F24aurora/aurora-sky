@@ -21,4 +21,13 @@
         android:layout_below="@id/event_title"
         android:layout_centerHorizontal="true"
         android:contentDescription="QR Code Image" />
+    <!-- Button to trigger the download of the QR Code -->
+    <Button
+        android:id="@+id/download_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Download QR Code"
+        android:layout_below="@id/qr_code_image"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"/>
 </RelativeLayout>

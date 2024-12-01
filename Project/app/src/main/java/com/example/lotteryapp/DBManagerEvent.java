@@ -33,6 +33,8 @@ public class DBManagerEvent {
         eventData.put("waitingList", event.getWaitingList());  // Store waiting list IDs
         eventData.put("image_url", event.getImage_url());
         eventData.put("geolocationRequired", event.getGeolocationRequired());
+        eventData.put("waitlistCap", event.getWaitlistCap());
+
 
         // Add event to "events" collection in Firestore
         DocumentReference eventRef = db.collection("events").document(eventId);

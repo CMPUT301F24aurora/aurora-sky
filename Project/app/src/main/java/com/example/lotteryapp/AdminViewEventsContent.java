@@ -16,9 +16,16 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The AdminViewEventsContent class displays the details of a selected event and allows admin users to delete it.
@@ -35,8 +42,11 @@ public class AdminViewEventsContent extends AppCompatActivity {
     private TextView eventNameTextView, eventDescriptionTextView, eventCapacityTextView, eventDateTextView;
     private ImageView eventPosterImageView;
     private Button adminEvRemove;
+    private Button adminQrRemove;
+    private Button adminPosterRemove;
     private FirebaseFirestore db;
     private Event event;
+    private String eventHash;
 
     /**
      * Called when the activity is first created.
@@ -56,6 +66,8 @@ public class AdminViewEventsContent extends AppCompatActivity {
         eventDateTextView = findViewById(R.id.admin_event_date);
         eventPosterImageView = findViewById(R.id.admin_event_poster);
         adminEvRemove = findViewById(R.id.admin_ev_remove);
+        adminQrRemove = findViewById(R.id.admin_ev_remove_qr);
+        adminPosterRemove = findViewById(R.id.admin_ev_remove_poster);
         event = (Event) getIntent().getSerializableExtra("event_data");
 
         // Get the intent extras and set the text views
@@ -64,6 +76,7 @@ public class AdminViewEventsContent extends AppCompatActivity {
         String eventCapacity = String.valueOf(event.getNumPeople());
         String eventDate = event.getEventStartDate();
         String eventImageUrl = event.getImage_url();
+        eventHash = event.getQR_code();
 
         // Set values to TextViews
         eventNameTextView.setText(eventName);
@@ -74,6 +87,7 @@ public class AdminViewEventsContent extends AppCompatActivity {
         // Load the poster image if URL is not null or empty
         if (eventImageUrl != null && !eventImageUrl.isEmpty()) {
             eventPosterImageView.setVisibility(View.VISIBLE);
+            adminPosterRemove.setVisibility(View.VISIBLE);
             Glide.with(this)
                     .load(eventImageUrl)
                     .placeholder(R.drawable.ic_profile_photo)  // Optional placeholder image
@@ -91,7 +105,124 @@ public class AdminViewEventsContent extends AppCompatActivity {
             }
         });
 
+        adminQrRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteQrHash(eventHash);
+            }
+        });
+
+        if (adminPosterRemove.getVisibility() == View.VISIBLE){
+            adminPosterRemove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    deleteEventPoster(eventHash, eventImageUrl);
+                }
+            });
+        }
+
         db = FirebaseFirestore.getInstance();
+    }
+
+    public void deleteEventPoster(String eventId, String eventPosterUrl){
+        DocumentReference docRef = db.collection("events").document(eventId);
+
+        docRef.update("image_url", null)
+                .addOnSuccessListener(aVoid -> {
+                    // Successfully deleted the image_url field
+                    Log.i("AdminDeletePoster", "image_url deleted successfully!");
+
+                    // Delete the Image from Firebase Storage
+                    StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(eventPosterUrl); // Replace with your image URL
+
+                    storageRef.delete().addOnSuccessListener(aVoid1 -> {
+                        // Successfully deleted the image from Firebase Storage
+                        Toast.makeText(AdminViewEventsContent.this, "Event Poster deleted successfully!",  Toast.LENGTH_SHORT).show();
+
+                        // Refresh page with no poster image and no remove poster button
+                        Intent intent = new Intent(this, AdminViewEventsContent.class);
+                        intent.putExtra("event_data", event);
+                        finish();
+                        startActivity(intent);
+                    }).addOnFailureListener(exception -> {
+                        // Handle any errors that occurred
+                        Log.e("AdminDeletePoster","Error deleting image from Firebase Storage: " + exception.getMessage());
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    // Handle the failure to delete the URL
+                    Log.e("AdminDeletePoster","Error deleting image_url: " + e.getMessage());
+                });
+
+    }
+    public void deleteQrHash(final String currentQrHash) {
+        DocumentReference oldDocRef = db.collection("events").document(currentQrHash);
+        oldDocRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                DocumentSnapshot document = task.getResult();
+                String newQrHash = event.generateQRHash();
+                Map<String, Object> docData = document.getData();
+                docData.put("qr_code", newQrHash);
+                createNewDocumentWithNewId(oldDocRef, docData, newQrHash, currentQrHash);
+
+                // Update the current Event Hash
+                event.setQR_code(newQrHash);
+                eventHash = newQrHash;
+                Toast.makeText(AdminViewEventsContent.this, "Event QR deleted successfully", Toast.LENGTH_SHORT).show();
+            } else {
+                Log.e("AdminDeleteQrHash", "Error fetching event with that qrHash!");
+            }
+        });
+    }
+
+    private void createNewDocumentWithNewId(DocumentReference oldDocRef, Map<String, Object> data, String newDocId, String currentQrHash) {
+        oldDocRef.delete().addOnSuccessListener(aVoid -> {
+                    // Successfully deleted the old document
+                    Log.i("AdminDeleteQrHash", "Successfully deleted old Event doc");
+                })
+                .addOnFailureListener(e -> {
+                    // Handle the failure
+                    Log.e("AdminDeleteQrHash", "Couldn't delete old Event doc!");
+                });
+        DocumentReference newDocRef = db.collection("events").document(newDocId);
+
+        newDocRef.set(data).addOnSuccessListener(aVoid -> {
+            // Successfully created the new document
+            updateOrganizers(currentQrHash, newDocId);
+            Log.i("AdminDeleteQrHash", "Successfully created new Event doc");
+        }).addOnFailureListener(e -> {
+            // Handle the failure
+            Log.e("AdminDeleteQrHash", "Couldn't create new Event doc!");
+        });
+    }
+
+
+    private void updateOrganizers(String oldQrHash, String newQrHash) {
+
+        // Query the organizers collection
+        db.collection("organizers").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (DocumentSnapshot document : task.getResult()) {
+                    List<String> eventHashes = (List<String>) document.get("eventHashes");
+
+                    if (eventHashes != null && eventHashes.contains(oldQrHash)) {
+                        // Replace the old QR hash with the new one
+                        eventHashes.remove(oldQrHash);
+                        eventHashes.add(newQrHash);
+
+                        // Update the document with the new list
+                        document.getReference().update("eventHashes", eventHashes)
+                                .addOnFailureListener(e -> {
+                                    // Handle failure to update organizer document
+                                    Log.e("AdminDeleteQrHash", "Couldn't update the eventHashes list!");
+                                });
+                    }
+                }
+            } else {
+                // Handle failure to query organizers collection
+                Log.e("AdminDeleteQrHash", "Couldn't fetch organizers!");
+            }
+        });
     }
 
     /**

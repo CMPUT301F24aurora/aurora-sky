@@ -78,6 +78,20 @@
 
     <!-- Remove Event Button -->
     <Button
+        android:id="@+id/admin_ev_remove_poster"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        android:backgroundTint="#3B6064"
+        android:text="Remove Poster"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@id/admin_ev_remove_qr"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
         android:id="@+id/admin_ev_remove_qr"
         android:layout_width="0dp"
         android:layout_height="48dp"

@@ -254,4 +254,5 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         intent.putExtra("entrant_data", entrant);
         startActivity(intent);
     }
+
 }

@@ -38,6 +38,7 @@ public class Event implements Serializable {
     private String qr_code;
     private List<String> selectedEntrants;
     private List<String> cancelledEntrants;
+    private List<String> finalEntrants;
     private List<String> waitingList;
     private String image_url;
     private Integer waitlistCap;
@@ -251,5 +252,13 @@ public class Event implements Serializable {
 
     public void setWaitlistCap(Integer waitlistCap) {
         this.waitlistCap = waitlistCap;
+    }
+
+    public List<String> getFinalEntrants() {
+        return finalEntrants;
+    }
+
+    public void setFinalEntrants(List<String> finalEntrants) {
+        this.finalEntrants = finalEntrants;
     }
 }

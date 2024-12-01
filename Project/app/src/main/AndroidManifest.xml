@@ -34,11 +34,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LotteryApp"
         tools:targetApi="31">
-
         <activity
-            android:name=".NotificationActivity"
-            android:exported="true" />
-
+            android:name=".RecyclerListActivity" />
+        <activity
+            android:name=".AfterSampling"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -49,6 +49,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Sampling" />
+<!--        <activity android:name=".SamplingWorker" />-->
         <activity android:name=".SamplingResultsActivity" />
         <activity android:name=".AdminHomepageActivity" />
         <activity
@@ -75,12 +76,10 @@
         <activity android:name=".QRScannerActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".AcceptDeclineActivity" />
+        <activity android:name=".EventInvitationAdapter" />
         <activity
             android:name=".InvitationActivity"
-            android:exported="true">
-        </activity>
-
-
+            android:exported="true" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

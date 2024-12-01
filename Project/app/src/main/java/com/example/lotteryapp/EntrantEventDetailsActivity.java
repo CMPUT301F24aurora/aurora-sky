@@ -72,6 +72,16 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
         entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
         organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
         signUp = getIntent().getBooleanExtra("sign_up", false);
+
+        if (event == null) {
+            Log.e(TAG, "Event data is missing from intent.");
+        } else {
+            Log.d(TAG, "Event retrieved: " + event.getEventName());
+        }
+
+        if (entrant == null) {
+            Log.e(TAG, "Entrant data is missing from intent.");
+        }
     }
 
     private void displayEventDetails() {

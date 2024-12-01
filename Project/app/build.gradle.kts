@@ -50,6 +50,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation ("com.google.firebase:firebase-messaging:24.1.0")
+    implementation ("androidx.work:work-runtime:2.8.1")
+    implementation ("com.google.guava:guava:31.1-android")
 
     implementation(libs.appcompat)
     implementation(libs.material)

@@ -52,7 +52,7 @@ public class AcceptDeclineActivity extends AppCompatActivity {
         // Update the event document by adding entrantId to the final_entrants list
         db.collection("events")
                 .document(eventId)
-                .update("final_entrants", com.google.firebase.firestore.FieldValue.arrayUnion(entrantId))
+                .update("finalChosenEntrants", com.google.firebase.firestore.FieldValue.arrayUnion(entrantId))
                 .addOnSuccessListener(aVoid -> {
                     // Navigate back to InvitationActivity after success
                     Toast.makeText(this, "Successfully accepted the invitation!", Toast.LENGTH_SHORT).show();

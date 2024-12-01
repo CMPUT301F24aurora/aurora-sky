@@ -162,7 +162,9 @@ public class Sampling extends AppCompatActivity {
                     });
 
             // Pass data to SamplingResultsActivity
-            Intent intent = new Intent(Sampling.this, SamplingResultsActivity.class);
+            Intent intent = new Intent(Sampling.this, AfterSampling.class);
+            intent.putExtra("eventId", eventId);
+            Log.d("ent: ", " "+eventId);
             intent.putExtra("selectedEntrants", (Serializable) selectedEntrants);
             intent.putExtra("cancelledEntrants", (Serializable) cancelledEntrants);
             startActivity(intent);

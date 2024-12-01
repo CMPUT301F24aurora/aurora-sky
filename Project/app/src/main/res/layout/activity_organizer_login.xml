@@ -3,21 +3,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#191F36"
     android:padding="16dp">
 
+    <TextView
+        android:id="@+id/email_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="Email"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
     <EditText
         android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
         android:hint="Email"
         android:inputType="textEmailAddress"
         android:minHeight="48dp"
         android:padding="12dp" />
 
+    <TextView
+        android:id="@+id/password_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="Password"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
     <EditText
         android:id="@+id/password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
         android:hint="Password"
         android:inputType="textPassword"
         android:minHeight="48dp"
@@ -28,5 +48,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Login"
+        android:backgroundTint="#0A4753"
         android:minHeight="48dp" />
 </LinearLayout>

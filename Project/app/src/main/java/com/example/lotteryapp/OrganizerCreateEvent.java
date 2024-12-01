@@ -24,12 +24,14 @@ import com.google.firebase.storage.StorageReference;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class OrganizerCreateEvent extends AppCompatActivity {
 
     private static final String TAG = "OrganizerCreateEvent";
 
-    private EditText eventDateTime, eventName, eventNumberOfPeople, eventDescription;
+    private EditText eventStartTime, eventEndTime, eventPrice, registrationDeadline, eventName,
+            eventNumberOfPeople, eventDescription, waitlistCap;
     private Button organizerCreateEvent, buttonRemovePoster;
     private SwitchCompat geo_toggle;
     private ImageButton buttonUploadPoster;
@@ -63,20 +65,26 @@ public class OrganizerCreateEvent extends AppCompatActivity {
 
 //        // Initialize EditText and Buttons
         eventName = findViewById(R.id.editTextEventName);
-        eventDateTime = findViewById(R.id.editTextDateTime);
         eventNumberOfPeople = findViewById(R.id.editNumberOfMembers);
         eventDescription = findViewById(R.id.editTextEventDescription);
         buttonUploadPoster = findViewById(R.id.buttonUploadPoster);
         buttonRemovePoster = findViewById(R.id.buttonRemovePoster);
         organizerCreateEvent = findViewById(R.id.buttonCreateEvent);
+        eventStartTime = findViewById(R.id.eventStartTime);
+        eventEndTime = findViewById(R.id.eventEndTime);
+        eventPrice = findViewById(R.id.eventPrice);
+        registrationDeadline = findViewById(R.id.registrationDeadline);
         geo_toggle = findViewById(R.id.geo_toggle);
+        waitlistCap = findViewById(R.id.editWaitlistCap);
 
         if (event != null) { // If event data exists, it's an edit operation
             preloadEventData(event);
         }
 
 //        // Set click listener for eventDateTime to open date and time picker
-        eventDateTime.setOnClickListener(v -> openDateTimePicker());
+        eventStartTime.setOnClickListener(v->openDateTimePicker(eventStartTime));
+        eventEndTime.setOnClickListener(v->openDateTimePicker(eventEndTime));
+        registrationDeadline.setOnClickListener(v->openDateTimePicker(registrationDeadline));
         buttonUploadPoster.setOnClickListener(v->selectImage());
         organizerCreateEvent.setOnClickListener(v -> saveEventDetails());
 
@@ -100,43 +108,46 @@ public class OrganizerCreateEvent extends AppCompatActivity {
 
     private void preloadEventData(Event event) {
         eventName.setText(event.getEventName());
-        eventDateTime.setText(event.getEventDate());
+        eventStartTime.setText(event.getEventStartDate());
+        eventEndTime.setText(event.getEventEndDate());
+        registrationDeadline.setText(event.getRegistrationDeadline());
         eventNumberOfPeople.setText(String.valueOf(event.getNumPeople()));
+        eventPrice.setText(String.valueOf(event.getEventPrice()));
         eventDescription.setText(event.getDescription());
         geo_toggle.setChecked(event.getGeolocationRequired());
         if (event.getImage_url() != null){
             buttonRemovePoster.setVisibility(View.VISIBLE);
             buttonRemovePoster.setEnabled(true);
         }
+
+        if (event.getWaitlistCap() != -1){
+            waitlistCap.setText(String.valueOf(event.getWaitlistCap()));
+        } else {
+            waitlistCap.setText("");
+        }
         organizerCreateEvent.setText("Save Event");
     }
 
-    private void openDateTimePicker() {
+    private void openDateTimePicker(EditText e) {
+        // Create the date picker
         MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select Event Date")
+                .setTitleText("Select Date")
                 .build();
 
         datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
 
         datePicker.addOnPositiveButtonClickListener(selection -> {
-            Calendar calendar = Calendar.getInstance();
+            // Use UTC timezone to prevent day adjustment
+            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             calendar.setTimeInMillis(selection);
 
-            TimePickerDialog timePickerDialog = new TimePickerDialog(this,
-                    (view, hourOfDay, minute) -> {
-                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                        calendar.set(Calendar.MINUTE, minute);
-
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-                        eventDateTime.setText(sdf.format(calendar.getTime()));
-                    },
-                    calendar.get(Calendar.HOUR_OF_DAY),
-                    calendar.get(Calendar.MINUTE),
-                    true);
-
-            timePickerDialog.show();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // Ensure UTC timezone
+            e.setText(sdf.format(calendar.getTime()));
         });
     }
+
+
 
     // Launcher for selecting an image
     private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
@@ -160,19 +171,25 @@ public class OrganizerCreateEvent extends AppCompatActivity {
 
     private void saveEventDetails() {
         String name = eventName.getText().toString().trim();
-        String dateTime = eventDateTime.getText().toString().trim();
+        String eventStart = eventStartTime.getText().toString().trim();
+        String eventEnd = eventEndTime.getText().toString().trim();
+        String registration = registrationDeadline.getText().toString().trim();
+        String price = eventPrice.getText().toString().trim();
         String numofPeople = eventNumberOfPeople.getText().toString().trim();
         String description = eventDescription.getText().toString().trim();
         Boolean geolocation = geo_toggle.isChecked();
+        String cap = waitlistCap.getText().toString().trim();
 
-        if (name.isEmpty() || dateTime.isEmpty() || numofPeople.isEmpty() || description.isEmpty()) {
+        if (name.isEmpty() || eventStart.isEmpty() || eventEnd.isEmpty() || registration.isEmpty() || price.isEmpty() || numofPeople.isEmpty() || description.isEmpty()) {
             Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Integer numPeople;
+        Float priceOf;
         try {
             numPeople = Integer.parseInt(numofPeople);
+            priceOf = Float.parseFloat(price);
         } catch (NumberFormatException e) {
             Toast.makeText(this, "Invalid number of people", Toast.LENGTH_SHORT).show();
             return;
@@ -181,13 +198,27 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         // Use the existing event if editing
         if (event != null) {
             event.setEventName(name);
-            event.setEventDate(dateTime);
+            event.setEventStartDate(eventStart);
+            event.setEventEndDate(eventEnd);
+            event.setRegistrationDeadline(registration);
+            event.setEventPrice(priceOf);
             event.setNumPeople(numPeople);
             event.setDescription(description);
             event.setGeolocationRequired(geolocation);
         } else {
             // Create a new event only if it's not an edit operation
-            event = new Event(name, dateTime, numPeople, description, geolocation);
+            event = new Event(name, numPeople, description, geolocation, registration, eventStart, eventEnd, priceOf);
+        }
+
+        if (!cap.isEmpty()){
+            try {
+                event.setWaitlistCap(Integer.parseInt(cap));
+            } catch (NumberFormatException e){
+                Toast.makeText(this, "Invalid waiting list cap", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } else {
+            event.setWaitlistCap(-1);
         }
 
         // Check if there is an image to upload
@@ -243,5 +274,4 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         intent.putExtra("entrant_data", entrant);
         startActivity(intent);
     }
-
 }

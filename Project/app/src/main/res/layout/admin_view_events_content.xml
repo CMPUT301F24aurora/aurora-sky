@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="#191F36"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,14 +12,15 @@
         android:id="@+id/admin_event_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="16dp"
         android:text="Event Name"
+        android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:gravity="center"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:paddingTop="16dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Poster Image (Initially Hidden) -->
     <ImageView
@@ -38,61 +40,81 @@
         android:id="@+id/admin_event_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:padding="16dp"
         android:text="Event Description"
+        android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/admin_event_poster"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="16dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/admin_event_poster" />
 
     <!-- Event Capacity -->
     <TextView
         android:id="@+id/admin_event_capacity"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:padding="16dp"
         android:text="Capacity: 100"
+        android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/admin_event_description"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="16dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/admin_event_description" />
 
     <!-- Event Date -->
     <TextView
         android:id="@+id/admin_event_date"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:padding="16dp"
         android:text="Date: Jan 01, 2024"
+        android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/admin_event_capacity"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="16dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/admin_event_capacity" />
 
     <!-- Remove QR Code Button -->
+
+    <!-- Remove Event Button -->
+    <Button
+        android:id="@+id/admin_ev_remove_poster"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        android:backgroundTint="#3B6064"
+        android:text="Remove Poster"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@id/admin_ev_remove_qr"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <Button
         android:id="@+id/admin_ev_remove_qr"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:backgroundTint="#000000"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="#3B6064"
         android:text="Remove QR Code"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toTopOf="@id/admin_ev_remove"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="8dp"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Remove Event Button -->
     <Button
         android:id="@+id/admin_ev_remove"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:backgroundTint="#000000"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#3B6064"
         android:text="Remove Event"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="16dp"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

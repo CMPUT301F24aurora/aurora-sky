@@ -43,7 +43,7 @@ public class DatabaseHelper {
      * @param latitude  The latitude of the entrant's location.
      * @param longitude The longitude of the entrant's location.
      */
-    public void saveEventEntrantLocation(String eventId, String entrantId, double latitude, double longitude) {
+    public void saveEventEntrantLocation(String eventId, String entrantId, String name, double latitude, double longitude) {
         if (eventId == null || entrantId == null) {
             Log.e("DatabaseHelper", "Event ID or Entrant ID is null. Cannot save data.");
             return;
@@ -52,6 +52,7 @@ public class DatabaseHelper {
         // Prepare the data to be saved
         Map<String, Object> locationData = new HashMap<>();
         locationData.put("entrantId", entrantId);
+        locationData.put("name", name);
         locationData.put("latitude", latitude);
         locationData.put("longitude", longitude);
 
@@ -93,11 +94,12 @@ public class DatabaseHelper {
                     List<EntrantLocation> entrantLocations = new ArrayList<>();
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         String entrantId = document.getId();
+                        String name = document.getString("name");
                         Double latitude = document.getDouble("latitude");
                         Double longitude = document.getDouble("longitude");
 
                         if (latitude != null && longitude != null) {
-                            entrantLocations.add(new EntrantLocation(entrantId, latitude, longitude));
+                            entrantLocations.add(new EntrantLocation(entrantId, name, latitude, longitude));
                         }
                     }
 
@@ -129,11 +131,14 @@ public class DatabaseHelper {
      */
     public static class EntrantLocation {
         private final String entrantId;
+        private final String name;
         private final double latitude;
         private final double longitude;
 
-        public EntrantLocation(String entrantId, double latitude, double longitude) {
+
+        public EntrantLocation(String entrantId, String name, double latitude, double longitude) {
             this.entrantId = entrantId;
+            this.name = name;
             this.latitude = latitude;
             this.longitude = longitude;
         }
@@ -141,6 +146,8 @@ public class DatabaseHelper {
         public String getEntrantId() {
             return entrantId;
         }
+
+        public String getName(){return name;}
 
         public double getLatitude() {
             return latitude;

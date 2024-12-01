@@ -1,12 +1,7 @@
 package com.example.lotteryapp;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -22,14 +17,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 /**
  * The {@code MainActivity} class represents the main entry point of the application.
  * It handles user authentication and navigation to the appropriate user type pages.
@@ -68,8 +57,6 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        checkNotificationField();
-
         // Button for Entrant
         Button entrantButton = findViewById(R.id.entrantButton);
         entrantButton.setOnClickListener(v -> checkUserExistsAndNavigate("entrant"));
@@ -85,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         });
         // Admin status check
         String deviceId = getDeviceId(this);
+        Log.i("Device Id: ", deviceId);
         checkAdminAndDisplayPage(deviceId);
     }
 
@@ -203,121 +191,4 @@ public class MainActivity extends AppCompatActivity {
     private String getDeviceId(Context context) {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
-
-    private void checkNotificationField() {
-        String deviceId = getDeviceId(this);
-        Log.d(TAG, "Device ID: " + deviceId);
-
-        db.collection("entrants")
-                .whereEqualTo("id", deviceId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
-
-                        // Retrieve the notifications array
-                        List<Map<String, Object>> notifications =
-                                (List<Map<String, Object>>) document.get("notifications");
-
-                        if (notifications != null && !notifications.isEmpty()) {
-                            // Send a notification for each entry in the array
-                            for (Map<String, Object> notification : notifications) {
-                                String title = (String) notification.get("title");
-                                String message = (String) notification.get("message");
-
-                                if (title != null && message != null) {
-                                    sendNotification(deviceId, title, message);
-                                }
-                            }
-
-//                            // Optionally clear the notifications array after processing
-//                            document.getReference().update("notifications", new ArrayList<>());
-                        }
-                    } else {
-                        Log.d(TAG, "No entrant found or notifications field is empty.");
-                    }
-                })
-                .addOnFailureListener(e -> Log.e(TAG, "Error checking notification field", e));
-    }
-
-//    /**
-//     * Sends a notification to the user.
-//     *
-//     * @param title   the title of the notification
-//     * @param message the message body of the notification
-//     */
-//    private void sendNotification(String title, String message) {
-//        // Create a notification channel if running on Android O or later
-//        String channelID = "CHANNEL_ID_NOTIFICATION";
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//            if (notificationManager != null) {
-//                NotificationChannel notificationChannel = notificationManager.getNotificationChannel(channelID);
-//                if (notificationChannel == null) {
-//                    int importance = NotificationManager.IMPORTANCE_HIGH;
-//                    notificationChannel = new NotificationChannel(channelID, "Notification Channel", importance);
-//                    notificationChannel.setLightColor(Color.GREEN);
-//                    notificationChannel.enableVibration(true);
-//                    notificationManager.createNotificationChannel(notificationChannel);
-//                }
-//            }
-//        }
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelID)
-//                .setSmallIcon(R.drawable.ic_notification) // Replace with your app's notification icon
-//                .setContentTitle(title)
-//                .setContentText(message)
-//                .setPriority(NotificationCompat.PRIORITY_HIGH);
-//
-//        NotificationManager notificationManager =
-//                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
-//    }
-
-    public void sendNotification(String deviceId, String title, String message) {
-        // Create a notification channel if running on Android O or later
-        String channelID = "CHANNEL_ID_NOTIFICATION";
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            if (notificationManager != null) {
-                NotificationChannel notificationChannel = notificationManager.getNotificationChannel(channelID);
-                if (notificationChannel == null) {
-                    int importance = NotificationManager.IMPORTANCE_HIGH;
-                    notificationChannel = new NotificationChannel(channelID, "Notification Channel", importance);
-                    notificationChannel.setLightColor(Color.GREEN);
-                    notificationChannel.enableVibration(true);
-                    notificationManager.createNotificationChannel(notificationChannel);
-                }
-            }
-        }
-
-        // Build the notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelID)
-                .setSmallIcon(R.drawable.notifications)
-                .setContentTitle(title)  // Use the passed-in title
-                .setContentText(message) // Use the passed-in message
-                .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
-
-        // Set up a pending intent (optional)
-        Intent intent = new Intent(this, NotificationMessaging.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("data", "some value");
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                intent,
-                PendingIntent.FLAG_MUTABLE
-        );
-        builder.setContentIntent(pendingIntent);
-
-        // Show the notification
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (notificationManager != null) {
-            notificationManager.notify((int) System.currentTimeMillis(), builder.build());
-            Log.d("NotificationActivity", "Notification sent to device: " + deviceId);
-        } else {
-            Log.e("NotificationActivity", "NotificationManager is null");
-        }
-    }
-
 }

@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#191F36"
     tools:context=".EntrantEventDetailsActivity">
 
     <!-- Event Title -->
@@ -14,12 +15,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Event Title"
+        android:textAlignment="center"
+        android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textAlignment="center" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Event Poster -->
     <ImageView
@@ -40,25 +42,27 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Date: MM/DD/YYYY"
+        android:textAlignment="center"
+        android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/event_poster"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textAlignment="center" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/event_poster" />
 
     <!-- Event Description -->
     <TextView
         android:id="@+id/event_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:text="Event Description"
+        android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/event_date"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/event_date" />
 
     <!-- Event Capacity -->
     <TextView
@@ -67,10 +71,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Capacity: 50"
+        android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/event_description"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/event_description" />
 
     <!-- Enter Waiting List Button -->
     <Button
@@ -78,9 +83,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:backgroundTint="#6200EE"
         android:text="Enter Waiting List"
-        android:textColor="#FFFFFF"
+        android:backgroundTint="#0A4753"
         app:layout_constraintTop_toBottomOf="@id/event_capacity"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -91,7 +95,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:backgroundTint="#6200EE"
+        android:backgroundTint="#0A4753"
         android:text="Leave Waiting List"
         android:textColor="#FFFFFF"
         android:enabled="false"

@@ -3,6 +3,9 @@ package com.example.lotteryapp;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -38,13 +41,15 @@ public class Event implements Serializable {
     private String qr_code;
     private List<String> waitingList;
     private String image_url;
-    private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseFirestore db;
 
     public Event() {
-        // Empty constructor for Firebase
+        // Initialize Firestore
+        this.db = FirebaseFirestore.getInstance();
     }
 
-    public Event(String eventName, Integer numPeople, String description, Boolean geolocationRequired, String registrationDeadline, String eventStartDate, String eventEndDate, Float eventPrice) {
+    public Event(String eventName, Integer numPeople, String description, Boolean geolocationRequired,
+                 String registrationDeadline, String eventStartDate, String eventEndDate, Float eventPrice) {
         this.eventName = eventName;
         this.numPeople = numPeople;
         this.description = description;
@@ -54,7 +59,8 @@ public class Event implements Serializable {
         this.eventEndDate = eventEndDate;
         this.eventPrice = eventPrice;
         this.qr_code = generateQRHash();
-        this.waitingList = new ArrayList<>();  // Initialize waitingList as an empty list
+        this.waitingList = new ArrayList<>();
+        this.db = FirebaseFirestore.getInstance();
     }
 
     public String getEventName() {
@@ -216,5 +222,17 @@ public class Event implements Serializable {
 
     public void setEventPrice(Float eventPrice) {
         this.eventPrice = eventPrice;
+    }
+
+    /**
+     * Saves the event to Firestore.
+     *
+     * @param callback The callback to handle success and failure.
+     */
+    public void saveToFirestore(SaveEventCallback callback) {
+        CollectionReference eventsRef = db.collection("events");
+        eventsRef.add(this)
+                .addOnSuccessListener(documentReference -> callback.onSuccess(documentReference.getId()))
+                .addOnFailureListener(callback::onFailure);
     }
 }

@@ -39,10 +39,11 @@
             android:id="@+id/create_event_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="#0A4753"
             android:text="Create Event"
-            app:layout_constraintTop_toBottomOf="@id/events_title"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/events_title" />
 
         <TextView
             android:id="@+id/facility_title"
@@ -51,7 +52,7 @@
             android:layout_marginTop="16dp"
             android:text="Facility"
             android:textColor="@color/white"
-            android:textSize="24sp"
+            android:textSize="34sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -61,11 +62,12 @@
             android:id="@+id/create_facility_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#3B6064"
             android:text="Create Facility"
-            app:layout_constraintTop_toBottomOf="@id/facility_title"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/facility_title" />
 
         <!-- RecyclerView to display events -->
         <androidx.recyclerview.widget.RecyclerView

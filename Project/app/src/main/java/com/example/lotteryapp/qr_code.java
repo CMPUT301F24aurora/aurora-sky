@@ -1,31 +1,24 @@
 package com.example.lotteryapp;
 
+import android.content.ContentValues;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.widget.ImageView;
+import android.widget.Toast;
+import android.widget.Button;
+
 import androidx.appcompat.app.AppCompatActivity;
-/**
- * The {@code qr_code} class is responsible for displaying a QR code image for a specified {@code Event}.
- * It retrieves an {@code Event} object from the intent, generates a QR code, and displays it in an {@code ImageView}.
- * This class extends {@code AppCompatActivity}.
- *
- * @see AppCompatActivity
- * @see Event
- * @see Bitmap
- * @version v1
- * @since v1
- * @author Team Aurora
- */
+
+import java.io.IOException;
+import java.io.OutputStream;
+
 public class qr_code extends AppCompatActivity {
 
     private ImageView qrCodeImage;
 
-    /**
-     * Initializes the activity, retrieves the {@code Event} data passed through the intent,
-     * generates a QR code bitmap from the event, and displays it in an {@code ImageView}.
-     *
-     * @param savedInstanceState the saved instance state of the activity
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,13 +28,48 @@ public class qr_code extends AppCompatActivity {
 
         // Retrieve the Event object
         Event event = (Event) getIntent().getSerializableExtra("event_data");
-        Organizer organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
-        Entrant entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
 
         if (event != null) {
             // Generate and display the QR code bitmap
             Bitmap qrCodeBitmap = event.generateQRCodeBitmap();
             qrCodeImage.setImageBitmap(qrCodeBitmap);
+
+            // Add functionality to download the QR code when the button is clicked
+            Button downloadButton = findViewById(R.id.download_button);
+            downloadButton.setOnClickListener(v -> {
+                saveQRCodeToGallery(qrCodeBitmap);
+            });
+        }
+    }
+
+    // Save the QR code bitmap to the gallery
+    private void saveQRCodeToGallery(Bitmap qrCodeBitmap) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // For Android 10 (API level 29) and above, use MediaStore API to save the image
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, "QR_Code.png");
+            contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+            contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/QR_Codes"); // Directory in the gallery
+
+            // Insert the image into the MediaStore
+            Uri imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+            if (imageUri != null) {
+                try (OutputStream outputStream = getContentResolver().openOutputStream(imageUri)) {
+                    if (outputStream != null) {
+                        qrCodeBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                        outputStream.flush();
+                        Toast.makeText(this, "QR code saved to gallery", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Failed to save QR code", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Failed to get image URI", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            // For Android versions below API level 29, use external storage (deprecated)
+            // Handle saving in older versions, but this approach is not recommended for newer Android versions
         }
     }
 }

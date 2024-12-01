@@ -9,20 +9,48 @@ import java.util.Optional;
 public class WaitingList {
     private String eventId;  // The ID of the event this waiting list belongs to
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private Integer waitlistCap;
 
     public WaitingList(String eventId){
         this.eventId = eventId;
+        fetchWaitlistCap();
     }
+
+    private void fetchWaitlistCap() {
+        db.collection("events").document(eventId).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists() && documentSnapshot.contains("waitlistCap")) {
+                waitlistCap = documentSnapshot.getLong("waitlistCap").intValue();
+            } else {
+                waitlistCap = null; // No cap set
+            }
+        }).addOnFailureListener(e -> {
+            waitlistCap = null; // Default to no cap on failure
+        });
+    }
+
     // Add or remove methods remain unchanged, but include callbacks for database operations
     public boolean addEntrant(String entrantId, List<String> waitingListIds, OnDatabaseUpdateListener listener) {
-        if (waitingListIds.isEmpty()){
-            waitingListIds.add(entrantId);
-            updateDatabase(waitingListIds, listener);
-        } else if(!waitingListIds.isEmpty() && !waitingListIds.contains(entrantId)){
-            waitingListIds.add(entrantId);
-            updateDatabase(waitingListIds, listener);
+        if (waitlistCap != null && waitingListIds.size() >= waitlistCap) {
+            // Waitlist is full
+            listener.onFailure(new Exception("Waitlist is full"));
+            return false;
         }
+
+        if (!waitingListIds.contains(entrantId)) {
+            waitingListIds.add(entrantId);
+            updateDatabase(waitingListIds, listener);
+            return true;
+        }
+
         return false;
+//        if (waitingListIds.isEmpty()){
+//            waitingListIds.add(entrantId);
+//            updateDatabase(waitingListIds, listener);
+//        } else if(!waitingListIds.isEmpty() && !waitingListIds.contains(entrantId)){
+//            waitingListIds.add(entrantId);
+//            updateDatabase(waitingListIds, listener);
+//        }
+//        return false;
     }
 
     public boolean removeEntrant(String entrantId, List<String> waitingListIds, OnDatabaseUpdateListener listener) {

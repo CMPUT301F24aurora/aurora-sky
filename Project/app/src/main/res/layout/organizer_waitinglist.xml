@@ -22,6 +22,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+<<<<<<< HEAD
 
     <TextView
         android:id="@+id/selected_entrants_label"
@@ -53,6 +54,8 @@
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textView4" />
+=======
+>>>>>>> main
 
     <TextView
         android:id="@+id/number_of_entrants"
@@ -65,18 +68,57 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- RecyclerView for Entrants List -->
+<<<<<<< HEAD
+=======
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/entrantRecyclerView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/random_select_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView4" />
+>>>>>>> main
 
     <!-- Random Select Button -->
     <Button
         android:id="@+id/random_select_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="#3B6064"
         android:text="Select Random Entrants"
-        app:layout_constraintTop_toBottomOf="@id/entrantRecyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+<<<<<<< HEAD
         android:backgroundTint="#0A4753"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Selected Entrants Section -->
+=======
+        app:layout_constraintTop_toBottomOf="@id/entrantRecyclerView" />
+
+    <!-- Selected Entrants Section -->
+    <TextView
+        android:id="@+id/selected_entrants_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selected Entrants:"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/random_select_button" />
+
+    <TextView
+        android:id="@+id/selected_entrants"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="None"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/selected_entrants_label" />
+>>>>>>> main
 
 </androidx.constraintlayout.widget.ConstraintLayout>

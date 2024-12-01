@@ -87,7 +87,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public void onEntrantLocationsRetrieved(List<DatabaseHelper.EntrantLocation> entrantLocations) {
                 for (DatabaseHelper.EntrantLocation location : entrantLocations) {
                     LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-                    mMap.addMarker(new MarkerOptions().position(position).title("Entrant ID: " + location.getEntrantId()));
+                    mMap.addMarker(new MarkerOptions().position(position).title("Entrant: " + location.getName()));
                 }
 
                 if (!entrantLocations.isEmpty()) {

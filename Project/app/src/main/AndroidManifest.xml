@@ -49,7 +49,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Sampling" />
-        <activity android:name=".SamplingWorker" />
+<!--        <activity android:name=".SamplingWorker" />-->
         <activity android:name=".SamplingResultsActivity" />
         <activity android:name=".AdminHomepageActivity" />
         <activity
@@ -76,6 +76,7 @@
         <activity android:name=".QRScannerActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".AcceptDeclineActivity" />
+        <activity android:name=".EventInvitationAdapter" />
         <activity
             android:name=".InvitationActivity"
             android:exported="true" />

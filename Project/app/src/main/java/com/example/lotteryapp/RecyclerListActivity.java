@@ -4,10 +4,14 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -183,6 +187,68 @@ public class RecyclerListActivity extends AppCompatActivity {
                             Toast.makeText(this, "Failed to retrieve final chosen entrants.", Toast.LENGTH_SHORT).show();
                         });
             }
+
+            if ("waitingList".equals(collection)) {
+                // Show a dialog to get custom title and message for the notification
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Send Custom Notification");
+
+                // Inflate a custom layout for the dialog (with input fields for title and message)
+                View customView = LayoutInflater.from(this).inflate(R.layout.dialog_custom_notifications, null);
+                builder.setView(customView);
+
+                EditText titleInput = customView.findViewById(R.id.notificationTitle);
+                EditText messageInput = customView.findViewById(R.id.notificationMessage);
+
+                builder.setPositiveButton("Send", (dialog, which) -> {
+                    String customTitle = titleInput.getText().toString().trim();
+                    String customMessage = messageInput.getText().toString().trim();
+
+                    if (customTitle.isEmpty() || customMessage.isEmpty()) {
+                        Toast.makeText(this, "Title or message cannot be empty.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Fetch entrants in the waitlist from the database
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    db.collection("events")
+                            .document(eventId) // Use event ID to find the event document
+                            .get()
+                            .addOnSuccessListener(documentSnapshot -> {
+                                if (documentSnapshot.exists() && documentSnapshot.contains("waitingList")) {
+                                    List<Map<String, Object>> waitlistEntrants =
+                                            (List<Map<String, Object>>) documentSnapshot.get("waitingList");
+
+                                    if (waitlistEntrants != null && !waitlistEntrants.isEmpty()) {
+                                        for (Map<String, Object> entrantData : waitlistEntrants) {
+                                            String deviceId = (String) entrantData.get("deviceId");
+                                            String name = (String) entrantData.get("name");
+
+                                            if (deviceId != null && !deviceId.isEmpty()) {
+                                                addNotificationToEntrant(deviceId, customTitle, customMessage);
+                                            } else {
+                                                Log.e("Notification", "Device ID is null or empty for entrant: " + name);
+                                            }
+                                        }
+                                        Toast.makeText(this, "Custom notifications sent to waitlist entrants!", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(this, "No entrants found in the waitlist.", Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    Toast.makeText(this, "Waitlist field not found in the database.", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("DatabaseError", "Error fetching waitlist: ", e);
+                                Toast.makeText(this, "Failed to retrieve waitlist entrants.", Toast.LENGTH_SHORT).show();
+                            });
+                });
+
+                builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+                builder.create().show();
+            }
+
 
 
         });

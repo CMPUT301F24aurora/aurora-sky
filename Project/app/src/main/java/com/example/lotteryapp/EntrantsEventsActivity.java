@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
+
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
@@ -25,6 +27,7 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
     private RecyclerView eventsRecyclerView;
     private EventAdapter eventAdapter;
     private List<Event> eventList;
+    private ArrayList<Event> filteredList;
     private TextView noEventsText;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -33,14 +36,19 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
     private ImageButton profileIcon;
     private RefreshDataManager refreshDataManager;
     private DBManagerEvent dbManagerEvent;
+    private SearchView searchView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrants_events_page);
+        searchView = findViewById(R.id.search_view);
+
         refreshDataManager = new RefreshDataManager(this);
         dbManagerEvent = new DBManagerEvent();
+
+
 
 
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -96,17 +104,27 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
         profileIcon = findViewById(R.id.profile_icon);
         setupProfileIcon();
         // Load events into RecyclerView
+        setupSearchView();
         loadEvents();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        // Clear the search query when returning to the page
+
+
         // Refresh the event list when the activity is resumed
         refreshData();
     }
 
     private void refreshData() {
+        if (searchView != null){
+            Log.d("", "search text");
+            searchView.setQuery("",false);
+            searchView.clearFocus();
+        }
         if (refreshDataManager == null) {
             Toast.makeText(EntrantsEventsActivity.this, "Refresh manager not initialized.", Toast.LENGTH_SHORT).show();
             return;
@@ -132,12 +150,30 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
         }
     }
 
+    private void setupSearchView() {
+        SearchView searchView = findViewById(R.id.search_view);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                eventAdapter.getFilter().filter(query);  // Apply filter on submit
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                eventAdapter.getFilter().filter(newText);  // Apply filter on text change
+                return false;
+            }
+        });
+    }
+
     private void loadEvents() {
         dbManagerEvent.getEventsFromFirestore(new GetEventsCallback() {
             @Override
             public void onSuccess(List<Event> events) {
                 eventList.clear();
                 eventList.addAll(events);
+                filteredList = new ArrayList<>(events);  // Reset filtered list with fresh data
                 if (eventList.isEmpty()) {
                     noEventsText.setVisibility(View.VISIBLE);
                     eventsRecyclerView.setVisibility(View.GONE);
@@ -145,7 +181,8 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
                     noEventsText.setVisibility(View.GONE);
                     eventsRecyclerView.setVisibility(View.VISIBLE);
                 }
-                eventAdapter.notifyDataSetChanged();
+                eventAdapter.updateData(events);
+                eventAdapter.notifyDataSetChanged();  // Notify adapter that the data has changed
             }
 
             @Override
@@ -156,6 +193,7 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
             }
         });
     }
+
 
     private void setupProfileIcon() {
         if (profileIcon != null && entrant != null && entrant.getImage_url() != null) {

@@ -17,48 +17,36 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationResult;
-
-import java.util.List;
 
 public class EntrantEventDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "EntrantEventDetails";
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     private TextView eventTitle, eventDescription, eventDate, eventCapacity;
     private Event event;
     private Entrant entrant;
     private Organizer organizer;
-    private Button enterWaitingButton;
-    private Button leaveWaitingButton;
+    private Button enterWaitingButton, leaveWaitingButton;
     private WaitingList waitingList;
     private boolean signUp;
     private ImageView eventImageView;
     private LocationHelper locationHelper;
     private DatabaseHelper databaseHelper;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrant_event_details);
 
-        locationHelper = new LocationHelper(this);
+        locationHelper = new LocationHelper(this, this);  // Pass both context and activity
         databaseHelper = new DatabaseHelper(this);
 
-
-
         getIntentData();
-        // Log user's current location
-        //logCurrentLocation();
-
         initializeViews();
         displayEventDetails();
 
-        // Initialize waiting list with the event QR code (as ID)
         waitingList = new WaitingList(event.getQR_code());
-
         setupEnterWaiting();
         setupLeaveWaiting();
         autoRegisterIfSignUpTrue();
@@ -88,7 +76,6 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
             eventDate.setText("Date: " + event.getEventStartDate());
             eventCapacity.setText("Capacity: " + event.getNumPeople());
 
-            // Load event image using Glide
             if (event.getImage_url() != null && !event.getImage_url().isEmpty()) {
                 eventImageView.setVisibility(View.VISIBLE);
                 Glide.with(this)
@@ -111,9 +98,9 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
             if (event.getWaitingList().contains(entrant.getId())) {
                 Toast.makeText(this, "Already in the Waiting list", Toast.LENGTH_SHORT).show();
             } else {
-                if(event.getGeolocationRequired()){
+                if (event.getGeolocationRequired()) {
                     showJoinConfirmationDialog();
-                } else{
+                } else {
                     joinWaitingList();
                 }
             }
@@ -135,11 +122,37 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
     }
 
     private void joinWaitingList() {
+        // Check if geolocation is required
+        if (event.getGeolocationRequired()) {
+            // Check if location services are enabled before proceeding
+            if (locationHelper.isLocationEnabled()) {
+                // If permission is granted, get the location
+                if (locationHelper.isLocationPermissionGranted()) {
+                    proceedToJoinWaitingList();
+                } else {
+                    // Request permission if not granted yet
+                    locationHelper.requestLocationPermission();
+                }
+            } else {
+                promptEnableLocation(); // If location is not enabled, prompt user
+            }
+        } else {
+            // If no geolocation is required, directly proceed to join the list
+            proceedToJoinWaitingList();
+        }
+    }
+
+
+    // Proceed to join the waiting list and add location if required
+    private void proceedToJoinWaitingList() {
         waitingList.addEntrant(entrant.getId(), event.getWaitingList(), new WaitingList.OnDatabaseUpdateListener() {
             @Override
             public void onSuccess() {
                 Toast.makeText(EntrantEventDetailsActivity.this, "Joined the Waiting list", Toast.LENGTH_SHORT).show();
-                addLocation();
+                // Add location only if geolocation is required
+                if (event.getGeolocationRequired()) {
+                    addLocation();
+                }
                 updateButtonStates();
             }
 
@@ -150,25 +163,37 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void addLocation(){
+    // Prompt user to enable location services
+    private void promptEnableLocation() {
+        new AlertDialog.Builder(this)
+                .setTitle("Location Required")
+                .setMessage("Please enable location services to join this event's waiting list.")
+                .setPositiveButton("Enable", (dialog, which) -> {
+                    //locationHelper.openLocationSettings(); // Open location settings screen
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
+    }
+
+    private void addLocation() {
         locationHelper.getCurrentLocation(new LocationHelper.LocationCallback() {
             @Override
             public void onLocationResult(double latitude, double longitude) {
                 // Save the location data to Firestore using DatabaseHelper
-                databaseHelper.saveEventEntrantLocation(event.getQR_code(), entrant.getId(), latitude, longitude);
-                Log.d("Location", "Location saved: Lat = " + latitude + ", Long = " + longitude);
+                databaseHelper.saveEventEntrantLocation(event.getQR_code(), entrant.getId(), entrant.getName(), latitude, longitude);
+                Log.d(TAG, "Location saved: Lat = " + latitude + ", Long = " + longitude);
             }
 
             @Override
             public void onError(String errorMessage) {
-                Log.e("Location", "Error retrieving location: " + errorMessage);
+                Log.e(TAG, "Error retrieving location: " + errorMessage);
             }
         });
     }
 
     private void setupLeaveWaiting() {
         updateButtonStates();
-
         leaveWaitingButton.setOnClickListener(view -> {
             if (!event.getWaitingList().contains(entrant.getId())) {
                 Toast.makeText(this, "Not in the Waiting list", Toast.LENGTH_SHORT).show();
@@ -192,37 +217,31 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
     private void updateButtonStates() {
         if (event.getWaitingList().contains(entrant.getId())) {
             enterWaitingButton.setEnabled(false);
-            enterWaitingButton.setText("Already in Waiting List");
             leaveWaitingButton.setEnabled(true);
-            leaveWaitingButton.setText("Leave Waiting List");
         } else {
             enterWaitingButton.setEnabled(true);
-            enterWaitingButton.setText("Join Waiting List");
             leaveWaitingButton.setEnabled(false);
-            leaveWaitingButton.setText("Not in Waiting List");
         }
     }
 
     private void autoRegisterIfSignUpTrue() {
         if (signUp) {
-            if (!event.getWaitingList().contains(entrant.getId())) {
-                waitingList.addEntrant(entrant.getId(), event.getWaitingList(), new WaitingList.OnDatabaseUpdateListener() {
-                    @Override
-                    public void onSuccess() {
-                        Toast.makeText(EntrantEventDetailsActivity.this, "Automatically joined the Waiting list", Toast.LENGTH_SHORT).show();
-                        updateButtonStates();
-                    }
-
-                    @Override
-                    public void onFailure(Exception e) {
-                        Toast.makeText(EntrantEventDetailsActivity.this, "Failed to automatically join the Waiting list", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } else {
-                Log.d(TAG, "Entrant already in the waiting list, no need to auto-register.");
-            }
+            joinWaitingList();
         }
     }
 
+    // Handle permission result
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, now proceed with adding to waiting list
+                joinWaitingList();
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
 }

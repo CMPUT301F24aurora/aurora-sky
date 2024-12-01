@@ -70,9 +70,6 @@ public class InvitationActivity extends AppCompatActivity implements EventInvita
                 organizerIntent.putExtra("entrant_data", entrant);
                 organizerIntent.putExtra("organizer_data", organizer);
                 startActivity(organizerIntent);
-            } else if (id == R.id.map_nav) {
-                Intent organizerIntent = new Intent(InvitationActivity.this, MapActivity.class);
-                startActivity(organizerIntent);
             } else if (id == R.id.qr_code_nav) {
                 Intent qrScannerIntent = new Intent(InvitationActivity.this, QRScannerActivity.class);
                 qrScannerIntent.putExtra("entrant_data", entrant);

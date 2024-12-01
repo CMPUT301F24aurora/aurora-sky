@@ -36,6 +36,8 @@ public class Event implements Serializable {
     private Float eventPrice;
     private String description;
     private String qr_code;
+    private List<String> selectedEntrants;
+    private List<String> cancelledEntrants;
     private List<String> waitingList;
     private String image_url;
     private Integer waitlistCap;
@@ -56,6 +58,22 @@ public class Event implements Serializable {
         this.eventPrice = eventPrice;
         this.qr_code = generateQRHash();
         this.waitingList = new ArrayList<>();  // Initialize waitingList as an empty list
+    }
+
+    public List<String> getSelectedEntrants() {
+        return selectedEntrants;
+    }
+
+    public void setSelectedEntrants(List<String> selectedEntrants) {
+        this.selectedEntrants = selectedEntrants;
+    }
+
+    public List<String> getCancelledEntrants() {
+        return cancelledEntrants;
+    }
+
+    public void setCancelledEntrants(List<String> cancelledEntrants) {
+        this.cancelledEntrants = cancelledEntrants;
     }
 
     public String getEventName() {

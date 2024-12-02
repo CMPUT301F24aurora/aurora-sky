@@ -89,15 +89,10 @@ public class RecyclerListActivity extends AppCompatActivity {
             @Override
             public void onChanged() {
                 super.onChanged();
-                updateCancelButtonVisibility();
             }
         });
     }
 
-    private void updateCancelButtonVisibility() {
-        boolean anySelected = entrantsList.stream().anyMatch(Entrant::isSelected);
-        cancelButton.setVisibility(anySelected ? View.VISIBLE : View.GONE);
-    }
 
     private void setupNotificationButton() {
         notificationBtn.setOnClickListener(v -> handleNotificationClick());
@@ -178,8 +173,19 @@ public class RecyclerListActivity extends AppCompatActivity {
     }
 
     private void setupCancelButton() {
+        cancelButton.setVisibility(View.VISIBLE);
         cancelButton.setOnClickListener(v -> {
-            // Logic to handle cancel functionality
+            List<Entrant> selectedEntrants = adapter.getSelectedEntrants();
+            DBManagerEvent.removeEntrantsFromList(selectedEntrants, collection);
+            if (!selectedEntrants.isEmpty()) {
+                // Remove selected entrants from the adapter
+                adapter.removeEntrants(selectedEntrants);
+                // Update UI
+                //updateCancelButtonVisibility();
+                Toast.makeText(this, "Selected entrants removed from waiting list", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "No entrants selected", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 

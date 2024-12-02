@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EntrantWaitlistAdapter extends RecyclerView.Adapter<EntrantWaitlistAdapter.EntrantViewHolder> {
@@ -41,6 +42,21 @@ public class EntrantWaitlistAdapter extends RecyclerView.Adapter<EntrantWaitlist
 
         // Handle checkbox toggle without notifying the whole data set
         holder.checkBoxEntrant.setOnCheckedChangeListener((buttonView, isChecked) -> entrant.setSelected(isChecked));
+    }
+
+    public List<Entrant> getSelectedEntrants() {
+        List<Entrant> selectedEntrants = new ArrayList<>();
+        for (Entrant entrant : entrantList) {
+            if (entrant.isSelected()) {
+                selectedEntrants.add(entrant);
+            }
+        }
+        return selectedEntrants;
+    }
+
+    public void removeEntrants(List<Entrant> entrantsToRemove) {
+        entrantList.removeAll(entrantsToRemove);
+        notifyDataSetChanged();
     }
 
     @Override

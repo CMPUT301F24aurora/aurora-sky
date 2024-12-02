@@ -3,6 +3,7 @@ package com.example.lotteryapp;
 import android.util.Log;
 
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.android.gms.tasks.Task;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DBManagerEvent {
 
@@ -128,6 +130,28 @@ public class DBManagerEvent {
                     }
                 })
                 .addOnFailureListener(callback::onFailure);
+    }
+
+    public static void removeEntrantsFromList(List<Entrant> entrantList, String listName) {
+        List<String> entrantIds = entrantList.stream().map(Entrant::getId).collect(Collectors.toList());
+
+        db.collection("events")
+                .whereArrayContainsAny(listName, entrantIds)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        document.getReference().update(listName, FieldValue.arrayRemove(entrantIds.toArray()))
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d("Firestore", "Entrants removed from " + listName + " successfully");
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e("Firestore", "Error removing entrants: ", e);
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error querying events: ", e);
+                });
     }
 
     public interface GetEventCallback {

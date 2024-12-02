@@ -144,6 +144,22 @@ public class AcceptDeclineActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to update entrant status.", Toast.LENGTH_SHORT).show();
                 });
+
+        db.collection("entrants")
+                .document(entrantId)
+                .update("cancelled_event", com.google.firebase.firestore.FieldValue.arrayUnion(eventId),
+                        "selected_event", com.google.firebase.firestore.FieldValue.arrayRemove(eventId))
+                .addOnSuccessListener(aVoid -> {
+                    // Navigate back to InvitationActivity after success
+                    Toast.makeText(this, "Did not accept the invitation", Toast.LENGTH_SHORT).show();
+                    Intent backIntent = new Intent(AcceptDeclineActivity.this, InvitationActivity.class);
+                    backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    startActivity(backIntent);
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure
+                    Toast.makeText(this, "Failed to accept the invitation. Try again.", Toast.LENGTH_SHORT).show();
+                });
     }
 
 

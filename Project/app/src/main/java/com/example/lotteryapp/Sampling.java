@@ -47,7 +47,6 @@ public class Sampling extends AppCompatActivity {
         sampledEntrants = new ArrayList<>();
         sampleButton = findViewById(R.id.sample_button);
 
-        // Example: Populate entrantList with sample data
         event = (Event) getIntent().getSerializableExtra("event_data");
         entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
         organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
@@ -158,8 +157,7 @@ public class Sampling extends AppCompatActivity {
                     .update(
                             "waitingList", FieldValue.arrayRemove(selectedEntrantIds.toArray()), // Remove selected entrants
                             "selectedEntrants", selectedEntrantIds,
-                            "cancelledEntrants", cancelledEntrantIds
-                    )
+                            "cancelledEntrants", cancelledEntrantIds)
                     .addOnSuccessListener(aVoid -> {
                         Log.d("Sampling", "Updated event with selected and cancelled entrants, and removed from waiting list.");
                         Toast.makeText(Sampling.this, "Sampling results saved successfully.", Toast.LENGTH_SHORT).show();

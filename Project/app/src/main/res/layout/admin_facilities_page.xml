@@ -6,19 +6,6 @@
     android:layout_height="match_parent"
     android:background="#191F36">
 
-    <TextView
-        android:id="@+id/admin_fac_txt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Facilites"
-        android:textColor="@color/white"
-        android:textSize="48sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.155"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <!--<SearchView
         android:id="@+id/fsearchView"
         android:layout_width="362dp"
@@ -28,6 +15,29 @@
         android:queryHint="Search Facilities"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/admin_fac_txt" />-->
+
+    <TextView
+        android:id="@+id/admin_fac_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:text="Facilities"
+        android:textColor="@color/white"
+        android:textSize="48sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/admin_fac_search_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:queryHint="Search events..."
+        app:layout_constraintTop_toBottomOf="@id/admin_fac_txt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
@@ -42,17 +52,26 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/admin_fac_list"
-        android:layout_width="match_parent"
-        android:layout_height="460dp"
-        android:layout_weight="1"
-        android:background="#191F36"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
         android:overScrollMode="never"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@id/admin_fac_search_view"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/admin_fac_txt">
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    </androidx.recyclerview.widget.RecyclerView>
+    <TextView
+        android:id="@+id/admin_no_facilities_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No facilities found"
+        android:textColor="#FDFDFD"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/admin_fac_search_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

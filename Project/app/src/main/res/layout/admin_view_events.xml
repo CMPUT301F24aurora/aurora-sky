@@ -19,64 +19,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!--<SearchView
-        android:id="@+id/admin_search_ev"
-        android:layout_width="392dp"
-        android:layout_height="51dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.473"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/admin_v_ev_txt" />-->
-
-    <RelativeLayout
-        android:id="@+id/rel_layout_events_admin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent">
-
-    </RelativeLayout>
-
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/admin_ev_search_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:queryHint="Search Events"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/admin_v_ev_txt" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/admin_ev_list"
-        android:layout_width="match_parent"
-        android:layout_height="460dp"
-        android:layout_marginTop="60dp"
-        android:layout_weight="1"
-        android:background="@color/white"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="28dp"
         android:overScrollMode="never"
+        app:layout_constraintTop_toBottomOf="@+id/admin_v_ev_txt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/admin_v_ev_txt">
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <TextView
-        android:id="@+id/admin_no_events_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="No events available"
-        android:textSize="16sp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/admin_ev_search_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+    />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

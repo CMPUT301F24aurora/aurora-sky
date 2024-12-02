@@ -151,6 +151,29 @@ public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdap
         orgEventAdapter.notifyDataSetChanged(); // Refresh adapter to show added events
     }
 
+//    private void loadEvents() {
+//        dbManagerEvent.getEventsByQRCodes(currentOrganizer.getEventHashes(), new DBManagerEvent.GetEventsCallback() {  // Use the full path for the callback
+//            @Override
+//            public void onSuccess(List<Event> events) {
+//                eventList.clear();
+//                eventList.addAll(events);
+//                if (eventList.isEmpty()) {
+//                    orgRecyclerView.setVisibility(View.GONE);
+//                } else {
+//                    orgRecyclerView.setVisibility(View.VISIBLE);
+//                }
+//                orgEventAdapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onFailure(Exception e) {
+//                orgRecyclerView.setVisibility(View.GONE);
+//            }
+//        });
+//        orgEventAdapter.notifyDataSetChanged(); // Refresh adapter to show added events
+//    }
+
+
     public void onEventClick(Event event) {
         Intent eventDetailsIntent = new Intent(this, OrganizerEventDetailsActivity.class);
         eventDetailsIntent.putExtra("event_data", event);

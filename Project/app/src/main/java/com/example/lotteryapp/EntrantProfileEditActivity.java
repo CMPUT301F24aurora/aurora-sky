@@ -184,6 +184,9 @@ public class EntrantProfileEditActivity extends AppCompatActivity {
     }
 
     private void saveEntrantToDatabase(Entrant entrant, Organizer organizer) {
+        if (entrant.getNotificationAllowed() == null){
+            entrant.setNotificationAllowed(true);
+        }
         DatabaseManager.saveEntrant(entrant, new SaveEntrantCallback() {
             @Override
             public void onSuccess() {

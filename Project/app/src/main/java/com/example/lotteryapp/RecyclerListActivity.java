@@ -31,7 +31,7 @@ public class RecyclerListActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private List<Entrant> entrantsList;
     private EntrantWaitlistAdapter adapter;
-    private Button notificationBtn;
+    private Button notificationBtn, cancelButton;
     private List<Entrant> cancelledEntrants;
     private List<Entrant> selectedEntrants;
 
@@ -46,6 +46,7 @@ public class RecyclerListActivity extends AppCompatActivity {
                 requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
             }
         }
+
 
         // Initialize views
         titleTextView = findViewById(R.id.recycler_title);
@@ -77,6 +78,31 @@ public class RecyclerListActivity extends AppCompatActivity {
         // Fetch data from Firestore
         fetchDataFromFirebase(eventId, collection);
 
+        cancelButton = findViewById(R.id.cancel_button);
+        cancelButton.setVisibility(View.GONE); // Initially hidden
+
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+
+                // Check if cancelButton and entrantsList are initialized
+                if (cancelButton != null && entrantsList != null) {
+                    boolean anySelected = false;
+                    for (Entrant entrant : entrantsList) {
+                        if (entrant.isSelected()) {
+                            anySelected = true;
+                            break;
+                        }
+                    }
+                    // Set visibility based on whether any entrant is selected
+                    cancelButton.setVisibility(anySelected ? View.VISIBLE : View.GONE);
+                } else {
+                    Log.e("RecyclerView", "cancelButton or entrantsList is not initialized.");
+                }
+            }
+        });
+
         notificationBtn.setOnClickListener(v -> {
             if ("selectedEntrants".equals(collection)) {
                 if (collection != null && !selectedEntrants.isEmpty()) {
@@ -97,7 +123,7 @@ public class RecyclerListActivity extends AppCompatActivity {
                 }
             }
 
-            if ("selectedEntrants".equals(collection)) {
+            if ("cancelledEntrants".equals(collection)) {
                 if (collection != null && !cancelledEntrants.isEmpty()) {
                     for (Entrant entrant : cancelledEntrants) {
                         String deviceId = entrant.getId();
@@ -116,43 +142,7 @@ public class RecyclerListActivity extends AppCompatActivity {
                 }
             }
 
-            if ("finalChosenEntrants".equals(collection)) {
-                db.collection("events")
-                        .document(eventId) // Use the event ID to locate the event document
-                        .get()
-                        .addOnSuccessListener(documentSnapshot -> {
-                            if (documentSnapshot.exists() && documentSnapshot.contains("finalChosenEntrants")) {
-                                List<Map<String, Object>> finalChosenEntrants =
-                                        (List<Map<String, Object>>) documentSnapshot.get("finalChosenEntrants");
-
-                                if (finalChosenEntrants != null && !finalChosenEntrants.isEmpty()) {
-                                    for (Map<String, Object> entrantData : finalChosenEntrants) {
-                                        String deviceId = (String) entrantData.get("deviceId");
-                                        String name = (String) entrantData.get("name");
-
-                                        if (deviceId != null && !deviceId.isEmpty()) {
-                                            String messageTitle = "Congratulations, " + name + "!";
-                                            String message = "You have been chosen as a finalist for the event. See you there!";
-                                            addNotificationToEntrant(deviceId, messageTitle, message);
-                                        } else {
-                                            Log.e("Notification", "Device ID is null or empty for entrant: " + name);
-                                        }
-                                    }
-                                    Toast.makeText(this, "Notifications sent to final chosen entrants!", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(this, "No final chosen entrants to notify.", Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
-                                Toast.makeText(this, "finalChosenEntrants field not found in the database.", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("DatabaseError", "Error fetching finalChosenEntrants: ", e);
-                            Toast.makeText(this, "Failed to retrieve final chosen entrants.", Toast.LENGTH_SHORT).show();
-                        });
-            }
-
-            if ("finalChosenEntrants".equals(collection)) {
+            if ("finalEntrants".equals(collection)) {
                 db.collection("events")
                         .document(eventId) // Use the event ID to locate the event document
                         .get()
@@ -208,6 +198,7 @@ public class RecyclerListActivity extends AppCompatActivity {
                         Toast.makeText(this, "Title or message cannot be empty.", Toast.LENGTH_SHORT).show();
                         return;
                     }
+                    Log.d("id: ",""+eventId);
 
                     // Fetch entrants in the waitlist from the database
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -215,20 +206,35 @@ public class RecyclerListActivity extends AppCompatActivity {
                             .document(eventId) // Use event ID to find the event document
                             .get()
                             .addOnSuccessListener(documentSnapshot -> {
+                                Log.d("id2: ",""+eventId);
                                 if (documentSnapshot.exists() && documentSnapshot.contains("waitingList")) {
-                                    List<Map<String, Object>> waitlistEntrants =
-                                            (List<Map<String, Object>>) documentSnapshot.get("waitingList");
+                                    List<String> waitlistEntrants =
+                                            (List<String>) documentSnapshot.get("waitingList");
+                                    Log.d("waitlist", "Entrants in waitlist: " + waitlistEntrants);
 
                                     if (waitlistEntrants != null && !waitlistEntrants.isEmpty()) {
-                                        for (Map<String, Object> entrantData : waitlistEntrants) {
-                                            String deviceId = (String) entrantData.get("deviceId");
-                                            String name = (String) entrantData.get("name");
+                                        for (String entrantId : waitlistEntrants) {
+                                            // Fetch the entrant document from Firestore
+                                            Log.d("entrants in waitist", " "+ entrantId);
+                                            db.collection("entrants")
+                                                    .document(entrantId)
+                                                    .get()
+                                                    .addOnSuccessListener(entrantDoc -> {
+                                                        if (entrantDoc.exists()) {
+                                                            String deviceId = entrantDoc.getString("id");
+                                                            String name = entrantDoc.getString("name");
 
-                                            if (deviceId != null && !deviceId.isEmpty()) {
-                                                addNotificationToEntrant(deviceId, customTitle, customMessage);
-                                            } else {
-                                                Log.e("Notification", "Device ID is null or empty for entrant: " + name);
-                                            }
+                                                            if (deviceId != null && !deviceId.isEmpty()) {
+                                                                Log.e("Notification", "Sending notification to: " + name);
+                                                                addNotificationToEntrant(deviceId, customTitle, customMessage);
+                                                            } else {
+                                                                Log.e("Notification", "Device ID is null or empty for entrant: " + name);
+                                                            }
+                                                        } else {
+                                                            Log.e("Firestore", "Entrant document not found for ID: " + entrantId);
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(e -> Log.e("Firestore", "Error fetching entrant document: " + e.getMessage()));
                                         }
                                         Toast.makeText(this, "Custom notifications sent to waitlist entrants!", Toast.LENGTH_SHORT).show();
                                     } else {
@@ -237,6 +243,7 @@ public class RecyclerListActivity extends AppCompatActivity {
                                 } else {
                                     Toast.makeText(this, "Waitlist field not found in the database.", Toast.LENGTH_SHORT).show();
                                 }
+
                             })
                             .addOnFailureListener(e -> {
                                 Log.e("DatabaseError", "Error fetching waitlist: ", e);
@@ -249,9 +256,39 @@ public class RecyclerListActivity extends AppCompatActivity {
                 builder.create().show();
             }
 
-
-
         });
+
+        cancelButton.setOnClickListener(v -> {
+            List<Entrant> toCancel = new ArrayList<>();
+            for (Entrant entrant : entrantsList) {
+                if (entrant.isSelected()) {
+                    toCancel.add(entrant);
+                }
+            }
+
+            // Remove from RecyclerView and add to cancelledEntrants
+            entrantsList.removeAll(toCancel);
+            cancelledEntrants.addAll(toCancel);
+            adapter.notifyDataSetChanged();
+
+            // Update Firestore
+            for (Entrant cancelledEntrant : toCancel) {
+                db.collection("events")
+                        .document(eventId) // Assuming eventId is available
+                        .update(collection, FieldValue.arrayRemove(cancelledEntrant.getId())) // Remove from current list
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("Firestore", "Entrant removed: " + cancelledEntrant.getName());
+                        });
+
+                db.collection("events")
+                        .document(eventId)
+                        .update("cancelledEntrants", FieldValue.arrayUnion(cancelledEntrant.getId())) // Add to cancelled list
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("Firestore", "Entrant added to cancelled: " + cancelledEntrant.getName());
+                        });
+            }
+        });
+
     }
 
     private void fetchDataFromFirebase(String eventId, String collection) {

@@ -62,15 +62,27 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             eventDescriptionTextView.setText(event.getDescription());
 
             viewEntrantsButton.setOnClickListener(v -> {
-                Intent entrantsIntent = new Intent(OrganizerEventDetailsActivity.this, Sampling.class);
-                entrantsIntent.putExtra("event_data", event);
-                entrantsIntent.putExtra("event_data", selectedEvent);
-                entrantsIntent.putExtra("eventId", eventId);
-                entrantsIntent.putExtra("eventQrCode", eventQrCode);
-                entrantsIntent.putExtra("eventCapacity", String.valueOf(eventCapacity));
-                startActivity(entrantsIntent);
-
+                // Check if cancelledEntrants and selectedEntrants are empty
+                if ((event.getCancelledEntrants() == null || event.getCancelledEntrants().isEmpty()) &&
+                        (event.getSelectedEntrants()== null || event.getSelectedEntrants().isEmpty())) {
+                    // Navigate to Sampling page if both are empty
+                    Intent samplingIntent = new Intent(OrganizerEventDetailsActivity.this, Sampling.class);
+                    samplingIntent.putExtra("event_data", event);
+                    samplingIntent.putExtra("eventId", eventId);
+                    samplingIntent.putExtra("eventQrCode", eventQrCode);
+                    samplingIntent.putExtra("eventCapacity", String.valueOf(eventCapacity));
+                    startActivity(samplingIntent);
+                } else {
+                    // Navigate to AfterSampling page if any list is not empty
+                    Intent afterSamplingIntent = new Intent(OrganizerEventDetailsActivity.this, AfterSampling.class);
+                    afterSamplingIntent.putExtra("event_data", event);
+                    afterSamplingIntent.putExtra("eventId", eventId);
+                    afterSamplingIntent.putExtra("eventQrCode", eventQrCode);
+                    afterSamplingIntent.putExtra("eventCapacity", String.valueOf(eventCapacity));
+                    startActivity(afterSamplingIntent);
+                }
             });
+
 
             viewQrCodeButton.setOnClickListener(v->{
                 Intent intent = new Intent(OrganizerEventDetailsActivity.this, qr_code.class);

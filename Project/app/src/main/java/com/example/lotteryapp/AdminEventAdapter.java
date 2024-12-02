@@ -3,6 +3,7 @@ package com.example.lotteryapp;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -73,7 +74,7 @@ public class AdminEventAdapter extends RecyclerView.Adapter<AdminEventAdapter.Ev
      */
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
-        Event event = eventList.get(position);
+        Event event = filteredEventList.get(position);
         holder.eventName.setText(event.getEventName());
         holder.eventDate.setText(event.getEventStartDate());
         holder.eventDescription.setText(event.getDescription());
@@ -89,7 +90,14 @@ public class AdminEventAdapter extends RecyclerView.Adapter<AdminEventAdapter.Ev
      */
     @Override
     public int getItemCount() {
-        return eventList.size();
+        return filteredEventList.size();
+    }
+
+    public void updateData(List<Event> newEventList) {
+        this.eventList.clear();
+        this.eventList.addAll(newEventList);
+        this.filteredEventList = new ArrayList<>(newEventList);  // Reset filtered list
+        notifyDataSetChanged();  // Notify adapter that the data has changed
     }
 
     /**
@@ -98,14 +106,33 @@ public class AdminEventAdapter extends RecyclerView.Adapter<AdminEventAdapter.Ev
      *
      * @param query the query to filter the event list by
      */
-    public List<Event> filter(String query) {
-        filteredEventList.clear();
-        for (Event event : eventList) {
-            if (event.getEventName().toLowerCase().contains(query.toLowerCase())) {
-                filteredEventList.add(event);
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String query = constraint.toString().toLowerCase().trim();
+                FilterResults results = new FilterResults();
+
+                if (query.isEmpty()) {
+                    results.values = eventList;
+                } else {
+                    List<Event> filtered = new ArrayList<>();
+                    for (Event event : eventList) {
+                        if (event.getEventName().toLowerCase().contains(query)) {
+                            filtered.add(event);
+                        }
+                    }
+                    results.values = filtered;
+                }
+                return results;
             }
-        }
-        return filteredEventList;
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                filteredEventList = (List<Event>) results.values;
+                notifyDataSetChanged();  // Refresh the RecyclerView
+            }
+        };
     }
 
     /**

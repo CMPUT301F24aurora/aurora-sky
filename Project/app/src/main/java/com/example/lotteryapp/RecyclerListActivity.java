@@ -161,18 +161,86 @@ public class RecyclerListActivity extends AppCompatActivity {
     }
 
     private void fetchFinalEntrantsAndNotify() {
-        db.collection("events").document(eventId).get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists() && documentSnapshot.contains("finalChosenEntrants")) {
-                List<Map<String, Object>> finalChosenEntrants = (List<Map<String, Object>>) documentSnapshot.get("finalChosenEntrants");
-                sendNotificationsToEntrants(finalChosenEntrants.stream().map(e -> (String) e.get("deviceId")).toList(), "Congratulations", "You have been chosen as a finalist!");
-            } else {
-                Toast.makeText(this, "No final chosen entrants to notify.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        String title = "Congratulations";
+        String message = "You have been chosen as a finalist!";
+        sendNotificationsToEntrants(entrantIds, title, message);
     }
 
     private void showCustomNotificationDialog() {
-        // Implementation remains similar to the existing code
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Send Custom Notification");
+
+        // Inflate a custom layout for the dialog (with input fields for title and message)
+        View customView = LayoutInflater.from(this).inflate(R.layout.dialog_custom_notifications, null);
+        builder.setView(customView);
+
+        EditText titleInput = customView.findViewById(R.id.notificationTitle);
+        EditText messageInput = customView.findViewById(R.id.notificationMessage);
+
+        builder.setPositiveButton("Send", (dialog, which) -> {
+            String customTitle = titleInput.getText().toString().trim();
+            String customMessage = messageInput.getText().toString().trim();
+
+            if (customTitle.isEmpty() || customMessage.isEmpty()) {
+                Toast.makeText(this, "Title or message cannot be empty.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Log.d("id: ",""+eventId);
+
+            // Fetch entrants in the waitlist from the database
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("events")
+                    .document(eventId) // Use event ID to find the event document
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        Log.d("id2: ",""+eventId);
+                        if (documentSnapshot.exists() && documentSnapshot.contains("waitingList")) {
+                            List<String> waitlistEntrants =
+                                    (List<String>) documentSnapshot.get("waitingList");
+                            Log.d("waitlist", "Entrants in waitlist: " + waitlistEntrants);
+
+                            if (waitlistEntrants != null && !waitlistEntrants.isEmpty()) {
+                                for (String entrantId : waitlistEntrants) {
+                                    // Fetch the entrant document from Firestore
+                                    Log.d("entrants in waitist", " "+ entrantId);
+                                    db.collection("entrants")
+                                            .document(entrantId)
+                                            .get()
+                                            .addOnSuccessListener(entrantDoc -> {
+                                                if (entrantDoc.exists()) {
+                                                    String deviceId = entrantDoc.getString("id");
+                                                    String name = entrantDoc.getString("name");
+
+                                                    if (deviceId != null && !deviceId.isEmpty()) {
+                                                        Log.e("Notification", "Sending notification to: " + name);
+                                                        addNotificationToEntrant(deviceId, customTitle, customMessage);
+                                                    } else {
+                                                        Log.e("Notification", "Device ID is null or empty for entrant: " + name);
+                                                    }
+                                                } else {
+                                                    Log.e("Firestore", "Entrant document not found for ID: " + entrantId);
+                                                }
+                                            })
+                                            .addOnFailureListener(e -> Log.e("Firestore", "Error fetching entrant document: " + e.getMessage()));
+                                }
+                                Toast.makeText(this, "Custom notifications sent to waitlist entrants!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(this, "No entrants found in the waitlist.", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(this, "Waitlist field not found in the database.", Toast.LENGTH_SHORT).show();
+                        }
+
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("DatabaseError", "Error fetching waitlist: ", e);
+                        Toast.makeText(this, "Failed to retrieve waitlist entrants.", Toast.LENGTH_SHORT).show();
+                    });
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+        builder.create().show();
     }
 
     private void updateUiState() {

@@ -24,9 +24,9 @@
             android:id="@+id/entrant_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Entrant Name"
             android:layout_weight="1"
-            android:textColor="#E2D7D7"
+            android:text="Entrant Name"
+            android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold" />
 

@@ -139,11 +139,11 @@
         android:id="@+id/admin_ev_ent_remove"
         android:layout_width="175dp"
         android:layout_height="45dp"
-        android:backgroundTint="#3B6064"
+        android:backgroundTint="#305052"
         android:text="Remove Profile"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/admin_ent_img_remove"/>
+        app:layout_constraintTop_toBottomOf="@id/admin_ent_img_remove" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

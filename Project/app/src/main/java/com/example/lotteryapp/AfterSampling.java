@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.work.Data;
@@ -22,8 +23,9 @@ import java.util.concurrent.TimeUnit;
 
 public class AfterSampling extends AppCompatActivity {
     private String eventId;
-    private List<Entrant> cancelledEntrants;
-    private List<Entrant> selectedEntrants;
+    private Event event;
+    private Organizer organizer;
+    private Entrant entrant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +33,13 @@ public class AfterSampling extends AppCompatActivity {
         setContentView(R.layout.after_sampling_list);
 
         // Get event ID from Intent
-        eventId = getIntent().getStringExtra("eventId");
-        selectedEntrants = (List<Entrant>) getIntent().getSerializableExtra("selectedEntrants");
-        cancelledEntrants = (List<Entrant>) getIntent().getSerializableExtra("cancelledEntrants");
+        event = (Event) getIntent().getSerializableExtra("event_data");
+        eventId = event.getQR_code();
+        entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
+        organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
+
+
+        Log.d("", event.getSelectedEntrants().toString());
 
         // Initialize buttons
         Button waitlistButton = findViewById(R.id.buttonWaitlistEntrants);
@@ -48,14 +54,39 @@ public class AfterSampling extends AppCompatActivity {
         chosenButton.setOnClickListener(v -> navigateToRecyclerList("Final chosen entrants", "finalEntrants"));
     }
 
+
     private void navigateToRecyclerList(String title, String collection) {
         Intent intent = new Intent(AfterSampling.this, RecyclerListActivity.class);
         Log.d("AfterSampling","done");
         intent.putExtra("title", title);
         intent.putExtra("collection", collection);
         intent.putExtra("eventId", eventId);
-        intent.putExtra("selectedEntrants", (Serializable) selectedEntrants);
-        intent.putExtra("cancelledEntrants", (Serializable) cancelledEntrants);
+        intent.putExtra("event_data", event);
+        intent.putExtra("organizer_data", organizer);
+        intent.putExtra("entrant_data", entrant);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshEventDetails();
+    }
+
+    private void refreshEventDetails() {
+        if (event != null && event.getQR_code() != null) {
+            new DBManagerEvent().getEventByQRCode(event.getQR_code(), new DBManagerEvent.GetEventCallback() {
+                @Override
+                public void onSuccess(Event updatedEvent) {
+                    event = updatedEvent;
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(AfterSampling.this, "Failed to refresh event details", Toast.LENGTH_SHORT).show();
+                    Log.e("OrganizerEventDetails", "Error refreshing event details: " + e.getMessage());
+                }
+            });
+        }
     }
 }

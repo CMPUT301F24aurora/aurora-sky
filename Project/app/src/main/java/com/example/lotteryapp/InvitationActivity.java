@@ -96,79 +96,31 @@ public class InvitationActivity extends AppCompatActivity implements EventInvita
 
         profileIcon = findViewById(R.id.profile_icon);
         setupProfileIcon();
-        // Load events into RecyclerView
         loadEvents();
     }
 
+
     private void loadEvents() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Step 1: Fetch entrant's list of selected events
-        db.collection("entrants")
-                .whereEqualTo("id", entrant.getId())
-                .get()
-                .addOnSuccessListener(entrantQuerySnapshot -> {
-                    if (!entrantQuerySnapshot.isEmpty()) {
-                        DocumentSnapshot entrantDoc = entrantQuerySnapshot.getDocuments().get(0);
-                        List<String> selectedEventQrCodes = (List<String>) entrantDoc.get("selected_event");
-                        Log.d("InvitationActivity", "Entrant ID: " + entrant.getId() + ", Selected Event QR Codes: " + selectedEventQrCodes);
-
-                        if (selectedEventQrCodes == null || selectedEventQrCodes.isEmpty()) {
-                            noEventsText.setVisibility(View.VISIBLE);
-                            eventsRecyclerView.setVisibility(View.GONE);
-                            noEventsText.setText("You have not been selected for any events.");
-                            return;
-                        }
-
-                        // Step 2: Fetch event details for all selected events
-                        db.collection("events")
-                                .whereIn("qr_code", selectedEventQrCodes) // Use the 'whereIn' query to get multiple events
-                                .get()
-                                .addOnSuccessListener(eventQuerySnapshot -> {
-                                    List<Event> matchedEvents = new ArrayList<>();
-                                    for (DocumentSnapshot eventDoc : eventQuerySnapshot.getDocuments()) {
-                                        Event event = eventDoc.toObject(Event.class);
-                                        Log.d("InvitationActivity", "Event fetched: " + event.getEventName());
-                                        if (event != null) {
-                                            matchedEvents.add(event);
-                                        }
-                                    }
-
-                                    // Step 3: Update UI with matched events
-                                    eventList.clear();
-                                    eventList.addAll(matchedEvents);
-
-                                    if (eventList.isEmpty()) {
-                                        noEventsText.setVisibility(View.VISIBLE);
-                                        eventsRecyclerView.setVisibility(View.GONE);
-                                        noEventsText.setText("No matching events found.");
-                                    } else {
-                                        Log.d("InvitationActivity", "done");
-                                        noEventsText.setVisibility(View.GONE);
-                                        eventsRecyclerView.setVisibility(View.VISIBLE);
-                                    }
-                                    Log.d("InvitationActivity", "Event list size: " + eventList.size());
-                                    eventInvitationAdapter.updateData(eventList);
-                                })
-                                .addOnFailureListener(e -> {
-                                    noEventsText.setVisibility(View.VISIBLE);
-                                    eventsRecyclerView.setVisibility(View.GONE);
-                                    noEventsText.setText("Failed to load event details. Please try again.");
-                                });
-                    } else {
-                        noEventsText.setVisibility(View.VISIBLE);
-                        eventsRecyclerView.setVisibility(View.GONE);
-                        noEventsText.setText("Entrant not found.");
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    noEventsText.setVisibility(View.VISIBLE);
+        dbManagerEvent.getEventsByQRCodes(entrant.getSelected_event(), new GetEventsCallback() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                eventList.clear();
+                eventList.addAll(events);
+                if (eventList.isEmpty()) {
                     eventsRecyclerView.setVisibility(View.GONE);
-                    noEventsText.setText("Failed to load entrant details. Please try again.");
-                });
+                } else {
+                    eventsRecyclerView.setVisibility(View.VISIBLE);
+                }
+                eventInvitationAdapter.updateData(events);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                eventsRecyclerView.setVisibility(View.GONE);
+            }
+        });
+        eventInvitationAdapter.notifyDataSetChanged(); // Refresh adapter to show added events
     }
-
-
 
 
 

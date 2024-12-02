@@ -1,5 +1,6 @@
 package com.example.lotteryapp;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ public class EventInvitationAdapter extends RecyclerView.Adapter<EventInvitation
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         // Get the event for the current position
         Event event = eventList.get(position);
+        Log.d("eventinvitationadapter",""+event);
 
         // Set the event data into the ViewHolder's views
         holder.eventNameTextView.setText(event.getEventName());

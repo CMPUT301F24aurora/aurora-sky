@@ -1,46 +1,58 @@
 package com.example.lotteryapp;
 
 import android.util.Log;
+
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Manages database operations related to events using Firebase Firestore.
- */
 public class DBManagerEvent {
+
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    /**
-     * Adds an Event to the database and returns the Event.
-     *
-     * @param event The Event object to be added to the database.
-     * @return The added Event object if successful, null otherwise.
-     */
+    // Method to add an Event to the database and return the Event
     public Event addEventToDatabase(Event event) {
-        Log.d("DBManagerEvent", "Uploading event " + event.getEventName());
-        String eventId = event.getQR_code();
+        Log.d("", "Uploading event " + event.getEventName());
+        String eventId = event.getQR_code();  // Use QR code as event ID
         Map<String, Object> eventData = new HashMap<>();
-        // Populate eventData map with event details
+        eventData.put("eventName", event.getEventName());
+        eventData.put("eventStartDate", event.getEventStartDate());
+        eventData.put("eventEndDate", event.getEventEndDate());
+        eventData.put("registrationDeadline", event.getRegistrationDeadline());
+        eventData.put("eventPrice", event.getEventPrice());
+        eventData.put("numPeople", event.getNumPeople());
+        eventData.put("description", event.getDescription());
+        eventData.put("qr_code", eventId);  // Store QR code as the ID field
+        eventData.put("waitingList", event.getWaitingList());  // Store waiting list IDs
+        eventData.put("selectedEntrants", event.getSelectedEntrants());
+        eventData.put("cancelledEntrants", event.getCancelledEntrants());
+        eventData.put("finalEntrants", event.getFinalEntrants());
+        eventData.put("image_url", event.getImage_url());
+        eventData.put("geolocationRequired", event.getGeolocationRequired());
+        eventData.put("waitlistCap", event.getWaitlistCap());
 
+
+        // Add event to "events" collection in Firestore
         DocumentReference eventRef = db.collection("events").document(eventId);
         Task<Void> task = eventRef.set(eventData);
+
         try {
-            Tasks.await(task);
+            Tasks.await(task);  // Wait for the task to complete (use in background if needed)
             if (task.isSuccessful()) {
                 System.out.println("Event added successfully.");
-                return event;
+                return event;  // Return the event if successful
             } else {
                 System.out.println("Error adding event: " + task.getException());
-                return null;
+                return null;  // Return null if there was an error
             }
         } catch (Exception e) {
             System.out.println("Exception while adding event: " + e.getMessage());
@@ -48,13 +60,9 @@ public class DBManagerEvent {
         }
     }
 
-    /**
-     * Retrieves all events from Firestore.
-     *
-     * @param callback The callback to handle the result.
-     */
     public void getEventsFromFirestore(GetEventsCallback callback) {
         if (callback == null) return;
+
         db.collection("events")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -70,22 +78,19 @@ public class DBManagerEvent {
                 .addOnFailureListener(e -> callback.onFailure(e));
     }
 
-    /**
-     * Retrieves events by their QR codes.
-     *
-     * @param qrCodes The list of QR codes to fetch events for.
-     * @param callback The callback to handle the result.
-     */
     public void getEventsByQRCodes(List<String> qrCodes, GetEventsCallback callback) {
         if (callback == null || qrCodes == null || qrCodes.isEmpty()) {
             callback.onFailure(new IllegalArgumentException("Invalid input parameters"));
             return;
         }
+
         List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+
         for (String qrCode : qrCodes) {
             Task<DocumentSnapshot> task = db.collection("events").document(qrCode).get();
             tasks.add(task);
         }
+
         Tasks.whenAllComplete(tasks)
                 .addOnSuccessListener(taskSnapshots -> {
                     List<Event> events = new ArrayList<>();
@@ -105,17 +110,12 @@ public class DBManagerEvent {
                 .addOnFailureListener(e -> callback.onFailure(e));
     }
 
-    /**
-     * Retrieves an event by its QR code.
-     *
-     * @param qrCode The QR code of the event to retrieve.
-     * @param callback The callback to handle the result.
-     */
     public void getEventByQRCode(String qrCode, GetEventCallback callback) {
         if (qrCode == null || qrCode.isEmpty() || callback == null) {
             callback.onFailure(new IllegalArgumentException("Invalid QR code or callback"));
             return;
         }
+
         db.collection("events").document(qrCode).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -132,13 +132,6 @@ public class DBManagerEvent {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    /**
-     * Removes entrants from a specified list in the event document.
-     *
-     * @param entrantList The list of entrants to remove.
-     * @param listName The name of the list to remove entrants from.
-     * @param callback The callback to handle the result.
-     */
     public static void removeEntrantsFromList(List<Entrant> entrantList, String listName, EntrantsUpdateCallback callback) {
         List<String> entrantIds = entrantList.stream().map(Entrant::getId).collect(Collectors.toList());
         db.collection("events")
@@ -149,56 +142,44 @@ public class DBManagerEvent {
                         document.getReference().update(listName, FieldValue.arrayRemove(entrantIds.toArray()))
                                 .addOnSuccessListener(aVoid -> {
                                     Log.d("Firestore", "Entrants removed from " + listName + " successfully");
-                                    callback.onSuccess();
+                                    callback.onSuccess();  // Notify success
                                 })
                                 .addOnFailureListener(e -> {
                                     Log.e("Firestore", "Error removing entrants: ", e);
-                                    callback.onFailure(e.getMessage());
+                                    callback.onFailure(e.getMessage());  // Notify failure
                                 });
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Error querying events: ", e);
-                    callback.onFailure(e.getMessage());
+                    callback.onFailure(e.getMessage());  // Notify failure for query error
                 });
     }
 
-    /**
-     * Adds entrants to a specified list in the event document.
-     *
-     * @param entrantList The list of entrants to add.
-     * @param listName The name of the list to add entrants to.
-     * @param eventId The ID of the event.
-     * @param callback The callback to handle the result.
-     */
+
     public static void addEntrantsToList(List<Entrant> entrantList, String listName, String eventId, EntrantsUpdateCallback callback) {
         List<String> entrantIds = entrantList.stream().map(Entrant::getId).collect(Collectors.toList());
         db.collection("events")
-                .document(eventId)
+                .document(eventId)  // Target a specific event by ID
                 .update(listName, FieldValue.arrayUnion(entrantIds.toArray()))
                 .addOnSuccessListener(aVoid -> {
                     Log.d("Firestore", "Entrants added to " + listName + " successfully");
-                    callback.onSuccess();
+                    callback.onSuccess();  // Notify success
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Error adding entrants: ", e);
-                    callback.onFailure(e.getMessage());
+                    callback.onFailure(e.getMessage());  // Notify failure with the error message
                 });
     }
 
-    /**
-     * Callback interface for entrants update operations.
-     */
     public interface EntrantsUpdateCallback {
         void onSuccess();
         void onFailure(String errorMessage);
     }
 
-    /**
-     * Callback interface for retrieving a single event.
-     */
     public interface GetEventCallback {
         void onSuccess(Event event);
         void onFailure(Exception e);
     }
+
 }

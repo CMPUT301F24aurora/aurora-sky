@@ -27,7 +27,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InvitationActivity extends AppCompatActivity implements EventInvitationAdapter.OnEventClickListener{
+/**
+ * Activity for displaying event invitations to the user.
+ * This activity shows a list of events the user has been invited to and allows navigation to other app features.
+ */
+public class InvitationActivity extends AppCompatActivity implements EventInvitationAdapter.OnEventClickListener {
 
     private RecyclerView eventsRecyclerView;
     private DrawerLayout drawerLayout;
@@ -41,6 +45,13 @@ public class InvitationActivity extends AppCompatActivity implements EventInvita
     private List<Event> eventList;
     private TextView noEventsText;
 
+    /**
+     * Initializes the activity, sets up UI components, and loads event data.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being
+     *                           shut down, this Bundle contains the data it most recently supplied
+     *                           in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,7 +110,9 @@ public class InvitationActivity extends AppCompatActivity implements EventInvita
         loadEvents();
     }
 
-
+    /**
+     * Loads events from the database and updates the UI accordingly.
+     */
     private void loadEvents() {
         dbManagerEvent.getEventsByQRCodes(entrant.getSelected_event(), new GetEventsCallback() {
             @Override
@@ -124,15 +137,16 @@ public class InvitationActivity extends AppCompatActivity implements EventInvita
         eventInvitationAdapter.notifyDataSetChanged(); // Refresh adapter to show added events
     }
 
-
-
+    /**
+     * Sets up the profile icon with the user's image and click listener.
+     */
     private void setupProfileIcon() {
         if (profileIcon != null && entrant != null && entrant.getImage_url() != null) {
             Glide.with(this)
-                    .load(entrant.getImage_url()) // Load the URL from the entrant object
-                    .placeholder(R.drawable.ic_profile_photo) // Optional: Placeholder while loading
-                    .error(R.drawable.ic_profile_photo) // Optional: Fallback image on error
-                    .circleCrop() // Makes the image circular
+                    .load(entrant.getImage_url())
+                    .placeholder(R.drawable.ic_profile_photo)
+                    .error(R.drawable.ic_profile_photo)
+                    .circleCrop()
                     .into(profileIcon);
 
             profileIcon.setOnClickListener(v -> {
@@ -144,6 +158,11 @@ public class InvitationActivity extends AppCompatActivity implements EventInvita
         }
     }
 
+    /**
+     * Handles click events on individual events in the list.
+     *
+     * @param event The Event object that was clicked.
+     */
     @Override
     public void onEventClick(Event event) {
         Intent eventDetailsIntent = new Intent(InvitationActivity.this, AcceptDeclineActivity.class);

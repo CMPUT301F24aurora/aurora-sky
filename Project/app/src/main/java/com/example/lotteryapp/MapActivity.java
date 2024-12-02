@@ -30,6 +30,8 @@ import java.util.List;
  * It handles location permissions, retrieves the last known location, and places a marker on the map at
  * the user's location.
  *
+ * This activity also retrieves and displays the locations of entrants for a specific event.
+ *
  * @see AppCompatActivity
  * @see OnMapReadyCallback
  * @see GoogleMap
@@ -39,14 +41,34 @@ import java.util.List;
  */
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    /** The Google Map object used to display the map. */
     private GoogleMap mMap;
+
+    /** The FusedLocationProviderClient used to get the user's location. */
     private FusedLocationProviderClient fusedLocationProviderClient;
+
+    /** The request code for fine location permission. */
     private static final int FINE_PERMISSION_CODE = 1;
+
+    /** Tag for logging purposes. */
     private static final String TAG = "MapActivity";
+
+    /** Helper class for database operations. */
     private DatabaseHelper databaseHelper;
+
+    /** The event object containing event details. */
     private Event event;
+
+    /** The ID of the event. */
     private String eventId;
 
+    /**
+     * Called when the activity is starting. This is where most initialization should go.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being
+     *                           shut down then this Bundle contains the data it most recently
+     *                           supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +91,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Initializes the map by getting the SupportMapFragment and requesting the GoogleMap object.
+     */
     private void initializeMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -77,6 +102,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Manipulates the map once available. This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera.
+     *
+     * @param googleMap The GoogleMap object representing the Google Map.
+     */
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
@@ -105,6 +136,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
     }
 
+    /**
+     * Callback for the result from requesting permissions.
+     *
+     * @param requestCode The request code passed in requestPermissions(android.app.Activity, String[], int)
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions which is either
+     *                     PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

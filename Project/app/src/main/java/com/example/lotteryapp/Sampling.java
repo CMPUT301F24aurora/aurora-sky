@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
@@ -131,7 +132,7 @@ public class Sampling extends AppCompatActivity {
                 selectedEntrantIds.add(entrant.getId());
                 db.collection("entrants")
                         .document(entrant.getId()) // Assuming each Entrant has a unique ID
-                        .update("selected_event", qrCode)
+                        .update("selected_event", FieldValue.arrayUnion(qrCode))
                         .addOnSuccessListener(aVoid -> Log.d("Sampling", "Updated entrant: " + entrant.getId()))
                         .addOnFailureListener(e -> Log.e("Sampling", "Failed to update entrant: " + entrant.getId(), e));
             }
@@ -141,7 +142,7 @@ public class Sampling extends AppCompatActivity {
                 cancelledEntrantIds.add(entrant.getId());
                 db.collection("entrants")
                         .document(entrant.getId())
-                        .update("cancelled_event", qrCode)
+                        .update("cancelled_event", FieldValue.arrayUnion(qrCode))
                         .addOnSuccessListener(aVoid -> Log.d("Sampling", "Updated entrant: " + entrant.getId()))
                         .addOnFailureListener(e -> Log.e("Sampling", "Failed to update entrant: " + entrant.getId(), e));
             }
@@ -162,7 +163,9 @@ public class Sampling extends AppCompatActivity {
                     });
 
             // Pass data to SamplingResultsActivity
-            Intent intent = new Intent(Sampling.this, SamplingResultsActivity.class);
+            Intent intent = new Intent(Sampling.this, AfterSampling.class);
+            intent.putExtra("eventId", eventId);
+            Log.d("ent: ", " "+eventId);
             intent.putExtra("selectedEntrants", (Serializable) selectedEntrants);
             intent.putExtra("cancelledEntrants", (Serializable) cancelledEntrants);
             startActivity(intent);

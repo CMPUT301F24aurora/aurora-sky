@@ -48,9 +48,6 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
         refreshDataManager = new RefreshDataManager(this);
         dbManagerEvent = new DBManagerEvent();
 
-
-
-
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         ImageButton menuButton = findViewById(R.id.menu_button);
@@ -73,10 +70,7 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
                 organizerIntent.putExtra("entrant_data", entrant);
                 organizerIntent.putExtra("organizer_data", organizer);
                 startActivity(organizerIntent);
-            } else if (id == R.id.map_nav) {
-                Intent organizerIntent = new Intent(EntrantsEventsActivity.this, MapActivity.class);
-                startActivity(organizerIntent);
-            } else if (id == R.id.qr_code_nav) {
+            }else if (id == R.id.qr_code_nav) {
                 Intent qrScannerIntent = new Intent(EntrantsEventsActivity.this, QRScannerActivity.class);
                 qrScannerIntent.putExtra("entrant_data", entrant);
                 qrScannerIntent.putExtra("organizer_data", organizer);

@@ -30,7 +30,8 @@ public class OrganizerCreateEvent extends AppCompatActivity {
 
     private static final String TAG = "OrganizerCreateEvent";
 
-    private EditText eventStartTime, eventEndTime, eventPrice, registrationDeadline, eventName, eventNumberOfPeople, eventDescription;
+    private EditText eventStartTime, eventEndTime, eventPrice, registrationDeadline, eventName,
+            eventNumberOfPeople, eventDescription, waitlistCap;
     private Button organizerCreateEvent, buttonRemovePoster;
     private SwitchCompat geo_toggle;
     private ImageButton buttonUploadPoster;
@@ -74,6 +75,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         eventPrice = findViewById(R.id.eventPrice);
         registrationDeadline = findViewById(R.id.registrationDeadline);
         geo_toggle = findViewById(R.id.geo_toggle);
+        waitlistCap = findViewById(R.id.editWaitlistCap);
 
         if (event != null) { // If event data exists, it's an edit operation
             preloadEventData(event);
@@ -116,6 +118,12 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         if (event.getImage_url() != null){
             buttonRemovePoster.setVisibility(View.VISIBLE);
             buttonRemovePoster.setEnabled(true);
+        }
+
+        if (event.getWaitlistCap() != -1){
+            waitlistCap.setText(String.valueOf(event.getWaitlistCap()));
+        } else {
+            waitlistCap.setText("");
         }
         organizerCreateEvent.setText("Save Event");
     }
@@ -170,6 +178,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         String numofPeople = eventNumberOfPeople.getText().toString().trim();
         String description = eventDescription.getText().toString().trim();
         Boolean geolocation = geo_toggle.isChecked();
+        String cap = waitlistCap.getText().toString().trim();
 
         if (name.isEmpty() || eventStart.isEmpty() || eventEnd.isEmpty() || registration.isEmpty() || price.isEmpty() || numofPeople.isEmpty() || description.isEmpty()) {
             Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
@@ -199,6 +208,17 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         } else {
             // Create a new event only if it's not an edit operation
             event = new Event(name, numPeople, description, geolocation, registration, eventStart, eventEnd, priceOf);
+        }
+
+        if (!cap.isEmpty()){
+            try {
+                event.setWaitlistCap(Integer.parseInt(cap));
+            } catch (NumberFormatException e){
+                Toast.makeText(this, "Invalid waiting list cap", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } else {
+            event.setWaitlistCap(-1);
         }
 
         // Check if there is an image to upload
@@ -254,4 +274,5 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         intent.putExtra("entrant_data", entrant);
         startActivity(intent);
     }
+
 }

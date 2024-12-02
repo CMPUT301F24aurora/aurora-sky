@@ -34,7 +34,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:queryHint="Search events..."
+        android:background="@color/white"
+        android:queryHint="Search Facilities..."
         app:layout_constraintTop_toBottomOf="@id/admin_fac_txt"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

@@ -162,7 +162,7 @@ public class RecyclerListActivity extends AppCompatActivity {
 
     private void fetchFinalEntrantsAndNotify() {
         String title = "Congratulations";
-        String message = "You have been chosen as a finalist!";
+        String message = "You have been chosen as a finalist!See you at the event:)";
         sendNotificationsToEntrants(entrantIds, title, message);
     }
 

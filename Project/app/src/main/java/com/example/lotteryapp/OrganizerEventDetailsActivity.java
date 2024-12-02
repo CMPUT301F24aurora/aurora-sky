@@ -79,7 +79,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         Log.d("", String.valueOf((event.getCancelledEntrants()==null)));
         Intent intent;
         if ((event.getCancelledEntrants() == null || event.getCancelledEntrants().isEmpty()) &&
-                (event.getSelectedEntrants() == null || event.getSelectedEntrants().isEmpty())) {
+                (event.getSelectedEntrants() == null || event.getSelectedEntrants().isEmpty()) &&
+                (event.getFinalEntrants() == null || event.getFinalEntrants().isEmpty())) {
             intent = new Intent(this, Sampling.class);
         } else {
             intent = new Intent(this, AfterSampling.class);

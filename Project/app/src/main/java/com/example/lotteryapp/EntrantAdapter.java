@@ -89,7 +89,7 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
 
         public EntrantViewHolder(@NonNull View itemView) {
             super(itemView);
-            entrantName = itemView.findViewById(R.id.prof_card_value);
+            entrantName = itemView.findViewById(R.id.admin_ent_name);
         }
     }
 }

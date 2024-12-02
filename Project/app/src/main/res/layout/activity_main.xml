@@ -28,14 +28,6 @@
         android:textColor="@android:color/white"
         android:layout_marginBottom="20dp"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="**SignUp/Login if you are an Organizer**"
-        android:textColor="#5D408A"
-        android:textSize="15dp"></TextView>
-
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,21 +35,12 @@
         android:layout_marginBottom="30dp">
 
         <Button
-            android:id="@+id/button2"
-            android:layout_width="132dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:backgroundTint="#352E48"
-            android:text="Button" />
-
-        <Button
             android:id="@+id/organizerButton"
-            android:layout_width="129dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:backgroundTint="#352E48"
-
-            android:text="Login"
+            android:text="I am an Organizer"
             android:textColor="@android:color/white" />
 
     </LinearLayout>

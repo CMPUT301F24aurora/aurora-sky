@@ -45,18 +45,19 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="4dp"
                         android:text="Event Name"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/white"
+                        android:textSize="18dp"/>
 
                     <EditText
                         android:id="@+id/editTextEventName"
-                        android:layout_width="280dp"
+                        android:layout_width="320dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
                         android:backgroundTint="@color/white"
                         android:hint="Enter event name"
                         android:inputType="text"
-                        android:padding="12dp"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/white"
+                        android:background="@drawable/edittext_rounded"/>
 
                 <!-- Event Start Date and Time -->
                 <TextView
@@ -64,38 +65,40 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     android:text="Event Start Date"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:textSize="18dp"/>
 
                 <EditText
                     android:id="@+id/eventStartTime"
-                    android:layout_width="273dp"
+                    android:layout_width="320dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:backgroundTint="@color/white"
                     android:focusable="false"
                     android:hint="Select start date"
                     android:inputType="none"
-                    android:padding="12dp"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:background="@drawable/edittext_rounded"/>
 
                 <!-- Event End Date and Time -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
-                    android:text="Event End Date"
+                    android:text="  Event End Date"
+                    android:textSize="18dp"
                     android:textColor="@color/white" />
 
                 <EditText
                     android:id="@+id/eventEndTime"
-                    android:layout_width="273dp"
+                    android:layout_width="320dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:backgroundTint="@color/white"
                     android:focusable="false"
                     android:hint="Select end date "
+                    android:background="@drawable/edittext_rounded"
                     android:inputType="none"
-                    android:padding="12dp"
                     android:textColor="@color/white" />
 
                 <!-- Registration End Time -->
@@ -104,19 +107,20 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     android:text="Registration End Date"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:textSize="18dp"/>
 
                 <EditText
                     android:id="@+id/registrationDeadline"
-                    android:layout_width="273dp"
+                    android:layout_width="320dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:backgroundTint="@color/white"
                     android:focusable="false"
                     android:hint="Registration end date"
                     android:inputType="none"
-                    android:padding="12dp"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:background="@drawable/edittext_rounded"/>
 
                 <!-- Event Price -->
                 <TextView
@@ -124,17 +128,18 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     android:text="Event Price"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:textSize="18dp"/>
 
                 <EditText
                     android:id="@+id/eventPrice"
-                    android:layout_width="273dp"
+                    android:layout_width="320dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:backgroundTint="@color/white"
                     android:hint="Enter event price"
                     android:inputType="numberDecimal"
-                    android:padding="12dp"
+                    android:background="@drawable/edittext_rounded"
                     android:textColor="@color/white" />
 
                 <!-- Number of Members -->
@@ -143,18 +148,19 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     android:text="Number of Members (NL-No Limit)"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:textSize="18dp"/>
 
                 <!-- Waitlist Capacity -->
                 <EditText
                     android:id="@+id/editNumberOfMembers"
-                    android:layout_width="273dp"
+                    android:layout_width="320dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:backgroundTint="@color/white"
                     android:hint="Enter number of members"
+                    android:background="@drawable/edittext_rounded"
                     android:inputType="number"
-                    android:padding="12dp"
                     android:textColor="@color/white" />
 
                 <TextView
@@ -162,16 +168,18 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     android:text="Waitlist Capacity (Optional)"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:textSize="18dp"/>
 
                 <EditText
                     android:id="@+id/editWaitlistCap"
-                    android:layout_width="273dp"
+                    android:layout_width="320dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:backgroundTint="@color/white"
                     android:hint="Enter waitlist capacity"
                     android:inputType="number"
+                    android:background="@drawable/edittext_rounded"
                     android:textColor="@color/white"
                     android:visibility="visible" />
 
@@ -181,17 +189,19 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     android:text="Event Description"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:textSize="18dp"/>
 
                 <EditText
                     android:id="@+id/editTextEventDescription"
-                    android:layout_width="305dp"
+                    android:layout_width="320dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:backgroundTint="@color/white"
                     android:hint="Enter event description"
                     android:inputType="textMultiLine"
                     android:padding="12dp"
+                    android:background="@drawable/edittext_rounded"
                     android:textColor="@color/white" />
 
 
@@ -205,9 +215,10 @@
                             android:id="@+id/uploadPosterGeolocationText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="2dp"
-                            android:text="Upload Poster                                             Geolocation"
-                            android:textColor="@color/white" />
+                            android:layout_marginBottom="10dp"
+                            android:text="    Upload Poster                   Geolocation"
+                            android:textColor="@color/white"
+                            android:textSize="18dp"/>
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -215,29 +226,28 @@
 
                         <ImageButton
                             android:id="@+id/buttonUploadPoster"
-                            android:layout_width="46dp"
-                            android:layout_height="45dp"
-                            android:layout_marginEnd="110dp"
-                            android:background="#0A4753"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_marginEnd="10dp"
                             android:contentDescription="Upload Poster"
-                            android:src="@drawable/ic_upload_icon" />
+                            android:src="@drawable/ic_upload_icon"
+                            android:background="@drawable/edittext_rounded"/>
 
                             <Button
                                 android:id="@+id/buttonRemovePoster"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="16dp"
-                                android:backgroundTint="@color/white"
+                                android:background="@drawable/edittext_rounded"
                                 android:text="Remove Poster"
-                                android:textColor="@color/black"
-                                />
+                                android:textColor="@color/white"
+                                android:visibility="gone"                                />
 
                             <androidx.appcompat.widget.SwitchCompat
                                 android:id="@+id/geo_toggle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="110dp"
-                                android:background="#4AA7CAC0" />
+                                android:layout_marginStart="120dp" />
 
                         </LinearLayout>
 

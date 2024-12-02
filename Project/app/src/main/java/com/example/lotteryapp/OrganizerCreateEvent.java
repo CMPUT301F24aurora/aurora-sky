@@ -91,7 +91,6 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         buttonRemovePoster.setOnClickListener(v -> {
             imageUri = null;  // Clear local reference
             buttonUploadPoster.setImageResource(R.drawable.ic_upload_icon);  // Reset upload icon
-            buttonRemovePoster.setVisibility(View.GONE);  // Hide remove button
             buttonRemovePoster.setEnabled(false);
             Toast.makeText(this, "Poster removed", Toast.LENGTH_SHORT).show();
         });

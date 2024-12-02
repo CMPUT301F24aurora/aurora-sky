@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A helper class to manage Firestore database operations.
+ * A helper class to manage Firestore database operations for event entrant locations.
  */
 public class DatabaseHelper {
 
@@ -36,10 +36,11 @@ public class DatabaseHelper {
     }
 
     /**
-     * Saves the event ID, entrant ID, latitude, and longitude under the specified collection.
+     * Saves the event ID, entrant ID, name, latitude, and longitude under the specified collection.
      *
      * @param eventId   The ID of the event.
      * @param entrantId The ID of the entrant.
+     * @param name      The name of the entrant.
      * @param latitude  The latitude of the entrant's location.
      * @param longitude The longitude of the entrant's location.
      */
@@ -49,17 +50,14 @@ public class DatabaseHelper {
             return;
         }
 
-        // Prepare the data to be saved
         Map<String, Object> locationData = new HashMap<>();
         locationData.put("entrantId", entrantId);
         locationData.put("name", name);
         locationData.put("latitude", latitude);
         locationData.put("longitude", longitude);
 
-        // Reference path: EventEntrantLocations/eventId/entrants/entrantId
         String documentPath = String.format("%s/%s/entrants/%s", collectionName, eventId, entrantId);
 
-        // Save data to Firestore
         firestore.document(documentPath)
                 .set(locationData, SetOptions.merge())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -122,7 +120,18 @@ public class DatabaseHelper {
      * Callback interface to handle entrant location data retrieval.
      */
     public interface EntrantLocationsCallback {
+        /**
+         * Called when entrant locations are successfully retrieved.
+         *
+         * @param entrantLocations List of retrieved entrant locations.
+         */
         void onEntrantLocationsRetrieved(List<EntrantLocation> entrantLocations);
+
+        /**
+         * Called when an error occurs during entrant location retrieval.
+         *
+         * @param errorMessage The error message describing the failure.
+         */
         void onError(String errorMessage);
     }
 
@@ -135,7 +144,14 @@ public class DatabaseHelper {
         private final double latitude;
         private final double longitude;
 
-
+        /**
+         * Constructor for EntrantLocation.
+         *
+         * @param entrantId The ID of the entrant.
+         * @param name      The name of the entrant.
+         * @param latitude  The latitude of the entrant's location.
+         * @param longitude The longitude of the entrant's location.
+         */
         public EntrantLocation(String entrantId, String name, double latitude, double longitude) {
             this.entrantId = entrantId;
             this.name = name;
@@ -143,16 +159,38 @@ public class DatabaseHelper {
             this.longitude = longitude;
         }
 
+        /**
+         * Gets the entrant ID.
+         *
+         * @return The entrant ID.
+         */
         public String getEntrantId() {
             return entrantId;
         }
 
-        public String getName(){return name;}
+        /**
+         * Gets the entrant name.
+         *
+         * @return The entrant name.
+         */
+        public String getName() {
+            return name;
+        }
 
+        /**
+         * Gets the latitude of the entrant's location.
+         *
+         * @return The latitude.
+         */
         public double getLatitude() {
             return latitude;
         }
 
+        /**
+         * Gets the longitude of the entrant's location.
+         *
+         * @return The longitude.
+         */
         public double getLongitude() {
             return longitude;
         }

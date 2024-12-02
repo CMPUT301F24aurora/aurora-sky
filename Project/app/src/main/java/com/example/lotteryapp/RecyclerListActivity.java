@@ -49,7 +49,6 @@ public class RecyclerListActivity extends AppCompatActivity {
             }
         }
 
-
         // Initialize views
         titleTextView = findViewById(R.id.recycler_title);
         recyclerView = findViewById(R.id.recycler_view);

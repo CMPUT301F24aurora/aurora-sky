@@ -22,7 +22,8 @@
         android:id="@+id/organizer_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/white" />
+        android:backgroundTint="@color/white"
+        android:textColor="@color/white" />
 
 
     <TextView
@@ -40,7 +41,8 @@
         android:id="@+id/organizer_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/white" />
+        android:backgroundTint="@color/white"
+        android:textColor="@color/white" />
 
 
     <!-- Subheading for Password -->
@@ -58,7 +60,8 @@
         android:id="@+id/organizer_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/white" />
+        android:backgroundTint="@color/white"
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/phone_label"
@@ -75,7 +78,8 @@
         android:id="@+id/organizer_phone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/white" />
+        android:backgroundTint="@color/white"
+        android:textColor="@color/white" />
 
 
     <Button

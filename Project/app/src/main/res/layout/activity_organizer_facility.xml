@@ -22,7 +22,8 @@
         android:backgroundTint="#FFFFFF"
         android:hint="Facility Name"
         android:minHeight="48dp"
-        android:padding="8dp" />
+        android:padding="8dp"
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/start_time_button"
@@ -51,10 +52,11 @@
         android:id="@+id/location_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Location"
         android:backgroundTint="#FFFFFF"
+        android:hint="Location"
         android:minHeight="48dp"
-        android:padding="8dp" />
+        android:padding="8dp"
+        android:textColor="@color/white" />
     <TextView
         android:id="@+id/email_label"
         android:layout_width="match_parent"
@@ -63,14 +65,16 @@
         android:textColor="@color/white"
         android:textSize="16sp"
         android:layout_marginBottom="4dp" />
+
     <EditText
         android:id="@+id/email_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Contact Email"
         android:backgroundTint="#FFFFFF"
+        android:hint="Contact Email"
         android:minHeight="48dp"
-        android:padding="8dp" />
+        android:padding="8dp"
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/save_button"

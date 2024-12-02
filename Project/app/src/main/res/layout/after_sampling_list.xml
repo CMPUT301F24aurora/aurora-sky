@@ -8,16 +8,16 @@
 
     <TextView
         android:id="@+id/textView9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="273dp"
+        android:layout_height="50dp"
         android:text="Registration deadline has passsed\nSampling is done!"
-        tools:layout_editor_absoluteX="152dp"
-        tools:layout_editor_absoluteY="99dp"
         android:textColor="@color/white"
+        android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/buttonWaitlistEntrants"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.52" />
 
     <Button
         android:id="@+id/buttonWaitlistEntrants"
@@ -28,42 +28,46 @@
         android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/buttonSelectedEntrants"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
     <Button
         android:id="@+id/buttonSelectedEntrants"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Selected entrants"
+        android:layout_width="190dp"
+        android:layout_height="46dp"
         android:backgroundTint="#0A4753"
+        android:text="Selected entrants"
         android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/buttonCancelledEntrants"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonWaitlistEntrants"/>
+        app:layout_constraintTop_toBottomOf="@+id/buttonWaitlistEntrants" />
 
     <Button
         android:id="@+id/buttonCancelledEntrants"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cancelled Entrants"
+        android:layout_width="190dp"
+        android:layout_height="46dp"
         android:backgroundTint="#0A4753"
+        android:text="Cancelled Entrants"
         android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/buttonChosenEntrants"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.547"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonSelectedEntrants"/>
+        app:layout_constraintTop_toBottomOf="@+id/buttonSelectedEntrants" />
 
     <Button
         android:id="@+id/buttonChosenEntrants"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Final chosen entrants"
+        android:layout_width="190dp"
+        android:layout_height="46dp"
         android:backgroundTint="#0A4753"
+        android:text="Final chosen entrants"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.555"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonCancelledEntrants"/>
+        app:layout_constraintTop_toBottomOf="@+id/buttonCancelledEntrants" />
 </androidx.constraintlayout.widget.ConstraintLayout>

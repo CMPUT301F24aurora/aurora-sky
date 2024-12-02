@@ -29,6 +29,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/notifications_button" />
 
+    <TextView
+        android:id="@+id/no_entrants_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Entrants to Display"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center" />
+
     <Button
         android:id="@+id/notifications_button"
         android:layout_width="wrap_content"
@@ -45,9 +59,9 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:text="Cancel Entrant"
-        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/notifications_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recycler_view" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

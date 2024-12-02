@@ -1,24 +1,24 @@
 package com.example.lotteryapp;
-import android.widget.CheckBox;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.bumptech.glide.Glide; // To load images
-import com.example.lotteryapp.Entrant;
 
-import java.util.ArrayList;
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 public class EntrantWaitlistAdapter extends RecyclerView.Adapter<EntrantWaitlistAdapter.EntrantViewHolder> {
 
     private Context context;
     private List<Entrant> entrantList;
-    private final List<Entrant> selectedEntrants = new ArrayList<>();
 
     public EntrantWaitlistAdapter(Context context, List<Entrant> entrantList) {
         this.context = context;
@@ -39,21 +39,19 @@ public class EntrantWaitlistAdapter extends RecyclerView.Adapter<EntrantWaitlist
         Glide.with(context).load(entrant.getImage_url()).into(holder.photoImageView);
         holder.checkBoxEntrant.setChecked(entrant.isSelected());
 
-        // Handle checkbox toggle
-        holder.checkBoxEntrant.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            entrant.setSelected(isChecked);
-            notifyDataSetChanged();
-        });
-    }
-
-    // Add a method to get the selected entrants
-    public List<Entrant> getSelectedEntrants() {
-        return new ArrayList<>(selectedEntrants); // Return a copy of the selected entrants list
+        // Handle checkbox toggle without notifying the whole data set
+        holder.checkBoxEntrant.setOnCheckedChangeListener((buttonView, isChecked) -> entrant.setSelected(isChecked));
     }
 
     @Override
     public int getItemCount() {
         return entrantList.size();
+    }
+
+    // Method to update the entrant list and notify the adapter
+    public void updateList(List<Entrant> newEntrantList) {
+        this.entrantList = newEntrantList;
+        notifyDataSetChanged();  // Notify the adapter to refresh the list
     }
 
     public static class EntrantViewHolder extends RecyclerView.ViewHolder {
@@ -66,7 +64,6 @@ public class EntrantWaitlistAdapter extends RecyclerView.Adapter<EntrantWaitlist
             nameTextView = itemView.findViewById(R.id.entrant_name);
             photoImageView = itemView.findViewById(R.id.entrant_photo);
             checkBoxEntrant = itemView.findViewById(R.id.checkBoxEntrant);
-
         }
     }
 }

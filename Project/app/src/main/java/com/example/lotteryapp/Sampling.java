@@ -29,6 +29,7 @@ public class Sampling extends AppCompatActivity {
     private EntrantWaitlistAdapter adapter;
     private EntrantWaitlistAdapter sampledAdapter;
     private Button sampleButton;
+    private Event event;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
@@ -44,6 +45,7 @@ public class Sampling extends AppCompatActivity {
 
         // Example: Populate entrantList with sample data
         String eventId = getIntent().getStringExtra("eventId");
+        event = (Event) getIntent().getSerializableExtra("event_data");
         loadEntrants(eventId);
 
         // Set up RecyclerView
@@ -166,6 +168,7 @@ public class Sampling extends AppCompatActivity {
             Intent intent = new Intent(Sampling.this, AfterSampling.class);
             intent.putExtra("eventId", eventId);
             Log.d("ent: ", " "+eventId);
+            intent.putExtra("event_data", event);
             intent.putExtra("selectedEntrants", (Serializable) selectedEntrants);
             intent.putExtra("cancelledEntrants", (Serializable) cancelledEntrants);
             startActivity(intent);

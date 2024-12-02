@@ -35,8 +35,9 @@ public class RecyclerListActivity extends AppCompatActivity {
     private List<Entrant> entrantsList;
     private EntrantWaitlistAdapter adapter;
     private Button notificationBtn, cancelButton;
-    private List<Entrant> cancelledEntrants;
-    private List<Entrant> selectedEntrants;
+    private List<String> cancelledEntrants;
+    private List<String> selectedEntrants;
+    private Event event;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +71,9 @@ public class RecyclerListActivity extends AppCompatActivity {
         String title = getIntent().getStringExtra("title");
         String collection = getIntent().getStringExtra("collection");
         String eventId = getIntent().getStringExtra("eventId");
-        selectedEntrants = (List<Entrant>) getIntent().getSerializableExtra("selectedEntrants");
-        cancelledEntrants = (List<Entrant>) getIntent().getSerializableExtra("cancelledEntrants");
+        event = (Event) getIntent().getSerializableExtra("event_data");
+        selectedEntrants = event.getSelectedEntrants();
+        cancelledEntrants = event.getCancelledEntrants();
         Log.d("RecyclerListActivity", "Received Event ID: " + eventId);
 
         // Set title

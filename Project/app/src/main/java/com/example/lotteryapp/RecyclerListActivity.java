@@ -109,12 +109,10 @@ public class RecyclerListActivity extends AppCompatActivity {
     }
 
     private void manageEntrantListVisibility() {
-        if (entrantIds == null || entrantIds.isEmpty()) {
-            recyclerView.setVisibility(View.GONE);
-            noEntrantsText.setVisibility(View.VISIBLE);
-        } else {
-            recyclerView.setVisibility(View.VISIBLE);
+        if (!entrantIds.isEmpty()) {
             getData(entrantIds);
+        } else {
+            updateUiState(); // Initially set the state
         }
     }
 
@@ -172,20 +170,48 @@ public class RecyclerListActivity extends AppCompatActivity {
         // Implementation remains similar to the existing code
     }
 
+    private void updateUiState() {
+            recyclerView.setVisibility(View.GONE);
+            noEntrantsText.setVisibility(View.VISIBLE);
+            cancelButton.setEnabled(false);
+    }
+
     private void setupCancelButton() {
-        cancelButton.setVisibility(View.VISIBLE);
+
         cancelButton.setOnClickListener(v -> {
             List<Entrant> selectedEntrants = adapter.getSelectedEntrants();
-            DBManagerEvent.removeEntrantsFromList(selectedEntrants, collection);
-            if (!selectedEntrants.isEmpty()) {
-                // Remove selected entrants from the adapter
-                adapter.removeEntrants(selectedEntrants);
-                // Update UI
-                //updateCancelButtonVisibility();
-                Toast.makeText(this, "Selected entrants removed from waiting list", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "No entrants selected", Toast.LENGTH_SHORT).show();
-            }
+            DBManagerEvent.removeEntrantsFromList(selectedEntrants, collection, new DBManagerEvent.EntrantsUpdateCallback() {
+                @Override
+                public void onSuccess() {
+                    if (!selectedEntrants.isEmpty()) {
+                        // Remove selected entrants from the adapter
+                        Toast.makeText(getApplicationContext(), "Entrant Removed!", Toast.LENGTH_SHORT).show();
+                        DBManagerEvent.addEntrantsToList(selectedEntrants, "cancelledEntrants", eventId, new DBManagerEvent.EntrantsUpdateCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d("","works");
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+                                Log.d("", "does not work");
+                            }
+                        });
+                        adapter.removeEntrants(selectedEntrants);
+                        if (adapter.getItemCount() == 0){
+                            updateUiState();
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "No entrants selected", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+
+                }
+            });
+
         });
     }
 

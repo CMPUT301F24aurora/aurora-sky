@@ -27,16 +27,6 @@
         android:text="I am an Entrant"
         android:textColor="@android:color/white"
         android:layout_marginBottom="20dp"/>
-    <Button
-        android:id="@+id/organizerButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#352E48"
-        android:text="I am an Organizer"
-        android:textColor="@android:color/white"
-        android:layout_marginBottom="20dp"/>
-
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -44,7 +34,14 @@
         android:orientation="horizontal"
         android:layout_marginBottom="30dp">
 
-         />
+        <Button
+            android:id="@+id/organizerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:backgroundTint="#352E48"
+            android:text="I am an Organizer"
+            android:textColor="@android:color/white" />
 
     </LinearLayout>
 

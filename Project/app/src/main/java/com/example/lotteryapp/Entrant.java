@@ -18,6 +18,7 @@ public class Entrant extends User implements Serializable {
     private String image_url;
     private String name;
     private List<String> selected_event;
+    private Boolean notificationAllowed;
 
     public boolean isSelected() {
         return isSelected;
@@ -118,5 +119,13 @@ public class Entrant extends User implements Serializable {
 
     public void setSelected_event(List<String> selected_event) {
         this.selected_event = selected_event;
+    }
+
+    public Boolean getNotificationAllowed() {
+        return notificationAllowed;
+    }
+
+    public void setNotificationAllowed(Boolean notificationAllowed) {
+        this.notificationAllowed = notificationAllowed;
     }
 }

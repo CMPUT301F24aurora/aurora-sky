@@ -2,11 +2,14 @@ package com.example.lotteryapp;
 
 import android.content.Context;
 import android.provider.Settings;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,9 +99,43 @@ public class DatabaseManager {
                 .addOnFailureListener(callback::onError);
     }
 
+    public static void fetchEntrantsByIds(List<String> entrantIds, EntrantsFetchCallback callback) {
+        if (entrantIds == null || entrantIds.isEmpty()) {
+            Log.d("RecyclerListActivity", "No entrants found");
+            callback.onFailure("No entrants found");
+            return;
+        }
+
+        List<Entrant> entrants = new ArrayList<>();
+
+        // Query Firestore for entrants by their IDs
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("entrants")
+                .whereIn("id", entrantIds) // Fetch entrants where the ID matches one of the provided IDs
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (QueryDocumentSnapshot documentSnapshot : querySnapshot) {
+                        Entrant entrant = documentSnapshot.toObject(Entrant.class);
+                        Log.d("RecyclerListActivity", "Fetched Entrant: " + entrant.getName());
+                        entrants.add(entrant);
+                    }
+                    callback.onSuccess(entrants); // Return the list on success
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("RecyclerListActivity", "Error fetching entrants: ", e);
+                    callback.onFailure("Failed to fetch entrants: " + e.getMessage()); // Pass error message on failure
+                });
+    }
+
 
     // Utility method
     private static String getDeviceId(Context context) {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
+    // Callback interface to handle success and failure
+    public interface EntrantsFetchCallback {
+        void onSuccess(List<Entrant> entrants);
+        void onFailure(String errorMessage);
     }
 }

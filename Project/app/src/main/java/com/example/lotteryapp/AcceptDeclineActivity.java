@@ -48,12 +48,7 @@ public class AcceptDeclineActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "Event or Entrant data missing!", Toast.LENGTH_SHORT).show();
             }
-
         });
-
-//        Intent backIntent = new Intent(AcceptDeclineActivity.this, InvitationActivity.class);
-//        backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//        startActivity(backIntent);
     }
 
     private void addEntrantToEvent(String eventId, String entrantId) {
@@ -82,7 +77,8 @@ public class AcceptDeclineActivity extends AppCompatActivity {
         // Update the event document by adding entrantId to the final_entrants list
         db.collection("events")
                 .document(eventId)
-                .update("cancelledEntrants", com.google.firebase.firestore.FieldValue.arrayUnion(entrantId))
+                .update("cancelledEntrants", com.google.firebase.firestore.FieldValue.arrayUnion(entrantId),
+                        "selectedEntrants", com.google.firebase.firestore.FieldValue.arrayRemove(entrantId))
                 .addOnSuccessListener(aVoid -> {
                     // Navigate back to InvitationActivity after success
                     Toast.makeText(this, "Did not accept the invitation", Toast.LENGTH_SHORT).show();

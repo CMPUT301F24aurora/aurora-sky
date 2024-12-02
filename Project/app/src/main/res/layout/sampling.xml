@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#191F36">
 
     <!-- TextView to display selected entrants -->
     <TextView
@@ -11,6 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Entrants in the waitlist"
+        android:textColor="@color/white"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@id/entrantsRecyclerView"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,6 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
+        android:backgroundTint="#0A4753"
         android:onClick="onSampleButtonClick"
         android:text="Sample"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -45,6 +48,7 @@
         android:id="@+id/after_sampling"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@color/white"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@+id/sample_button"
         app:layout_constraintEnd_toEndOf="parent"

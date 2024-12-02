@@ -8,98 +8,6 @@
     android:padding="16dp"
     android:background="#191F36">
 
-<<<<<<< HEAD
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="539dp"
-        android:background="#4AA7CAC0"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="Event Name"
-            android:textColor="@color/white" />
-
-        <EditText
-            android:id="@+id/editTextEventName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/white"
-            android:inputType="text"
-            android:padding="12dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="Date and Time"
-            android:textColor="@color/white" />
-
-        <EditText
-            android:id="@+id/editTextDateTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/white"
-            android:focusable="false"
-            android:inputType="none"
-            android:padding="12dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="Number of Members (NL-No Limit)"
-            android:textColor="@color/white" />
-
-        <EditText
-            android:id="@+id/editNumberOfMembers"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/white"
-            android:inputType="number"
-            android:padding="12dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="Event Description"
-            android:textColor="@color/white" />
-
-        <EditText
-            android:id="@+id/editTextEventDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/white"
-            android:inputType="textMultiLine"
-            android:padding="12dp" />
-
-        <TextView
-            android:id="@+id/uploadPosterGeolocationText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="Upload Poster                                             Geolocation"
-            android:textColor="@color/white" />
-
-        <Button
-            android:id="@+id/buttonRemovePoster"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/black"
-            android:text="Remove Poster"
-            android:textColor="@color/white"
-            android:visibility="gone" />
-
-=======
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -108,44 +16,10 @@
         app:layout_constraintBottom_toTopOf="@id/buttonCreateEvent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
->>>>>>> main
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-<<<<<<< HEAD
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/buttonUploadPoster"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="110dp"
-                android:background="@null"
-                android:contentDescription="Upload Poster"
-                android:src="@drawable/ic_upload_icon" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/geo_toggle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="110dp" />
-        </LinearLayout>
-
-
-        <Button
-            android:id="@+id/buttonCreateEvent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#0A4753"
-            android:text="Create Event"
-            android:textColor="@color/white" />
-
-
-    </LinearLayout>
-    </LinearLayout>
-=======
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
@@ -157,8 +31,9 @@
                 app:cardBackgroundColor="#F4EDED">
 
                 <LinearLayout
-                    android:layout_width="367dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="#4AA7CAC0"
                     android:orientation="vertical"
                     android:padding="16dp">
 
@@ -315,6 +190,7 @@
                             android:layout_marginBottom="2dp"
                             android:text="Upload Poster                                             Geolocation"
                             android:textColor="@color/black" />
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -369,4 +245,3 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
->>>>>>> main

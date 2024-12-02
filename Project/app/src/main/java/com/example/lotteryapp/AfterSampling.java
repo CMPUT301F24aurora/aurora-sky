@@ -45,7 +45,7 @@ public class AfterSampling extends AppCompatActivity {
         waitlistButton.setOnClickListener(v -> navigateToRecyclerList("Entrants in the waitlist", "waitingList"));
         selectedButton.setOnClickListener(v -> navigateToRecyclerList("Selected entrants", "selectedEntrants"));
         cancelledButton.setOnClickListener(v -> navigateToRecyclerList("Cancelled Entrants", "cancelledEntrants"));
-        chosenButton.setOnClickListener(v -> navigateToRecyclerList("Final chosen entrants", "finalChosenEntrants"));
+        chosenButton.setOnClickListener(v -> navigateToRecyclerList("Final chosen entrants", "finalEntrants"));
     }
 
     private void navigateToRecyclerList(String title, String collection) {

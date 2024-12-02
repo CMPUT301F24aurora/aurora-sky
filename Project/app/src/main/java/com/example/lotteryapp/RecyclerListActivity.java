@@ -152,7 +152,7 @@ public class RecyclerListActivity extends AppCompatActivity {
                         });
             }
 
-            if ("finalChosenEntrants".equals(collection)) {
+            if ("finalEntrants".equals(collection)) {
                 db.collection("events")
                         .document(eventId) // Use the event ID to locate the event document
                         .get()

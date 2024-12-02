@@ -108,8 +108,10 @@ public class InvitationActivity extends AppCompatActivity implements EventInvita
                 eventList.addAll(events);
                 if (eventList.isEmpty()) {
                     eventsRecyclerView.setVisibility(View.GONE);
+                    noEventsText.setVisibility(View.VISIBLE);
                 } else {
                     eventsRecyclerView.setVisibility(View.VISIBLE);
+                    noEventsText.setVisibility(View.GONE);
                 }
                 eventInvitationAdapter.updateData(events);
             }

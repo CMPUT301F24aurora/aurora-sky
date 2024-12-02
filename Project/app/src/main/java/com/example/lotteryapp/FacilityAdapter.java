@@ -3,6 +3,7 @@ package com.example.lotteryapp;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -56,20 +57,46 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.Facili
 
     @Override
     public void onBindViewHolder(@NonNull FacilityViewHolder holder, int position) {
-        Facility facility = facilityList.get(position);
+        Facility facility = filteredFacilityList.get(position);
         holder.facilityName.setText(facility.getName());
         holder.facilityLocation.setText(facility.getLocation());
         holder.itemView.setOnClickListener(v -> clickListener.onFacilityClick(facility));
     }
 
-    public List<Facility> filter(String query) {
-        filteredFacilityList.clear();
-        for (Facility facility : facilityList) {
-            if (facility.getName().toLowerCase().contains(query.toLowerCase())) {
-                filteredFacilityList.add(facility);
+    public void updateData(List<Facility> newFacilityList) {
+        this.facilityList.clear();
+        this.facilityList.addAll(newFacilityList);
+        this.filteredFacilityList = new ArrayList<>(newFacilityList);  // Reset filtered list
+        notifyDataSetChanged();  // Notify adapter that the data has changed
+    }
+
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String query = constraint.toString().toLowerCase().trim();
+                FilterResults results = new FilterResults();
+
+                if (query.isEmpty()) {
+                    results.values = facilityList;
+                } else {
+                    List<Facility> filtered = new ArrayList<>();
+                    for (Facility facility : facilityList) {
+                        if (facility.getName().toLowerCase().contains(query)) {
+                            filtered.add(facility);
+                        }
+                    }
+                    results.values = filtered;
+                }
+                return results;
             }
-        }
-        return filteredFacilityList;
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                filteredFacilityList = (List<Facility>) results.values;
+                notifyDataSetChanged();  // Refresh the RecyclerView
+            }
+        };
     }
 
     /**
@@ -80,7 +107,7 @@ public class FacilityAdapter extends RecyclerView.Adapter<FacilityAdapter.Facili
 
     @Override
     public int getItemCount() {
-        return facilityList.size();
+        return filteredFacilityList.size();
     }
 
     public static class FacilityViewHolder extends RecyclerView.ViewHolder {

@@ -1,24 +1,30 @@
 package com.example.lotteryapp;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Adapter class for managing and displaying Entrant objects in a RecyclerView.
+ * This adapter supports filtering and click events on entrant items.
  */
 public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantViewHolder> {
 
     private List<Entrant> entrantList;
     private List<Entrant> filteredEntrantList;
     private final EntrantClickListener clickListener;
+    private Context context;
 
     /**
      * Interface for handling click events on Entrant items.
@@ -35,10 +41,12 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
     /**
      * Constructor for EntrantAdapter.
      *
+     * @param context The context in which the adapter is being used.
      * @param entrantList List of Entrant objects to display.
      * @param clickListener Listener for Entrant item click events.
      */
-    public EntrantAdapter(List<Entrant> entrantList, EntrantClickListener clickListener) {
+    public EntrantAdapter(Context context, List<Entrant> entrantList, EntrantClickListener clickListener) {
+        this.context = context;
         this.entrantList = entrantList;
         this.filteredEntrantList = new ArrayList<>(entrantList);
         this.clickListener = clickListener;
@@ -54,7 +62,7 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
     @NonNull
     @Override
     public EntrantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.entrant_card, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.admin_entrant_card, parent, false);
         return new EntrantViewHolder(view);
     }
 
@@ -65,7 +73,7 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
      */
     @Override
     public int getItemCount() {
-        return entrantList.size();
+        return filteredEntrantList.size();
     }
 
     /**
@@ -76,37 +84,56 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
      */
     @Override
     public void onBindViewHolder(@NonNull EntrantViewHolder holder, int position) {
-        Entrant entrant = entrantList.get(position);
+        Entrant entrant = filteredEntrantList.get(position);
         Log.d("EntrantAdapter", "Displaying: " + entrant.getName());
         holder.entrantName.setText(entrant.getName());
         holder.itemView.setOnClickListener(v -> clickListener.onEntrantClick(entrant));
     }
 
     /**
-     * Filters the Entrant list based on a query string.
-     *
-     * @param query The search query to filter Entrants.
-     * @return A filtered list of Entrants.
-     */
-    public List<Entrant> filter(String query) {
-        filteredEntrantList.clear();
-        for (Entrant entrant : entrantList) {
-            if (entrant.getName().toLowerCase().contains(query.toLowerCase())) {
-                filteredEntrantList.add(entrant);
-            }
-        }
-        return filteredEntrantList;
-    }
-
-    /**
-     * Updates the Entrant list with new data.
+     * Updates the adapter's data set with a new list of Entrants.
      *
      * @param newEntrantList The new list of Entrants to display.
      */
-    public void updateList(List<Entrant> newEntrantList) {
-        entrantList.clear();
-        entrantList.addAll(newEntrantList);
+    public void updateData(List<Entrant> newEntrantList) {
+        this.entrantList.clear();
+        this.entrantList.addAll(newEntrantList);
+        this.filteredEntrantList = new ArrayList<>(newEntrantList);
         notifyDataSetChanged();
+    }
+
+    /**
+     * Returns a Filter that can be used to constrain data with a filtering pattern.
+     *
+     * @return A Filter for constraining data in the adapter.
+     */
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String query = constraint.toString().toLowerCase().trim();
+                FilterResults results = new FilterResults();
+
+                if (query.isEmpty()) {
+                    results.values = entrantList;
+                } else {
+                    List<Entrant> filtered = new ArrayList<>();
+                    for (Entrant entrant : entrantList) {
+                        if (entrant.getName().toLowerCase().contains(query)) {
+                            filtered.add(entrant);
+                        }
+                    }
+                    results.values = filtered;
+                }
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                filteredEntrantList = (List<Entrant>) results.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     /**
@@ -122,7 +149,7 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
          */
         public EntrantViewHolder(@NonNull View itemView) {
             super(itemView);
-            entrantName = itemView.findViewById(R.id.profile_name_value);
+            entrantName = itemView.findViewById(R.id.admin_ent_name);
         }
     }
 }

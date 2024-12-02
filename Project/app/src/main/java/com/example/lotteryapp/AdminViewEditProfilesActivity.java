@@ -3,11 +3,14 @@ package com.example.lotteryapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,8 +25,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import android.widget.SearchView;
 
 /**
  * The AdminViewEditProfilesActivity class allows admin users to view and edit entrant profiles.
@@ -44,6 +45,9 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
     private List<Entrant> entrantList;
     private List<Entrant> filteredEntrantList;
     private FirebaseFirestore db;
+    private SearchView searchView;
+    private TextView noEntrantsText;
+    private DBManagerEvent dbManagerEvent;
 
     /**
      * Called when the activity is first created.
@@ -57,56 +61,36 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
         setContentView(R.layout.admin_event_entrants);
 
         recyclerViewEntrants = findViewById(R.id.ev_entrants_lv);
+        noEntrantsText = findViewById(R.id.admin_no_entrants_text);
         db = FirebaseFirestore.getInstance();
         entrantList = new ArrayList<>();
-        entrantAdapter = new EntrantAdapter(entrantList, this);
+        entrantAdapter = new EntrantAdapter(this, entrantList, this);
+        //searchView = findViewById(R.id.admin_pro_search_view);
+
+        dbManagerEvent = new DBManagerEvent();
 
         recyclerViewEntrants.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewEntrants.setAdapter(entrantAdapter);
 
+        setupSearchView();
         loadEntrants();
+    }
 
-        /*
-        // Set up SearchView
-        SearchView searchView = findViewById(R.id.entrants_search_view);
+    private void setupSearchView() {
+        SearchView searchView = findViewById(R.id.admin_pro_search_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            //
-             * Called when a query is submitted in the SearchView.
-             *
-             * @param query the search query
-             * @return false to indicate the query has been handled
-             //
             @Override
             public boolean onQueryTextSubmit(String query) {
-                //recyclerViewEntrants.setAdapter();
-                filteredEntrantList = entrantAdapter.filter(query);
-                entrantList.clear();
-                entrantList.addAll(filteredEntrantList);
-                entrantAdapter.notifyDataSetChanged();
+                entrantAdapter.getFilter().filter(query);  // Apply filter on submit
                 return false;
             }
 
-            //
-             * Called when the query text is changed in the SearchView.
-             *
-             * @param newText the new text in the SearchView
-             * @return false to indicate the query text change has been handled
-             //
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (newText != null && !newText.trim().isEmpty()) {
-                    filteredEntrantList = entrantAdapter.filter(newText);
-                    entrantList.clear();
-                    entrantList.addAll(filteredEntrantList);
-                    entrantAdapter.notifyDataSetChanged();
-                }
-                else {
-                    loadEntrants(); // Reload data from Firestore when query is cleared
-                }
+                entrantAdapter.getFilter().filter(newText);  // Apply filter on text change
                 return false;
             }
         });
-         */
     }
 
     /**
@@ -124,38 +108,24 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    for (DocumentSnapshot document : task.getResult()) {
-                        Entrant entrant = document.toObject(Entrant.class);
-                        Log.i("Entrant: ", entrant.getId());
-                        entrantList.add(entrant);
-                    }
-                    //entrantAdapter.updateList(entrantList);
-                    entrantAdapter.notifyDataSetChanged();
-                } else {
-                    Toast.makeText(AdminViewEditProfilesActivity.this, "Error getting documents: " + task.getException(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        /*
-        entrantsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Toast.makeText(AdminViewEditProfilesActivity.this, "Error getting documents: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    return;
-                } if (snapshots != null) {
+                    List<Entrant> entrants = task.getResult().toObjects(Entrant.class);
                     entrantList.clear();
-                    for (DocumentSnapshot document : snapshots.getDocuments()) {
-                        Entrant entrant = document.toObject(Entrant.class);
-                        entrantList.add(entrant);
+                    entrantList.addAll(entrants);
+                    filteredEntrantList = new ArrayList<>(entrants);  // Reset filtered list with fresh data
+                    if (entrantList.isEmpty()) {
+                        noEntrantsText.setVisibility(View.VISIBLE);
+                        recyclerViewEntrants.setVisibility(View.GONE);
+                    } else {
+                        noEntrantsText.setVisibility(View.GONE);
+                        recyclerViewEntrants.setVisibility(View.VISIBLE);
                     }
-                    entrantAdapter.notifyDataSetChanged();
+                    entrantAdapter.updateData(entrants);
+                    entrantAdapter.notifyDataSetChanged();  // Notify adapter that the data has changed
+                } else {
+                    Toast.makeText(AdminViewEditProfilesActivity.this, "Error getting entrants!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
-         */
     }
 
     /**

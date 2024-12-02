@@ -3,10 +3,13 @@ package com.example.lotteryapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,8 +22,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import android.widget.SearchView;
 
 /**
  * The AdminViewEditFacilitiesActivity class allows admin users to view and edit facilities.
@@ -41,6 +42,8 @@ public class AdminViewEditFacilitiesActivity extends AppCompatActivity implement
     private List<Facility> facilityList;
     private List<Facility> filteredFacilityList;
     private FirebaseFirestore db;
+    private TextView noFacilitiesText;
+    private DBManagerEvent dbManagerEvent;
 
     /**
      * Called when the activity is first created.
@@ -72,81 +75,67 @@ public class AdminViewEditFacilitiesActivity extends AppCompatActivity implement
          */
 
         adminFacList = findViewById(R.id.admin_fac_list);
+        noFacilitiesText = findViewById(R.id.admin_no_facilities_text);
         db = FirebaseFirestore.getInstance();
         facilityList = new ArrayList<>();
         facilityAdapter = new FacilityAdapter(facilityList, this);
 
+        dbManagerEvent = new DBManagerEvent();
+
         adminFacList.setLayoutManager(new LinearLayoutManager(this));
         adminFacList.setAdapter(facilityAdapter);
 
+        setupSearchView();
         loadFacilities();
+    }
 
-        /*
-        // Set up SearchView
-        SearchView searchView = findViewById(R.id.fsearchView);
+    private void setupSearchView() {
+        androidx.appcompat.widget.SearchView searchView = findViewById(R.id.admin_fac_search_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            //
-             * Called when a query is submitted in the SearchView.
-             *
-             * @param query the search query
-             * @return false to indicate the query has been handled
-             //
             @Override
             public boolean onQueryTextSubmit(String query) {
-                filteredFacilityList = facilityAdapter.filter(query);
-                facilityList.clear();
-                facilityList.addAll(filteredFacilityList);
-                facilityAdapter.notifyDataSetChanged();
+                facilityAdapter.getFilter().filter(query);  // Apply filter on submit
                 return false;
             }
 
-            //
-             * Called when the query text is changed in the SearchView.
-             *
-             * @param newText the new text in the SearchView
-             * @return false to indicate the query text change has been handled
-             //
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (newText != null && !newText.trim().isEmpty()) {
-                    filteredFacilityList = facilityAdapter.filter(newText);
-                    facilityList.clear();
-                    facilityList.addAll(filteredFacilityList);
-                    facilityAdapter.notifyDataSetChanged();
-                }
-                else {
-                    loadFacilities(); // Reload data from Firestore when query is cleared
-                }
+                facilityAdapter.getFilter().filter(newText);  // Apply filter on text change
                 return false;
             }
         });
-         */
     }
 
     /**
      * Loads facilities from the database and updates the facility list.
      * Retrieves facilities from the "facilities" collection in Firestore and adds them to the facility list.
-     *
-     * @see FirebaseFirestore#collection(String)
      */
     private void loadFacilities() {
         CollectionReference facilitiesRef = db.collection("facilities");
+        /**
+         * Called when the task to retrieve facilities is complete.
+         *
+         * @param task the task to retrieve facilities
+         */
         facilitiesRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            /**
-             * Called when the task to retrieve facilities is complete.
-             *
-             * @param task the task to retrieve facilities
-             */
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    for (DocumentSnapshot document : task.getResult()) {
-                        Facility facility = document.toObject(Facility.class);
-                        facilityList.add(facility);
+                    List<Facility> facilities = task.getResult().toObjects(Facility.class);
+                    facilityList.clear();
+                    facilityList.addAll(facilities);
+                    filteredFacilityList = new ArrayList<>(facilities);  // Reset filtered list with fresh data
+                    if (facilityList.isEmpty()) {
+                        noFacilitiesText.setVisibility(View.VISIBLE);
+                        adminFacList.setVisibility(View.GONE);
+                    } else {
+                        noFacilitiesText.setVisibility(View.GONE);
+                        adminFacList.setVisibility(View.VISIBLE);
                     }
-                    facilityAdapter.notifyDataSetChanged();
+                    facilityAdapter.updateData(facilities);
+                    facilityAdapter.notifyDataSetChanged();  // Notify adapter that the data has changed
                 } else {
-                    Toast.makeText(AdminViewEditFacilitiesActivity.this, "Error getting documents: " + task.getException(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AdminViewEditFacilitiesActivity.this, "Error getting facilities!", Toast.LENGTH_SHORT).show();
                 }
             }
         });

@@ -38,6 +38,8 @@ dependencies {
     implementation ("com.google.android.gms:play-services-tasks:18.0.2")
     implementation ("androidx.drawerlayout:drawerlayout:1.1.1")
     implementation ("com.google.android.material:material:1.8.0")
+    implementation ("androidx.appcompat:appcompat:1.6.1")
+
     //implementation ("com.google.firebase:firebase-messaging:23.1.0")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
     implementation ("com.google.firebase:firebase-appcheck-safetynet:16.0.1")
@@ -48,6 +50,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation ("com.google.firebase:firebase-messaging:24.1.0")
+    implementation ("androidx.work:work-runtime:2.8.1")
+    implementation ("com.google.guava:guava:31.1-android")
 
     implementation(libs.appcompat)
     implementation(libs.material)

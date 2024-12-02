@@ -36,8 +36,12 @@ public class Event implements Serializable {
     private Float eventPrice;
     private String description;
     private String qr_code;
+    private List<String> selectedEntrants;
+    private List<String> cancelledEntrants;
+    private List<String> finalEntrants;
     private List<String> waitingList;
     private String image_url;
+    private Integer waitlistCap;
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public Event() {
@@ -55,6 +59,22 @@ public class Event implements Serializable {
         this.eventPrice = eventPrice;
         this.qr_code = generateQRHash();
         this.waitingList = new ArrayList<>();  // Initialize waitingList as an empty list
+    }
+
+    public List<String> getSelectedEntrants() {
+        return selectedEntrants;
+    }
+
+    public void setSelectedEntrants(List<String> selectedEntrants) {
+        this.selectedEntrants = selectedEntrants;
+    }
+
+    public List<String> getCancelledEntrants() {
+        return cancelledEntrants;
+    }
+
+    public void setCancelledEntrants(List<String> cancelledEntrants) {
+        this.cancelledEntrants = cancelledEntrants;
     }
 
     public String getEventName() {
@@ -214,11 +234,31 @@ public class Event implements Serializable {
         this.registrationDeadline = registrationDeadline;
     }
 
+    public Integer getWaitingListLength(){
+        return this.getWaitingList().size();
+    }
+
     public Float getEventPrice() {
         return eventPrice;
     }
 
     public void setEventPrice(Float eventPrice) {
         this.eventPrice = eventPrice;
+    }
+
+    public Integer getWaitlistCap() {
+        return waitlistCap;
+    }
+
+    public void setWaitlistCap(Integer waitlistCap) {
+        this.waitlistCap = waitlistCap;
+    }
+
+    public List<String> getFinalEntrants() {
+        return finalEntrants;
+    }
+
+    public void setFinalEntrants(List<String> finalEntrants) {
+        this.finalEntrants = finalEntrants;
     }
 }

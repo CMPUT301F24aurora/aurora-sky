@@ -1,6 +1,7 @@
 package com.example.lotteryapp;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -16,6 +17,18 @@ import java.util.Objects;
 public class Entrant extends User implements Serializable {
     private String image_url;
     private String name;
+    private List<String> selected_event;
+    private Boolean notificationAllowed;
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    private boolean isSelected;
     /**
      * Default constructor required for Firestore.
      */
@@ -100,4 +113,19 @@ public class Entrant extends User implements Serializable {
     }
 
 
+    public List<String> getSelected_event() {
+        return selected_event;
+    }
+
+    public void setSelected_event(List<String> selected_event) {
+        this.selected_event = selected_event;
+    }
+
+    public Boolean getNotificationAllowed() {
+        return notificationAllowed;
+    }
+
+    public void setNotificationAllowed(Boolean notificationAllowed) {
+        this.notificationAllowed = notificationAllowed;
+    }
 }

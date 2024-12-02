@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -69,12 +71,13 @@ public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdap
                 organizerIntent.putExtra("entrant_data", entrant);
                 organizerIntent.putExtra("organizer_data", currentOrganizer);
                 startActivity(organizerIntent);
-            } else if (id == R.id.map_nav) {
-                Intent organizerIntent = new Intent(OrganizerMainPage.this, MapActivity.class);
-                startActivity(organizerIntent);
             } else if (id == R.id.qr_code_nav) {
-                Intent organizerIntent = new Intent(OrganizerMainPage.this, QRScannerActivity.class);
-                startActivity(organizerIntent);
+                // Hide the QR code navigation item
+                Intent qrScannerIntent = new Intent(OrganizerMainPage.this, QRScannerActivity.class);
+                qrScannerIntent.putExtra("entrant_data", entrant);
+                qrScannerIntent.putExtra("organizer_data", currentOrganizer);
+                startActivity(qrScannerIntent);
+
             } else if (id == R.id.invitation_nav) {
                 Intent organizerIntent = new Intent(OrganizerMainPage.this, InvitationActivity.class);
                 organizerIntent.putExtra("entrant_data", entrant);
@@ -147,6 +150,29 @@ public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdap
         });
         orgEventAdapter.notifyDataSetChanged(); // Refresh adapter to show added events
     }
+
+//    private void loadEvents() {
+//        dbManagerEvent.getEventsByQRCodes(currentOrganizer.getEventHashes(), new DBManagerEvent.GetEventsCallback() {  // Use the full path for the callback
+//            @Override
+//            public void onSuccess(List<Event> events) {
+//                eventList.clear();
+//                eventList.addAll(events);
+//                if (eventList.isEmpty()) {
+//                    orgRecyclerView.setVisibility(View.GONE);
+//                } else {
+//                    orgRecyclerView.setVisibility(View.VISIBLE);
+//                }
+//                orgEventAdapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onFailure(Exception e) {
+//                orgRecyclerView.setVisibility(View.GONE);
+//            }
+//        });
+//        orgEventAdapter.notifyDataSetChanged(); // Refresh adapter to show added events
+//    }
+
 
     public void onEventClick(Event event) {
         Intent eventDetailsIntent = new Intent(this, OrganizerEventDetailsActivity.class);

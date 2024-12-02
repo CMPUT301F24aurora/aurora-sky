@@ -21,6 +21,8 @@ import androidx.core.app.ActivityCompat;
 
 import com.bumptech.glide.Glide;
 
+import java.util.Objects;
+
 public class EntrantEventDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "EntrantEventDetails";
@@ -70,6 +72,16 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
         entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
         organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
         signUp = getIntent().getBooleanExtra("sign_up", false);
+
+        if (event == null) {
+            Log.e(TAG, "Event data is missing from intent.");
+        } else {
+            Log.d(TAG, "Event retrieved: " + event.getEventName());
+        }
+
+        if (entrant == null) {
+            Log.e(TAG, "Entrant data is missing from intent.");
+        }
     }
 
     private void displayEventDetails() {
@@ -146,6 +158,12 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
 //    }
 
     private void joinWaitingList() {
+        if(event.getWaitlistCap()!=-1){
+            if (Objects.equals(event.getWaitingListLength(), event.getWaitlistCap())){
+                Toast.makeText(this, "Waiting List is full", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
         // Check if geolocation is required
         if (event.getGeolocationRequired()) {
             // Check if location services are enabled before proceeding
@@ -195,6 +213,7 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
 
     // Proceed to join the waiting list and add location if required
     private void proceedToJoinWaitingList() {
+        Log.e("", event.getWaitingList().toString());
         waitingList.addEntrant(entrant.getId(), event.getWaitingList(), new WaitingList.OnDatabaseUpdateListener() {
             @Override
             public void onSuccess() {
@@ -277,6 +296,32 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
     private void autoRegisterIfSignUpTrue() {
         if (signUp) {
             joinWaitingList();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshEventDetails();
+    }
+
+    private void refreshEventDetails() {
+        if (event != null && event.getQR_code() != null) {
+            DBManagerEvent dbManagerEvent = new DBManagerEvent();
+            dbManagerEvent.getEventByQRCode(event.getQR_code(), new DBManagerEvent.GetEventCallback() {
+                @Override
+                public void onSuccess(Event updatedEvent) {
+                    event = updatedEvent;
+                    displayEventDetails();
+                    updateButtonStates();
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(EntrantEventDetailsActivity.this, "Failed to refresh event details", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error refreshing event details: " + e.getMessage());
+                }
+            });
         }
     }
 

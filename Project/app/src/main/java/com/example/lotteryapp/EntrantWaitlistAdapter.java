@@ -37,6 +37,13 @@ public class EntrantWaitlistAdapter extends RecyclerView.Adapter<EntrantWaitlist
         Entrant entrant = entrantList.get(position);
         holder.nameTextView.setText(entrant.getName());
         Glide.with(context).load(entrant.getImage_url()).into(holder.photoImageView);
+        holder.checkBoxEntrant.setChecked(entrant.isSelected());
+
+        // Handle checkbox toggle
+        holder.checkBoxEntrant.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            entrant.setSelected(isChecked);
+            notifyDataSetChanged();
+        });
     }
 
     // Add a method to get the selected entrants
@@ -52,11 +59,13 @@ public class EntrantWaitlistAdapter extends RecyclerView.Adapter<EntrantWaitlist
     public static class EntrantViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView;
         ImageView photoImageView;
+        CheckBox checkBoxEntrant;
 
         public EntrantViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.entrant_name);
             photoImageView = itemView.findViewById(R.id.entrant_photo);
+            checkBoxEntrant = itemView.findViewById(R.id.checkBoxEntrant);
 
         }
     }

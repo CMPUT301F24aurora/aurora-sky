@@ -31,8 +31,13 @@ public class DBManagerEvent {
         eventData.put("description", event.getDescription());
         eventData.put("qr_code", eventId);  // Store QR code as the ID field
         eventData.put("waitingList", event.getWaitingList());  // Store waiting list IDs
+        eventData.put("selectedEntrants", event.getSelectedEntrants());
+        eventData.put("cancelledEntrants", event.getCancelledEntrants());
+        eventData.put("finalEntrants", event.getFinalEntrants());
         eventData.put("image_url", event.getImage_url());
         eventData.put("geolocationRequired", event.getGeolocationRequired());
+        eventData.put("waitlistCap", event.getWaitlistCap());
+
 
         // Add event to "events" collection in Firestore
         DocumentReference eventRef = db.collection("events").document(eventId);
@@ -129,6 +134,5 @@ public class DBManagerEvent {
         void onSuccess(Event event);
         void onFailure(Exception e);
     }
-
 
 }

@@ -30,11 +30,11 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-<!--        <CheckBox-->
-<!--            android:id="@+id/checkBox"-->
-<!--            android:layout_width="48dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_weight="0"-->
-<!--            android:text="" />-->
+        <CheckBox
+            android:id="@+id/checkBoxEntrant"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

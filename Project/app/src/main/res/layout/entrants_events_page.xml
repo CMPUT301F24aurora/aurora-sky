@@ -69,7 +69,7 @@
             android:id="@+id/events_recycler_view"
             android:layout_width="408dp"
             android:layout_height="554dp"
-            android:background="@color/white"
+            android:background="#191F36"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

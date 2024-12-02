@@ -132,5 +132,4 @@ public class DBManagerEvent {
         void onFailure(Exception e);
     }
 
-
 }

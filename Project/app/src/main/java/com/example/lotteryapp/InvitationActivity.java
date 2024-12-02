@@ -3,7 +3,6 @@ package com.example.lotteryapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -27,7 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InvitationActivity extends AppCompatActivity implements EventInvitationAdapter.OnEventClickListener{
+public class InvitationActivity extends AppCompatActivity implements EventAdapter.OnEventClickListener{
 
     private RecyclerView eventsRecyclerView;
     private DrawerLayout drawerLayout;
@@ -37,7 +36,7 @@ public class InvitationActivity extends AppCompatActivity implements EventInvita
     private ImageButton profileIcon;
     private RefreshDataManager refreshDataManager;
     private DBManagerEvent dbManagerEvent;
-    private EventInvitationAdapter eventInvitationAdapter;
+    private EventAdapter eventAdapter;
     private List<Event> eventList;
     private TextView noEventsText;
 
@@ -91,94 +90,61 @@ public class InvitationActivity extends AppCompatActivity implements EventInvita
 
         // Initialize event list and adapter with click listener
         eventList = new ArrayList<>();
-        eventInvitationAdapter = new EventInvitationAdapter(eventList, this);
-        eventsRecyclerView.setAdapter(eventInvitationAdapter);
+        eventAdapter = new EventAdapter(eventList, this);
+        eventsRecyclerView.setAdapter(eventAdapter);
 
         profileIcon = findViewById(R.id.profile_icon);
         setupProfileIcon();
         // Load events into RecyclerView
-        loadEvent();
+        loadEvents();
     }
-
-    private void loadEvent() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("entrants")
-                .whereEqualTo("id", entrant.getId())  // Assuming `entrant.getId()` returns the entrant ID
-                .get()
-                .addOnSuccessListener(entrantQuerySnapshot -> {
-                    if (!entrantQuerySnapshot.isEmpty()) {
-                        DocumentSnapshot entrantDoc = entrantQuerySnapshot.getDocuments().get(0);
-
-                        // Fetching selected events and device ID
-                        List<String> selectedEventQrCodes = (List<String>) entrantDoc.get("selected_event");
-                        String deviceId = entrantDoc.getString("id");  // Replace with actual field name in Firestore
-
-                        Log.d("InvitationActivity", "Entrant ID: " + entrant.getId() +
-                                ", Selected Event QR Codes: " + selectedEventQrCodes +
-                                ", Device ID: " + deviceId);
-
-
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("InvitationActivity", "Error fetching entrant details: " + e.getMessage());
-                });
-    }
-
 
     private void loadEvents() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Step 1: Fetch entrant's list of selected events
+        // Step 1: Fetch entrant's selected event
         db.collection("entrants")
-                .whereEqualTo("id", entrant.getId())
+                .whereEqualTo("email", entrant.getEmail()) // Replace with dynamically obtained email for the logged-in entrant
                 .get()
                 .addOnSuccessListener(entrantQuerySnapshot -> {
                     if (!entrantQuerySnapshot.isEmpty()) {
                         DocumentSnapshot entrantDoc = entrantQuerySnapshot.getDocuments().get(0);
-                        List<String> selectedEventQrCodes = (List<String>) entrantDoc.get("selected_event");
-                        Log.d("InvitationActivity", "Entrant ID: " + entrant.getId() + ", Selected Event QR Codes: " + selectedEventQrCodes);
+                        String selectedEventQrCode = entrantDoc.getString("selected_event");
 
-                        if (selectedEventQrCodes == null || selectedEventQrCodes.isEmpty()) {
+                        if (selectedEventQrCode == null || selectedEventQrCode.isEmpty()) {
                             noEventsText.setVisibility(View.VISIBLE);
                             eventsRecyclerView.setVisibility(View.GONE);
-                            noEventsText.setText("You have not been selected for any events.");
+                            noEventsText.setText("No event selected.");
                             return;
                         }
 
-                        // Step 2: Fetch event details for all selected events
+                        // Step 2: Fetch event details based on the selected event's QR code
                         db.collection("events")
-                                .whereIn("qr_code", selectedEventQrCodes)
+                                .whereEqualTo("qr_code", selectedEventQrCode)
                                 .get()
                                 .addOnSuccessListener(eventQuerySnapshot -> {
                                     List<Event> matchedEvents = new ArrayList<>();
                                     for (DocumentSnapshot eventDoc : eventQuerySnapshot.getDocuments()) {
-                                        Event event = eventDoc.toObject(Event.class);
-                                        Log.d("InvitationActivity", "Event fetched: " + event.getEventName());
+                                        Event event = eventDoc.toObject(Event.class); // Assuming you have an Event model
                                         if (event != null) {
                                             matchedEvents.add(event);
                                         }
-                                        Log.d("matchedEvents",""+matchedEvents);
                                     }
 
-                                    // Step 3: Update UI with matched events
-                                    runOnUiThread(() -> {
-                                        eventList.clear();
-                                        eventList.addAll(matchedEvents);
+                                    // Step 3: Update UI with the matched event
+                                    eventList.clear();
+                                    eventList.addAll(matchedEvents);
 
-                                        if (eventList.isEmpty()) {
-                                            noEventsText.setVisibility(View.VISIBLE);
-                                            eventsRecyclerView.setVisibility(View.GONE);
-                                            noEventsText.setText("No matching events found.");
-                                        } else {
-                                            Log.d("InvitationActivity", "done");
-                                            noEventsText.setVisibility(View.GONE);
-                                            eventsRecyclerView.setVisibility(View.VISIBLE);
-                                        }
-                                        Log.d("InvitationActivity", "Event list size: " + eventList.size());
-                                        eventInvitationAdapter.updateData(eventList);
-                                        eventInvitationAdapter.notifyDataSetChanged();
-                                    });
+                                    if (eventList.isEmpty()) {
+                                        noEventsText.setVisibility(View.VISIBLE);
+                                        eventsRecyclerView.setVisibility(View.GONE);
+                                        noEventsText.setText("No matching event found.");
+                                    } else {
+                                        noEventsText.setVisibility(View.GONE);
+                                        eventsRecyclerView.setVisibility(View.VISIBLE);
+                                    }
+
+                                    eventAdapter.notifyDataSetChanged();
                                 })
                                 .addOnFailureListener(e -> {
                                     noEventsText.setVisibility(View.VISIBLE);
@@ -197,8 +163,6 @@ public class InvitationActivity extends AppCompatActivity implements EventInvita
                     noEventsText.setText("Failed to load entrant details. Please try again.");
                 });
     }
-
-
 
 
 

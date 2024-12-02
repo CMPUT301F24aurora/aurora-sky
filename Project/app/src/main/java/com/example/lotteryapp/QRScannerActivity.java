@@ -135,6 +135,17 @@ public class QRScannerActivity extends AppCompatActivity {
         viewEventButton.setOnClickListener(v -> navigateToEventDetails(event));
     }
 
+    /**
+     * Navigates to the EntrantEventDetailsActivity to allow the user to sign up for an event.
+     * <p>
+     * This method creates an Intent that passes the event data, entrant data, and organizer data
+     * to the `EntrantEventDetailsActivity`. It also includes a flag indicating that the user is
+     * attempting to sign up for the event.
+     *
+     * @param event The event that the user intends to sign up for.
+     * @throws IllegalArgumentException if the event or entrant data is null.
+     * @see EntrantEventDetailsActivity
+     */
     private void navigateToSignUp(Event event) {
         Intent intent = new Intent(QRScannerActivity.this, EntrantEventDetailsActivity.class);
         intent.putExtra("event_data", event);
@@ -144,6 +155,17 @@ public class QRScannerActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Navigates to the EntrantEventDetailsActivity to view the details of an event without signing up.
+     * <p>
+     * This method creates an Intent that passes the event data, entrant data, and organizer data
+     * to the `EntrantEventDetailsActivity`. It also includes a flag indicating that the user is
+     * viewing the event details rather than signing up for the event.
+     *
+     * @param event The event for which the user is viewing details.
+     * @throws IllegalArgumentException if the event or entrant data is null.
+     * @see EntrantEventDetailsActivity
+     */
     private void navigateToEventDetails(Event event) {
         Intent intent = new Intent(QRScannerActivity.this, EntrantEventDetailsActivity.class);
         intent.putExtra("event_data", event);

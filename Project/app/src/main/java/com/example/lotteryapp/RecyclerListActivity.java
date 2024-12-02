@@ -28,6 +28,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * The {@code RecyclerListActivity} class is an {@link AppCompatActivity} that displays a list of entrants
+ * in a RecyclerView. It provides functionality for managing and notifying entrants, including handling
+ * selected, cancelled, waiting, and final entrants.
+ * <p>
+ * This activity interacts with Firebase Firestore to fetch and update entrant data and supports sending
+ * notifications to entrants based on their status.
+ *
+ * @see AppCompatActivity
+ * @see RecyclerView
+ * @see FirebaseFirestore
+ */
 public class RecyclerListActivity extends AppCompatActivity {
     private TextView titleTextView, noEntrantsText;
     private RecyclerView recyclerView;
@@ -40,6 +52,15 @@ public class RecyclerListActivity extends AppCompatActivity {
     private String eventId;
     private String collection;
 
+
+    /**
+     * Called when the activity is first created. This method sets up the user interface, initializes
+     * views, retrieves data from intents, and manages notifications and entrant lists.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this {@link Bundle} contains the data it most recently supplied.
+     * @see Bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +80,11 @@ public class RecyclerListActivity extends AppCompatActivity {
         manageEntrantListVisibility();
     }
 
+    /**
+     * Checks and requests notification permissions for devices running Android Tiramisu (API level 33) or higher.
+     *
+     * @throws SecurityException If permission request fails on devices with incompatible APIs.
+     */
     private void checkNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -67,6 +93,13 @@ public class RecyclerListActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Initializes views and adapters for the activity.
+     *
+     * @see TextView
+     * @see RecyclerView
+     * @see EntrantWaitlistAdapter
+     */
     private void initializeViews() {
         titleTextView = findViewById(R.id.recycler_title);
         noEntrantsText = findViewById(R.id.no_entrants_text);
@@ -79,6 +112,11 @@ public class RecyclerListActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
+    /**
+     * Retrieves data passed via the intent and sets up the title, collection, and event details.
+     *
+     * @throws NullPointerException If expected intent data is missing.
+     */
     private void retrieveIntentData() {
         titleTextView.setText(getIntent().getStringExtra("title"));
         collection = getIntent().getStringExtra("collection");
@@ -86,6 +124,11 @@ public class RecyclerListActivity extends AppCompatActivity {
         event = (Event) getIntent().getSerializableExtra("event_data");
     }
 
+    /**
+     * Configures the {@link RecyclerView} with a layout manager and sets up an adapter observer.
+     *
+     * @see RecyclerView
+     */
     private void setupRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
@@ -96,11 +139,20 @@ public class RecyclerListActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * Configures the notification button to send notifications to entrants based on their status.
+     *
+     * @see Button
+     */
     private void setupNotificationButton() {
         notificationBtn.setOnClickListener(v -> handleNotificationClick());
     }
 
+    /**
+     * Determines the list of entrant IDs based on the specified collection type.
+     *
+     * @throws IllegalStateException If the collection type is invalid or unsupported.
+     */
     private void determineEntrantIds() {
         if (Objects.equals(collection, "selectedEntrants")) {
             entrantIds = event.getSelectedEntrants();
@@ -113,6 +165,11 @@ public class RecyclerListActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Updates the entrant list UI visibility based on the presence of entrant IDs.
+     *
+     * @throws IllegalStateException If the entrant list or UI state cannot be updated.
+     */
     private void manageEntrantListVisibility() {
         if (!entrantIds.isEmpty()) {
             getData(entrantIds);
@@ -121,6 +178,9 @@ public class RecyclerListActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles the click event for sending notifications to entrants based on their status.
+     */
     private void handleNotificationClick() {
         switch (collection) {
             case "selectedEntrants":
@@ -138,6 +198,14 @@ public class RecyclerListActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sends notifications to entrants with a given title and message.
+     *
+     * @param entrantIds  A list of entrant IDs to notify.
+     * @param titlePrefix The prefix of the notification title.
+     * @param message     The notification message content.
+     * @throws NullPointerException If the entrant list is null.
+     */
     private void sendNotificationsToEntrants(List<String> entrantIds, String titlePrefix, String message) {
         if (entrantIds == null || entrantIds.isEmpty()) {
             Toast.makeText(this, "No entrants to notify.", Toast.LENGTH_SHORT).show();
@@ -160,12 +228,30 @@ public class RecyclerListActivity extends AppCompatActivity {
         Toast.makeText(this, "Notifications sent!", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Sends notifications to all entrants in the "finalists" list.
+     * <p>
+     * This method uses the `sendNotificationsToEntrants` function to notify entrants
+     * that they have been chosen as finalists. It defines a title and message for the notification.
+     *
+     * @throws IllegalArgumentException if the entrant list is null or empty.
+     * @see #sendNotificationsToEntrants(List, String, String)
+     */
     private void fetchFinalEntrantsAndNotify() {
         String title = "Congratulations";
         String message = "You have been chosen as a finalist!";
         sendNotificationsToEntrants(entrantIds, title, message);
     }
 
+    /**
+     * Displays a dialog to send a custom notification to entrants in the waitlist.
+     * <p>
+     * The dialog allows the user to specify a custom title and message. It then retrieves
+     * entrants from the waitlist in the database and sends the notification to each entrant.
+     *
+     * @throws NullPointerException if the waitlist field is missing or the entrants' data cannot be retrieved.
+     * @see #addNotificationToEntrant(String, String, String)
+     */
     private void showCustomNotificationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Send Custom Notification");
@@ -243,12 +329,27 @@ public class RecyclerListActivity extends AppCompatActivity {
         builder.create().show();
     }
 
+    /**
+     * Updates the UI to indicate no entrants are available.
+     * <p>
+     * This method hides the RecyclerView, displays a "no entrants" message,
+     * and disables the cancel button.
+     */
     private void updateUiState() {
             recyclerView.setVisibility(View.GONE);
             noEntrantsText.setVisibility(View.VISIBLE);
             cancelButton.setEnabled(false);
     }
 
+    /**
+     * Configures the cancel button to handle entrant removal.
+     * <p>
+     * The button triggers logic to remove selected entrants from the list and
+     * update the database accordingly. It also updates the UI when the list is empty.
+     *
+     * @throws IllegalStateException if the database operation fails.
+     * @see #updateUiState()
+     */
     private void setupCancelButton() {
 
         cancelButton.setOnClickListener(v -> {
@@ -288,6 +389,18 @@ public class RecyclerListActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Adds a notification to an entrant's Firestore document.
+     * <p>
+     * Creates a notification object with a title, message, and timestamp, and appends it
+     * to the entrant's "notifications" list in Firestore.
+     *
+     * @param deviceId The unique ID of the entrant's device.
+     * @param title    The title of the notification.
+     * @param message  The content of the notification.
+     * @throws IllegalArgumentException if the deviceId is null or empty.
+     * @throws RuntimeException if the Firestore update operation fails.
+     */
     private void addNotificationToEntrant(String deviceId, String title, String message) {
         DocumentReference entrantDocRef = db.collection("entrants").document(deviceId);
 
@@ -309,9 +422,17 @@ public class RecyclerListActivity extends AppCompatActivity {
 
 
     private void fetchDataFromFirebase(String eventId, String collection) {
-        // Fetch data logic here
     }
 
+    /**
+     * Retrieves data for a list of entrant IDs.
+     * <p>
+     * This method fetches entrant details based on their IDs and updates the
+     * adapter with the retrieved data.
+     *
+     * @param dataList A list of entrant IDs to fetch.
+     * @throws IllegalArgumentException if the data list is null or empty.
+     */
     private void getData(List<String> dataList){
         entrantsList.clear();
         DatabaseManager.fetchEntrantsByIds(dataList, new DatabaseManager.EntrantsFetchCallback() {
@@ -327,6 +448,4 @@ public class RecyclerListActivity extends AppCompatActivity {
             }
         });
     }
-
-
 }

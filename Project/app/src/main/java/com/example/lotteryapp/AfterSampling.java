@@ -7,9 +7,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -21,6 +18,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The {@code AfterSampling} class represents an activity that facilitates navigation to different lists
+ * of entrants categorized based on their status (e.g., waitlist, selected, cancelled, final chosen).
+ * It also provides functionality to refresh event details.
+ *
+ * @see AppCompatActivity
+ * @see Event
+ * @see Organizer
+ * @see Entrant
+ */
 public class AfterSampling extends AppCompatActivity {
     private String eventId;
     private Event event;
@@ -55,6 +62,14 @@ public class AfterSampling extends AppCompatActivity {
     }
 
 
+    /**
+     * Navigates to the {@link RecyclerListActivity} to display a list of entrants based on the specified category.
+     *
+     * @param title      the title of the entrant list (e.g., "Entrants in the waitlist")
+     * @param collection the category of entrants to display (e.g., "waitingList", "selectedEntrants")
+     * @see RecyclerListActivity
+     * @see Intent
+     */
     private void navigateToRecyclerList(String title, String collection) {
         Intent intent = new Intent(AfterSampling.this, RecyclerListActivity.class);
         Log.d("AfterSampling","done");
@@ -67,12 +82,23 @@ public class AfterSampling extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Called when the activity enters the foreground. Refreshes event details from the database.
+     *
+     * @see #refreshEventDetails()
+     */
     @Override
     protected void onResume() {
         super.onResume();
         refreshEventDetails();
     }
 
+    /**
+     * Refreshes the event details from the database by querying using the QR code associated with the event.
+     *
+     * @throws IllegalStateException if the event QR code is null
+     * @see DBManagerEvent
+     */
     private void refreshEventDetails() {
         if (event != null && event.getQR_code() != null) {
             new DBManagerEvent().getEventByQRCode(event.getQR_code(), new DBManagerEvent.GetEventCallback() {

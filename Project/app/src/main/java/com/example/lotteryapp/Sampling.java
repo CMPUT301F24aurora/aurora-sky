@@ -20,6 +20,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * The {@code Sampling} class manages the entrant sampling process for an event.
+ * It allows loading entrants from a waiting list, randomly sampling them based on event capacity,
+ * and updating the Firebase Firestore database with selected and cancelled entrants.
+ *
+ * This class also handles UI interactions and RecyclerView setup for displaying both
+ * entrants and sampled entrants.
+ *
+ * @see AppCompatActivity
+ * @see RecyclerView
+ * @see FirebaseFirestore
+ */
 public class Sampling extends AppCompatActivity {
 
     private RecyclerView entrantsRecyclerView;
@@ -36,6 +48,15 @@ public class Sampling extends AppCompatActivity {
     private Organizer organizer;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    /**
+     * Called when the activity is first created. Initializes UI components, loads data, and sets up event listeners.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this contains the data most recently supplied in {@link #onSaveInstanceState(Bundle)}.
+     *                           {@code null} otherwise.
+     * @see Bundle
+     * @see RecyclerView
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +90,13 @@ public class Sampling extends AppCompatActivity {
         sampleButton.setOnClickListener(v -> onSampleButtonClick(eventCapacity));
     }
 
+    /**
+     * Loads entrants from the waiting list of the specified event.
+     *
+     * @param eventId The unique identifier for the event whose waiting list will be loaded.
+     * @throws IllegalArgumentException If the event document is not found or the waiting list is missing.
+     * @see FirebaseFirestore
+     */
     private void loadEntrants(String eventId) {
         db.collection("events")
                 .document(eventId)  // Access the specific event document
@@ -108,6 +136,14 @@ public class Sampling extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Handles the sampling process, selecting a subset of entrants and updating the database.
+     *
+     * @param numPeople The number of people to be selected from the entrants list.
+     * @throws IllegalStateException If the event QR code is missing or no entrants are available to sample.
+     * @see Collections#shuffle(List)
+     * @see FirebaseFirestore
+     */
     private void onSampleButtonClick(int numPeople) {
         if (entrantsList.size() > 0) {
             List<Entrant> selectedEntrants = new ArrayList<>();

@@ -11,6 +11,19 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Activity for displaying and managing details of an event.
+ * <p>
+ * This activity allows the organizer to view details about the event, including its title, date, description,
+ * and available actions such as viewing entrants, QR code, editing the event, and viewing the entrants' locations.
+ * </p>
+ *
+ * @see AppCompatActivity
+ * @see Event
+ * @see Organizer
+ * @see Entrant
+ * @see DBManagerEvent
+ */
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private TextView eventTitleTextView;
     private TextView eventDateTextView;
@@ -21,6 +34,21 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private Entrant entrant;
     private Event event;
 
+    /**
+     * Called when the activity is created.
+     * <p>
+     * Initializes the views, loads data from the intent, and sets up the event details and button listeners.
+     * </p>
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being previously shut down,
+     *                           this Bundle contains the data it most recently supplied in
+     *                           {@link #onSaveInstanceState(Bundle)}. Otherwise, it is null.
+     * @return void
+     * @see #initializeViews()
+     * @see #loadIntentData()
+     * @see #setupEventDetails()
+     * @see #setupButtonListeners()
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +66,17 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Initializes the views for the event details screen.
+     * <p>
+     * This method sets up the text views for event title, date, description,
+     * and the buttons for viewing entrants, QR code, editing the event, and viewing entrants' location.
+     * </p>
+     *
+     * @return void
+     * @see #setupEventDetails()
+     * @see #setupButtonListeners()
+     */
     private void initializeViews() {
         eventTitleTextView = findViewById(R.id.event_title);
         eventDateTextView = findViewById(R.id.event_date);
@@ -49,6 +88,18 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         viewEntrantsLocationButton = findViewById(R.id.view_location);
     }
 
+    /**
+     * Loads data from the intent, including event, entrant, and organizer details.
+     * <p>
+     * This method retrieves the event, entrant, and organizer objects from the intent passed to the activity.
+     * </p>
+     *
+     * @return void
+     * @see Intent
+     * @see Event
+     * @see Organizer
+     * @see Entrant
+     */
     private void loadIntentData() {
         Intent intent = getIntent();
         event = (Event) intent.getSerializableExtra("event_data");
@@ -56,6 +107,16 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         organizer = (Organizer) intent.getSerializableExtra("organizer_data");
     }
 
+    /**
+     * Sets up the event details in the UI.
+     * <p>
+     * This method populates the text views with the event's name, start date, and description.
+     * If the event requires geolocation, the button to view entrants' location is made visible.
+     * </p>
+     *
+     * @return void
+     * @see Event
+     */
     private void setupEventDetails() {
         eventTitleTextView.setText(event.getEventName());
         eventDateTextView.setText("Date: " + event.getEventStartDate());
@@ -68,12 +129,24 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         }
     }
 
+
     private void setupButtonListeners() {
         viewEntrantsButton.setOnClickListener(v -> navigateToEntrantsPage());
         viewQrCodeButton.setOnClickListener(v -> navigateToQRCodePage());
         editEventButton.setOnClickListener(v -> navigateToEditEventPage());
         viewEntrantsLocationButton.setOnClickListener(v -> navigateToLocationPage());
     }
+
+    /**
+     * Navigates to the page for viewing entrants based on event status.
+     * <p>
+     * If the event has cancelled entrants or selected entrants, the activity will navigate to a different page based on the event's state.
+     * </p>
+     *
+     * @return void
+     * @see Sampling
+     * @see AfterSampling
+     */
     private void navigateToEntrantsPage() {
 
         Log.d("", String.valueOf((event.getCancelledEntrants()==null)));

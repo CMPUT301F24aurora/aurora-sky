@@ -48,9 +48,6 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
         refreshDataManager = new RefreshDataManager(this);
         dbManagerEvent = new DBManagerEvent();
 
-
-
-
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         ImageButton menuButton = findViewById(R.id.menu_button);

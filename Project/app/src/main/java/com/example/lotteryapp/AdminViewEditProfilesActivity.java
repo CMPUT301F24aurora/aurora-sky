@@ -64,7 +64,7 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
         noEntrantsText = findViewById(R.id.admin_no_entrants_text);
         db = FirebaseFirestore.getInstance();
         entrantList = new ArrayList<>();
-        entrantAdapter = new EntrantAdapter(entrantList, this);
+        entrantAdapter = new EntrantAdapter(this, entrantList, this);
         //searchView = findViewById(R.id.admin_pro_search_view);
 
         dbManagerEvent = new DBManagerEvent();

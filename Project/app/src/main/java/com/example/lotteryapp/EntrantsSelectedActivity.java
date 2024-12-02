@@ -43,7 +43,7 @@ public class EntrantsSelectedActivity extends AppCompatActivity implements Entra
         waitlist.add(new Entrant("id_5", "Edward", "edward@example.com"));
 
         // Set up RecyclerView
-        adapter = new EntrantAdapter(waitlist, this); // Passing the current activity as EntrantClickListener
+        adapter = new EntrantAdapter(this, waitlist, this); // Passing the current activity as EntrantClickListener
         entrantRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         entrantRecyclerView.setAdapter(adapter);
 

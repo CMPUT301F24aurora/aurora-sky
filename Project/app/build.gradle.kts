@@ -35,6 +35,7 @@ android {
 }
 
 dependencies {
+//    implementation(files("/Users/siddharthdileep/Library/Android/sdk/platforms/android-34/android.jar"))
     implementation ("com.google.android.gms:play-services-tasks:18.0.2")
     implementation ("androidx.drawerlayout:drawerlayout:1.1.1")
     implementation ("com.google.android.material:material:1.8.0")

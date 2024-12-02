@@ -18,6 +18,16 @@ public class Entrant extends User implements Serializable {
     private String image_url;
     private String name;
     private List<String> selected_event;
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    private boolean isSelected;
     /**
      * Default constructor required for Firestore.
      */

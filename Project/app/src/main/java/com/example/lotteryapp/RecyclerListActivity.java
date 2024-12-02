@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentSnapshot;
+
 
 public class RecyclerListActivity extends AppCompatActivity {
     private TextView titleTextView;
@@ -39,7 +42,6 @@ public class RecyclerListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recycler_list);
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -258,35 +260,60 @@ public class RecyclerListActivity extends AppCompatActivity {
 
         });
 
+
         cancelButton.setOnClickListener(v -> {
-            List<Entrant> toCancel = new ArrayList<>();
-            for (Entrant entrant : entrantsList) {
-                if (entrant.isSelected()) {
-                    toCancel.add(entrant);
-                }
-            }
+            db.collection("events")
+                    .document(eventId)  // Access the specific event document
+                    .get()
+                    .addOnSuccessListener(eventDoc -> {
+                        if (eventDoc.exists()) {
+                            // Get a list of Entrant IDs
+                            List<String> chosenList = (List<String>) eventDoc.get(collection);
+                            Log.d("entrantslist: ", "" + chosenList);
+                            Log.d("collection: ", "" + collection);
 
-            // Remove from RecyclerView and add to cancelledEntrants
-            entrantsList.removeAll(toCancel);
-            cancelledEntrants.addAll(toCancel);
-            adapter.notifyDataSetChanged();
+                            // Prepare a list of entrants to cancel (fetch Entrants based on IDs)
+                            List<Entrant> toCancel = new ArrayList<>();
 
-            // Update Firestore
-            for (Entrant cancelledEntrant : toCancel) {
-                db.collection("events")
-                        .document(eventId) // Assuming eventId is available
-                        .update(collection, FieldValue.arrayRemove(cancelledEntrant.getId())) // Remove from current list
-                        .addOnSuccessListener(aVoid -> {
-                            Log.d("Firestore", "Entrant removed: " + cancelledEntrant.getName());
-                        });
+                            // Iterate over the chosen list of Entrant IDs
+                            for (String entrantId : chosenList) {
+                                // Find the Entrant object based on the ID
+                                for (Entrant entrant : entrantsList) {
+                                    Log.d("tocancel: ", "" + entrant);
+                                    if (entrant.getId().equals(entrantId) && entrant.isSelected()) {
+                                        toCancel.add(entrant);
+                                    }
 
-                db.collection("events")
-                        .document(eventId)
-                        .update("cancelledEntrants", FieldValue.arrayUnion(cancelledEntrant.getId())) // Add to cancelled list
-                        .addOnSuccessListener(aVoid -> {
-                            Log.d("Firestore", "Entrant added to cancelled: " + cancelledEntrant.getName());
-                        });
-            }
+                                }
+                            }
+
+
+                            // Remove from RecyclerView and add to cancelledEntrants
+                            entrantsList.removeAll(toCancel);
+                            cancelledEntrants.addAll(toCancel);  // Ensure cancelledEntrants is not null
+                            adapter.notifyDataSetChanged();
+
+                            // Update Firestore
+                            for (Entrant cancelledEntrant : toCancel) {
+                                db.collection("events")
+                                        .document(eventId) // Assuming eventId is available
+                                        .update(collection, FieldValue.arrayRemove(cancelledEntrant.getId())) // Remove from current list
+                                        .addOnSuccessListener(aVoid -> {
+                                            Log.d("Firestore", "Entrant removed: " + cancelledEntrant.getName());
+                                        });
+
+                                db.collection("events")
+                                        .document(eventId)
+                                        .update("cancelledEntrants", FieldValue.arrayUnion(cancelledEntrant.getId())) // Add to cancelled list
+                                        .addOnSuccessListener(aVoid -> {
+                                            Log.d("Firestore", "Entrant added to cancelled: " + cancelledEntrant.getName());
+                                        });
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("Firestore", "Error fetching event document: " + e.getMessage());
+                    });
         });
 
     }

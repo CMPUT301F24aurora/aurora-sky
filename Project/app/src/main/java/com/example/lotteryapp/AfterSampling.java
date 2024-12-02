@@ -34,7 +34,6 @@ public class AfterSampling extends AppCompatActivity {
         eventId = getIntent().getStringExtra("eventId");
         selectedEntrants = (List<Entrant>) getIntent().getSerializableExtra("selectedEntrants");
         cancelledEntrants = (List<Entrant>) getIntent().getSerializableExtra("cancelledEntrants");
-
         // Initialize buttons
         Button waitlistButton = findViewById(R.id.buttonWaitlistEntrants);
         Button selectedButton = findViewById(R.id.buttonSelectedEntrants);

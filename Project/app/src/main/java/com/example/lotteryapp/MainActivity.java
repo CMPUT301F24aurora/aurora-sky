@@ -78,11 +78,6 @@ public class MainActivity extends AppCompatActivity {
         Button organizerButton = findViewById(R.id.organizerButton);
         organizerButton.setOnClickListener(v -> checkUserExistsAndNavigate("organizer"));
 
-        Button button2 = findViewById(R.id.button2);
-        button2.setOnClickListener(v->{
-            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-            startActivity(intent);
-        });
         // Admin status check
         String deviceId = getDeviceId(this);
         Log.i("Device Id: ", deviceId);

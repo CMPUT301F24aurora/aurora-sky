@@ -33,8 +33,8 @@ public class AfterSampling extends AppCompatActivity {
         setContentView(R.layout.after_sampling_list);
 
         // Get event ID from Intent
-        eventId = getIntent().getStringExtra("eventId");
         event = (Event) getIntent().getSerializableExtra("event_data");
+        eventId = event.getQR_code();
         entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
         organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
 
@@ -65,5 +65,28 @@ public class AfterSampling extends AppCompatActivity {
         intent.putExtra("organizer_data", organizer);
         intent.putExtra("entrant_data", entrant);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshEventDetails();
+    }
+
+    private void refreshEventDetails() {
+        if (event != null && event.getQR_code() != null) {
+            new DBManagerEvent().getEventByQRCode(event.getQR_code(), new DBManagerEvent.GetEventCallback() {
+                @Override
+                public void onSuccess(Event updatedEvent) {
+                    event = updatedEvent;
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(AfterSampling.this, "Failed to refresh event details", Toast.LENGTH_SHORT).show();
+                    Log.e("OrganizerEventDetails", "Error refreshing event details: " + e.getMessage());
+                }
+            });
+        }
     }
 }

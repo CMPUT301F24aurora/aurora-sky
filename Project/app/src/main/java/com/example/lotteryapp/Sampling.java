@@ -30,6 +30,10 @@ public class Sampling extends AppCompatActivity {
     private EntrantWaitlistAdapter sampledAdapter;
     private Button sampleButton;
     private Event event;
+    private String eventId;
+    private Integer eventCapacity;
+    private Entrant entrant;
+    private Organizer organizer;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
@@ -44,8 +48,10 @@ public class Sampling extends AppCompatActivity {
         sampleButton = findViewById(R.id.sample_button);
 
         // Example: Populate entrantList with sample data
-        String eventId = getIntent().getStringExtra("eventId");
         event = (Event) getIntent().getSerializableExtra("event_data");
+        entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
+        organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
+        eventId = event.getQR_code();
         loadEntrants(eventId);
 
         // Set up RecyclerView
@@ -59,9 +65,7 @@ public class Sampling extends AppCompatActivity {
         sampledRecyclerView.setAdapter(sampledAdapter);
 
         // Set up Sample button listener
-        String eventCapacityStr = getIntent().getStringExtra("eventCapacity");
-        Log.d("Sampling", "Retrieved eventCapacity from Intent: " + eventCapacityStr);
-        int eventCapacity = eventCapacityStr != null ? Integer.parseInt(eventCapacityStr) : 0;
+        eventCapacity = event.getNumPeople();
 
         sampleButton.setOnClickListener(v -> onSampleButtonClick(eventCapacity));
     }
@@ -121,8 +125,8 @@ public class Sampling extends AppCompatActivity {
             }
 
             // Retrieve event ID and QR code from the Intent
-            String eventId = getIntent().getStringExtra("eventId");
-            String qrCode = getIntent().getStringExtra("eventQrCode"); // Retrieve the event's QR code from the Intent
+
+            String qrCode = eventId; // Retrieve the event's QR code from the Intent
             if (qrCode == null || qrCode.isEmpty()) {
                 Toast.makeText(this, "Event QR code is missing.", Toast.LENGTH_SHORT).show();
                 return;
@@ -166,11 +170,9 @@ public class Sampling extends AppCompatActivity {
 
             // Pass data to SamplingResultsActivity
             Intent intent = new Intent(Sampling.this, AfterSampling.class);
-            intent.putExtra("eventId", eventId);
-            Log.d("ent: ", " "+eventId);
             intent.putExtra("event_data", event);
-            intent.putExtra("selectedEntrants", (Serializable) selectedEntrants);
-            intent.putExtra("cancelledEntrants", (Serializable) cancelledEntrants);
+            intent.putExtra("entrant_data", entrant);
+            intent.putExtra("organizer_data", organizer);
             startActivity(intent);
         } else {
             Toast.makeText(this, "No entrants available to sample.", Toast.LENGTH_SHORT).show();

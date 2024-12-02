@@ -74,8 +74,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         editEventButton.setOnClickListener(v -> navigateToEditEventPage());
         viewEntrantsLocationButton.setOnClickListener(v -> navigateToLocationPage());
     }
-
     private void navigateToEntrantsPage() {
+
+        Log.d("", String.valueOf((event.getCancelledEntrants()==null)));
         Intent intent;
         if ((event.getCancelledEntrants() == null || event.getCancelledEntrants().isEmpty()) &&
                 (event.getSelectedEntrants() == null || event.getSelectedEntrants().isEmpty())) {
@@ -106,6 +107,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     }
 
     private void passEventDetails(Intent intent) {
+        //intent.putExtra("event_id",event.getQR_code());
         intent.putExtra("event_data", event);
         intent.putExtra("entrant_data", entrant);
         intent.putExtra("organizer_data", organizer);

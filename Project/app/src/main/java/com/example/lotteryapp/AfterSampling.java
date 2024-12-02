@@ -7,39 +7,36 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
+/**
+ * Activity displayed after sampling process is completed.
+ * Provides navigation to different lists of entrants based on their status.
+ */
 public class AfterSampling extends AppCompatActivity {
     private String eventId;
     private Event event;
     private Organizer organizer;
     private Entrant entrant;
 
+    /**
+     * Initializes the activity, sets up UI components, and handles button click events.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being
+     *                           shut down, this Bundle contains the data it most recently supplied
+     *                           in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.after_sampling_list);
 
-        // Get event ID from Intent
+        // Get event data from Intent
         event = (Event) getIntent().getSerializableExtra("event_data");
         eventId = event.getQR_code();
         entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
         organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
 
-
-        Log.d("", event.getSelectedEntrants().toString());
+        Log.d("AfterSampling", "Selected Entrants: " + event.getSelectedEntrants().toString());
 
         // Initialize buttons
         Button waitlistButton = findViewById(R.id.buttonWaitlistEntrants);
@@ -54,10 +51,15 @@ public class AfterSampling extends AppCompatActivity {
         chosenButton.setOnClickListener(v -> navigateToRecyclerList("Final chosen entrants", "finalEntrants"));
     }
 
-
+    /**
+     * Navigates to the RecyclerListActivity with specified parameters.
+     *
+     * @param title The title to be displayed in the RecyclerListActivity.
+     * @param collection The name of the collection to be displayed.
+     */
     private void navigateToRecyclerList(String title, String collection) {
         Intent intent = new Intent(AfterSampling.this, RecyclerListActivity.class);
-        Log.d("AfterSampling","done");
+        Log.d("AfterSampling", "Navigating to RecyclerListActivity");
         intent.putExtra("title", title);
         intent.putExtra("collection", collection);
         intent.putExtra("eventId", eventId);
@@ -67,12 +69,19 @@ public class AfterSampling extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Called when the activity resumes from a paused state.
+     * Refreshes the event details to ensure up-to-date information.
+     */
     @Override
     protected void onResume() {
         super.onResume();
         refreshEventDetails();
     }
 
+    /**
+     * Refreshes the event details by fetching the latest data from the database.
+     */
     private void refreshEventDetails() {
         if (event != null && event.getQR_code() != null) {
             new DBManagerEvent().getEventByQRCode(event.getQR_code(), new DBManagerEvent.GetEventCallback() {
@@ -84,7 +93,7 @@ public class AfterSampling extends AppCompatActivity {
                 @Override
                 public void onFailure(Exception e) {
                     Toast.makeText(AfterSampling.this, "Failed to refresh event details", Toast.LENGTH_SHORT).show();
-                    Log.e("OrganizerEventDetails", "Error refreshing event details: " + e.getMessage());
+                    Log.e("AfterSampling", "Error refreshing event details: " + e.getMessage());
                 }
             });
         }

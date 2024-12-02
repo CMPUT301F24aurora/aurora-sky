@@ -1,5 +1,6 @@
 package com.example.lotteryapp;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,12 +20,14 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
     private List<Entrant> entrantList;
     private List<Entrant> filteredEntrantList;
     private final EntrantClickListener clickListener;
+    private Context context;
 
     public interface EntrantClickListener {
         void onEntrantClick(Entrant entrant);
     }
 
-    public EntrantAdapter(List<Entrant> entrantList, EntrantClickListener clickListener) {
+    public EntrantAdapter(Context context, List<Entrant> entrantList, EntrantClickListener clickListener) {
+        this.context = context;
         this.entrantList = entrantList;
         this.filteredEntrantList = new ArrayList<>(entrantList);
         this.clickListener = clickListener;
@@ -45,6 +50,7 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
         Entrant entrant = filteredEntrantList.get(position);
         Log.d("EntrantAdapter", "Displaying: " + entrant.getName());
         holder.entrantName.setText(entrant.getName());
+//        Glide.with(context).load(entrant.getImage_url()).into(holder.admin_ent_photo);
         holder.itemView.setOnClickListener(v -> clickListener.onEntrantClick(entrant));
     }
 

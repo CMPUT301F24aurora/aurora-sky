@@ -16,11 +16,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -105,6 +108,8 @@ public class RecyclerListActivity extends AppCompatActivity {
             entrantIds = event.getCancelledEntrants();
         } else if (Objects.equals(collection, "waitingList")) {
             entrantIds = event.getWaitingList();
+        } else if(Objects.equals(collection, "finalEntrants")){
+            entrantIds = event.getFinalEntrants();
         }
     }
 
@@ -216,8 +221,24 @@ public class RecyclerListActivity extends AppCompatActivity {
     }
 
     private void addNotificationToEntrant(String deviceId, String title, String message) {
-        // Add notification logic here
+        DocumentReference entrantDocRef = db.collection("entrants").document(deviceId);
+
+        // Create the notification object
+        Map<String, String> notification = new HashMap<>();
+        notification.put("title", title);
+        notification.put("message", message);
+        notification.put("timestamp", String.valueOf(System.currentTimeMillis()));
+
+        // Add notification to the "notifications" list field in the Firestore document
+        entrantDocRef.update("notifications", FieldValue.arrayUnion(notification))
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firestore", "Notification added to entrant: " + deviceId);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error adding notification: " + e.getMessage());
+                });
     }
+
 
     private void fetchDataFromFirebase(String eventId, String collection) {
         // Fetch data logic here

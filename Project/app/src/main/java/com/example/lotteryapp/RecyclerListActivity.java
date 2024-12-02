@@ -273,42 +273,50 @@ public class RecyclerListActivity extends AppCompatActivity {
                             Log.d("collection: ", "" + collection);
 
                             // Prepare a list of entrants to cancel (fetch Entrants based on IDs)
-                            List<Entrant> toCancel = new ArrayList<>();
+                            List<String> toCancel = new ArrayList<>();
 
-                            // Iterate over the chosen list of Entrant IDs
+                            // Iterate over the chosenList to fetch entrant data
                             for (String entrantId : chosenList) {
-                                // Find the Entrant object based on the ID
-                                for (Entrant entrant : entrantsList) {
-                                    Log.d("tocancel: ", "" + entrant);
-                                    if (entrant.getId().equals(entrantId) && entrant.isSelected()) {
-                                        toCancel.add(entrant);
-                                    }
-
-                                }
+                                db.collection("entrants") // Assuming 'entrants' collection stores entrant details
+                                        .document(entrantId)
+                                        .get()
+                                        .addOnSuccessListener(entrantDoc -> {
+                                            if (entrantDoc.exists()) {
+                                                Entrant entrant = entrantDoc.toObject(Entrant.class);
+                                                if (entrant != null && entrant.isSelected()) {
+                                                    toCancel.add(entrant.getId());
+                                                    Log.d("tocancel", "Entrant to cancel: " + entrant.getName());
+                                                }
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.d("Firestore", "Error fetching entrant data: " + e.getMessage());
+                                        });
                             }
+                            Log.d("cancelledentrants", "" + cancelledEntrants);
+                            Log.d("entrants", "" + entrantsList);
 
-
-                            // Remove from RecyclerView and add to cancelledEntrants
-                            entrantsList.removeAll(toCancel);
-                            cancelledEntrants.addAll(toCancel);  // Ensure cancelledEntrants is not null
-                            adapter.notifyDataSetChanged();
+//                            // Remove from RecyclerView and add to cancelledEntrants
+//                            entrantsList.removeAll(toCancel);
+//                            cancelledEntrants.addAll(toCancel);  // Ensure cancelledEntrants is not null
+//                            adapter.notifyDataSetChanged();
 
                             // Update Firestore
-                            for (Entrant cancelledEntrant : toCancel) {
-                                db.collection("events")
-                                        .document(eventId) // Assuming eventId is available
-                                        .update(collection, FieldValue.arrayRemove(cancelledEntrant.getId())) // Remove from current list
-                                        .addOnSuccessListener(aVoid -> {
-                                            Log.d("Firestore", "Entrant removed: " + cancelledEntrant.getName());
-                                        });
-
-                                db.collection("events")
-                                        .document(eventId)
-                                        .update("cancelledEntrants", FieldValue.arrayUnion(cancelledEntrant.getId())) // Add to cancelled list
-                                        .addOnSuccessListener(aVoid -> {
-                                            Log.d("Firestore", "Entrant added to cancelled: " + cancelledEntrant.getName());
-                                        });
-                            }
+//                            for (Entrant cancelledEntrant : toCancel) {
+//                                db.collection("events")
+//                                        .document(eventId) // Assuming eventId is available
+//                                        .update(collection, FieldValue.arrayRemove(cancelledEntrant.getId())) // Remove from current list
+//                                        .addOnSuccessListener(aVoid -> {
+//                                            Log.d("Firestore", "Entrant removed: " + cancelledEntrant.getName());
+//                                        });
+//
+//                                db.collection("events")
+//                                        .document(eventId)
+//                                        .update("cancelledEntrants", FieldValue.arrayUnion(cancelledEntrant.getId())) // Add to cancelled list
+//                                        .addOnSuccessListener(aVoid -> {
+//                                            Log.d("Firestore", "Entrant added to cancelled: " + cancelledEntrant.getName());
+//                                        });
+//                            }
                         }
                     })
                     .addOnFailureListener(e -> {

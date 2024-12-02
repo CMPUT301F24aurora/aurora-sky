@@ -216,23 +216,30 @@ public class MainActivity extends AppCompatActivity {
                     if (task.isSuccessful() && !task.getResult().isEmpty()) {
                         DocumentSnapshot document = task.getResult().getDocuments().get(0);
 
-                        // Retrieve the notifications array
-                        List<Map<String, Object>> notifications =
-                                (List<Map<String, Object>>) document.get("notifications");
+                        // Check if notifications are allowed for this device
+                        Boolean notificationAllowed = document.getBoolean("notificationAllowed");
 
-                        if (notifications != null && !notifications.isEmpty()) {
-                            // Send a notification for each entry in the array
-                            for (Map<String, Object> notification : notifications) {
-                                String title = (String) notification.get("title");
-                                String message = (String) notification.get("message");
+                        if (notificationAllowed != null && notificationAllowed) {
+                            // Retrieve the notifications array
+                            List<Map<String, Object>> notifications =
+                                    (List<Map<String, Object>>) document.get("notifications");
 
-                                if (title != null && message != null) {
-                                    sendNotification(deviceId, title, message);
+                            if (notifications != null && !notifications.isEmpty()) {
+                                // Send a notification for each entry in the array
+                                for (Map<String, Object> notification : notifications) {
+                                    String title = (String) notification.get("title");
+                                    String message = (String) notification.get("message");
+
+                                    if (title != null && message != null) {
+                                        sendNotification(deviceId, title, message);
+                                    }
                                 }
-                            }
 
-                            // Optionally clear the notifications array after processing
-                            document.getReference().update("notifications", new ArrayList<>());
+                                // Optionally clear the notifications array after processing
+                                document.getReference().update("notifications", new ArrayList<>());
+                            }
+                        } else {
+                            Log.d(TAG, "Notifications not allowed or notificationAllowed is false.");
                         }
                     } else {
                         Log.d(TAG, "No entrant found or notifications field is empty.");
@@ -240,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Error checking notification field", e));
     }
+
 
 //    /**
 //     * Sends a notification to the user.

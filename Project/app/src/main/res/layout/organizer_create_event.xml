@@ -49,14 +49,14 @@
 
                     <EditText
                         android:id="@+id/editTextEventName"
-                        android:layout_width="246dp"
+                        android:layout_width="280dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
                         android:backgroundTint="@color/white"
-                        android:textColor="@color/white"
                         android:hint="Enter event name"
                         android:inputType="text"
-                        android:padding="12dp" />
+                        android:padding="12dp"
+                        android:textColor="@color/white" />
 
                     <!-- Event Start Date and Time -->
                     <TextView
@@ -231,14 +231,14 @@
                                 android:backgroundTint="@color/black"
                                 android:text="Remove Poster"
                                 android:textColor="@color/black"
-                                android:visibility="gone" />
+                                />
 
                             <androidx.appcompat.widget.SwitchCompat
                                 android:id="@+id/geo_toggle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="110dp"
-                                android:background="#0A4753" />
+                                android:background="" />
 
                         </LinearLayout>
 

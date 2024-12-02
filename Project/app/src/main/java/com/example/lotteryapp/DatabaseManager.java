@@ -3,7 +3,6 @@ package com.example.lotteryapp;
 import android.content.Context;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -14,15 +13,27 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Manages database operations for the Lottery App using Firebase Firestore.
+ */
 public class DatabaseManager {
     private static FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    // Method to set a different Firestore instance (for testing)
+    /**
+     * Sets a different Firestore instance (for testing purposes).
+     *
+     * @param firestore The Firestore instance to be used.
+     */
     public static void setDatabase(FirebaseFirestore firestore) {
         db = firestore;
     }
 
-    // Entrant-related methods
+    /**
+     * Checks if an entrant exists in the database.
+     *
+     * @param deviceId The device ID of the entrant.
+     * @param callback The callback to handle the result.
+     */
     public static void checkEntrantExists(String deviceId, EntrantCheckCallback callback) {
         if (callback == null) return;
 
@@ -39,6 +50,12 @@ public class DatabaseManager {
                 .addOnFailureListener(callback::onError);
     }
 
+    /**
+     * Retrieves an entrant from the database.
+     *
+     * @param context The context of the application.
+     * @param callback The callback to handle the result.
+     */
     public static void getEntrant(Context context, GetEntrantCallback callback) {
         if (callback == null) return;
 
@@ -57,6 +74,12 @@ public class DatabaseManager {
                 .addOnFailureListener(callback::onError);
     }
 
+    /**
+     * Saves an entrant to the database.
+     *
+     * @param entrant The entrant to be saved.
+     * @param callback The callback to handle the result.
+     */
     public static void saveEntrant(Entrant entrant, SaveEntrantCallback callback) {
         if (callback == null) return;
 
@@ -66,7 +89,12 @@ public class DatabaseManager {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    // Organizer-related methods
+    /**
+     * Retrieves an organizer from the database by device ID.
+     *
+     * @param deviceId The device ID of the organizer.
+     * @param callback The callback to handle the result.
+     */
     public static void getOrganizerByDeviceId(String deviceId, GetOrganizerCallback callback) {
         Query query = db.collection("organizers").whereEqualTo("id", deviceId);
 
@@ -83,6 +111,12 @@ public class DatabaseManager {
                 .addOnFailureListener(callback::onError);
     }
 
+    /**
+     * Saves an organizer to the database.
+     *
+     * @param organizer The organizer to be saved.
+     * @param callback The callback to handle the result.
+     */
     public static void saveOrganizer(Organizer organizer, SaveOrganizerCallback callback) {
         DocumentReference organizerRef = db.collection("organizers").document(organizer.getId());
 
@@ -91,6 +125,13 @@ public class DatabaseManager {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    /**
+     * Adds an event hash to an organizer's list of events.
+     *
+     * @param organizerId The ID of the organizer.
+     * @param eventHash The hash of the event to be added.
+     * @param callback The callback to handle the result.
+     */
     public static void addEventHashToOrganizer(String organizerId, String eventHash, Organizer.AddEventCallback callback) {
         DocumentReference organizerRef = db.collection("organizers").document(organizerId);
 
@@ -99,6 +140,12 @@ public class DatabaseManager {
                 .addOnFailureListener(callback::onError);
     }
 
+    /**
+     * Fetches entrants from the database by their IDs.
+     *
+     * @param entrantIds The list of entrant IDs to fetch.
+     * @param callback The callback to handle the result.
+     */
     public static void fetchEntrantsByIds(List<String> entrantIds, EntrantsFetchCallback callback) {
         if (entrantIds == null || entrantIds.isEmpty()) {
             Log.d("RecyclerListActivity", "No entrants found");
@@ -108,10 +155,8 @@ public class DatabaseManager {
 
         List<Entrant> entrants = new ArrayList<>();
 
-        // Query Firestore for entrants by their IDs
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("entrants")
-                .whereIn("id", entrantIds) // Fetch entrants where the ID matches one of the provided IDs
+                .whereIn("id", entrantIds)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     for (QueryDocumentSnapshot documentSnapshot : querySnapshot) {
@@ -119,23 +164,40 @@ public class DatabaseManager {
                         Log.d("RecyclerListActivity", "Fetched Entrant: " + entrant.getName());
                         entrants.add(entrant);
                     }
-                    callback.onSuccess(entrants); // Return the list on success
+                    callback.onSuccess(entrants);
                 })
                 .addOnFailureListener(e -> {
                     Log.e("RecyclerListActivity", "Error fetching entrants: ", e);
-                    callback.onFailure("Failed to fetch entrants: " + e.getMessage()); // Pass error message on failure
+                    callback.onFailure("Failed to fetch entrants: " + e.getMessage());
                 });
     }
 
-
-    // Utility method
+    /**
+     * Retrieves the device ID.
+     *
+     * @param context The context of the application.
+     * @return The device ID.
+     */
     private static String getDeviceId(Context context) {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
-    // Callback interface to handle success and failure
+    /**
+     * Callback interface for fetching entrants.
+     */
     public interface EntrantsFetchCallback {
+        /**
+         * Called when entrants are successfully fetched.
+         *
+         * @param entrants The list of fetched entrants.
+         */
         void onSuccess(List<Entrant> entrants);
+
+        /**
+         * Called when there's an error fetching entrants.
+         *
+         * @param errorMessage The error message.
+         */
         void onFailure(String errorMessage);
     }
 }

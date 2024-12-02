@@ -8,9 +8,10 @@
 
     <TextView
         android:id="@+id/textView9"
-        android:layout_width="273dp"
-        android:layout_height="50dp"
+        android:layout_width="280dp"
+        android:layout_height="84dp"
         android:text="Registration deadline has passsed\nSampling is done!"
+        android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/buttonWaitlistEntrants"
@@ -28,7 +29,7 @@
         android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/buttonSelectedEntrants"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
@@ -54,7 +55,7 @@
         android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/buttonChosenEntrants"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.547"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonSelectedEntrants" />
 
@@ -67,7 +68,7 @@
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.555"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonCancelledEntrants" />
 </androidx.constraintlayout.widget.ConstraintLayout>

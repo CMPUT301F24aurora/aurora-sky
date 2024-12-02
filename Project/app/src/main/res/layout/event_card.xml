@@ -7,6 +7,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#2E394E"
         android:orientation="vertical"
         android:padding="16dp">
 
@@ -15,9 +16,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Event Name"
+            android:textColor="@color/white"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/event_date"
@@ -25,16 +26,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Event Date"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="16sp" />
 
         <TextView
             android:id="@+id/event_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="Event Description"
-            android:textSize="14sp"
-            android:textColor="@android:color/black"
-            android:layout_marginTop="8dp" />
+            android:textColor="@color/white"
+            android:textSize="14sp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -61,7 +61,7 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ad
         noEventsText = findViewById(R.id.admin_no_events_text);
         eventList = new ArrayList<>();
         adapter = new AdminEventAdapter(eventList, this);
-        searchView = findViewById(R.id.admin_ev_search_view);
+        //searchView = findViewById(R.id.admin_ev_search_view);
 
         dbManagerEvent = new DBManagerEvent();
 
@@ -114,7 +114,7 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ad
     }
 
     private void setupSearchView() {
-        androidx.appcompat.widget.SearchView searchView = findViewById(R.id.admin_ev_search_view);
+        SearchView searchView = findViewById(R.id.admin_ev_search_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

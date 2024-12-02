@@ -28,6 +28,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ev_ent_text_title" />-->
 
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/admin_pro_search_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:queryHint="Search Profiles..."
+        app:layout_constraintTop_toBottomOf="@id/ev_ent_text_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,16 +49,26 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/ev_entrants_lv"
-        android:layout_width="match_parent"
-        android:layout_height="460dp"
-        android:layout_marginTop="32dp"
-        android:background="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        android:overScrollMode="never"
+        app:layout_constraintTop_toBottomOf="@id/admin_pro_search_view"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ev_ent_text_title">
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    </androidx.recyclerview.widget.RecyclerView>
+    <TextView
+        android:id="@+id/admin_no_entrants_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No entrants found"
+        android:textColor="#FDFDFD"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/admin_pro_search_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

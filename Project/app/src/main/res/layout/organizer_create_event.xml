@@ -238,7 +238,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="110dp"
-                                android:background="" />
+                                android:background="#4AA7CAC0" />
 
                         </LinearLayout>
 

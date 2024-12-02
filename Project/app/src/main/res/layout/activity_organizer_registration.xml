@@ -7,96 +7,86 @@
     android:background="#191F36"
     android:padding="16dp">
 
-    <LinearLayout
+    <!-- Subheading for Name -->
+    <TextView
+        android:id="@+id/name_label"
         android:layout_width="match_parent"
-        android:layout_height="487dp"
-        android:background="#4AA7CAC0"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="Name"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/name_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="Name"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
+    <!-- Name Input -->
+    <EditText
+        android:id="@+id/organizer_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/white" />
 
-        <EditText
-            android:id="@+id/organizer_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/white"
-            android:hint="Enter your name"
-            android:padding="12dp" />
 
-        <TextView
-            android:id="@+id/email_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="Email"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
+    <TextView
+        android:id="@+id/email_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp"
+        android:text="Email"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 
-        <EditText
-            android:id="@+id/organizer_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/white"
-            android:hint="Enter your email"
-            android:inputType="textEmailAddress"
-            android:padding="12dp" />
+    <!-- Email Input -->
+    <EditText
+        android:id="@+id/organizer_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/white" />
 
-        <TextView
-            android:id="@+id/password_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="Password"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
 
-        <EditText
-            android:id="@+id/organizer_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/white"
-            android:hint="Enter your password"
-            android:inputType="textPassword"
-            android:padding="12dp" />
+    <!-- Subheading for Password -->
+    <TextView
+        android:id="@+id/password_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp"
+        android:text="Password"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/phone_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="Phone"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
+    <EditText
+        android:id="@+id/organizer_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/white" />
 
-        <EditText
-            android:id="@+id/organizer_phone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/white"
-            android:hint="Enter your phone number (optional)"
-            android:inputType="phone"
-            android:padding="12dp" />
+    <TextView
+        android:id="@+id/phone_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp"
+        android:text="Phone"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 
-        <Button
-            android:id="@+id/register_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#0A4753"
-            android:minHeight="48dp"
-            android:padding="12dp"
-            android:text="Register"
-            android:textColor="@color/white" />
-    </LinearLayout>
+    <!-- Phone Input -->
+    <EditText
+        android:id="@+id/organizer_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/white" />
+
+
+    <Button
+        android:id="@+id/register_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#0A4753"
+        android:text="Register"
+        android:minHeight="48dp" />
 </LinearLayout>

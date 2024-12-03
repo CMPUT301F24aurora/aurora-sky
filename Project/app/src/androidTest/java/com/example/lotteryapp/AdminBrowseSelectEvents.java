@@ -49,7 +49,7 @@ public class AdminBrowseSelectEvents {
         IdlingRegistry.getInstance().register(idlingResource);
     }
 
-    @Ignore
+
     @Test
     public void testAdminLinkNavigatesToAdminView() {
         // Click the admin_link button in MainActivity

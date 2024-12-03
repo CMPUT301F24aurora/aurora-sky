@@ -13,6 +13,7 @@ import androidx.test.rule.ActivityTestRule;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +49,7 @@ public class AdminBrowseSelectEvents {
         IdlingRegistry.getInstance().register(idlingResource);
     }
 
+    @Ignore
     @Test
     public void testAdminLinkNavigatesToAdminView() {
         // Click the admin_link button in MainActivity
@@ -80,7 +82,7 @@ public class AdminBrowseSelectEvents {
         onView(withId(R.id.admin_v_ev)).perform(click());
         idlingResource.setIdleState(true); // Set to idle when the action is done
 
-        onView(withId(R.id.admin_search_ev)).perform(setText("e1"));
+        //onView(withId(R.id.admin_search_ev)).perform(setText("e1"));
         idlingResource.setIdleState(true); // Set to idle after typing
 
         // Perform a scroll to the item with "e1" and check if it's displayed

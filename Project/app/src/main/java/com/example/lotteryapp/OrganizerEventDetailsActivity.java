@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+
 /**
  * Activity for displaying and managing details of an event.
  * <p>
@@ -121,6 +123,17 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         eventTitleTextView.setText(event.getEventName());
         eventDateTextView.setText("Date: " + event.getEventStartDate());
         eventDescriptionTextView.setText(event.getDescription());
+
+        if (event.getImage_url() != null && !event.getImage_url().isEmpty()) {
+            eventPosterView.setVisibility(View.VISIBLE);
+            Glide.with(this)
+                    .load(event.getImage_url())
+                    .placeholder(R.drawable.ic_profile_photo)
+                    .error(R.drawable.ic_profile_photo)
+                    .into(eventPosterView);
+        } else {
+            //eventPosterView.setVisibility(View.GONE);
+        }
 
         if (event.getGeolocationRequired()) {
             viewEntrantsLocationButton.setVisibility(View.VISIBLE);

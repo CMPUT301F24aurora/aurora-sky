@@ -82,7 +82,7 @@ public class AdminBrowseSelectEvents {
         onView(withId(R.id.admin_v_ev)).perform(click());
         idlingResource.setIdleState(true); // Set to idle when the action is done
 
-        //onView(withId(R.id.admin_search_ev)).perform(setText("e1"));
+        onView(withId(R.id.admin_search_ev)).perform(setText("e1"));
         idlingResource.setIdleState(true); // Set to idle after typing
 
         // Perform a scroll to the item with "e1" and check if it's displayed

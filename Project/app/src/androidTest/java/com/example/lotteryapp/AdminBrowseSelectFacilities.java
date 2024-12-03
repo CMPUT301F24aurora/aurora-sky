@@ -79,7 +79,7 @@ public class AdminBrowseSelectFacilities {
         onView(withId(R.id.admin_v_fac)).perform(click());
         idlingResource.setIdleState(true); // Set to idle when the action is done
 
-        //onView(withId(R.id.fsearchView)).perform(setText("testFacility"));
+        onView(withId(R.id.fsearchView)).perform(setText("testFacility"));
         idlingResource.setIdleState(true); // Set to idle after typing
 
         onView(withId(R.id.admin_fac_list))

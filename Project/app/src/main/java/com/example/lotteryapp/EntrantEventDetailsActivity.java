@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -300,8 +301,17 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
      */
     private void autoRegisterIfSignUpTrue() {
         if (signUp) {
-            Log.d("", "Trying to sign up auto");
-            enterWaitingButton.performClick();        }
+            Log.d(TAG, "Preparing to auto sign up");
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (!isFinishing() && !isDestroyed()) {
+                        Log.d(TAG, "Attempting auto sign up");
+                        enterWaitingButton.performClick();
+                    }
+                }
+            }, 500); // 500 milliseconds delay
+        }
     }
 
     /**

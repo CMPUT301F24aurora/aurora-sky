@@ -20,26 +20,24 @@
         android:layout_height="match_parent"
         android:visibility="gone" />
 
-    <!-- Button to sign up for the event, initially hidden -->
-    <Button
-        android:id="@+id/sign_up_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/scan_event_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:text="Sign Up"
-        android:visibility="gone" />
+    <!--    &lt;!&ndash; Button to sign up for the event, initially hidden &ndash;&gt;-->
+    <!--    <Button-->
+    <!--        android:id="@+id/sign_up_button"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_below="@id/scan_event_button"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:layout_marginTop="16dp"-->
+    <!--        android:text="Sign Up" />-->
 
-    <!-- Button to view the event details, initially hidden -->
-    <Button
-        android:id="@+id/view_event_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/sign_up_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:text="View Event"
-        android:visibility="gone" />
+    <!--    &lt;!&ndash; Button to view the event details, initially hidden &ndash;&gt;-->
+    <!--    <Button-->
+    <!--        android:id="@+id/view_event_button"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_below="@id/sign_up_button"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:layout_marginTop="16dp"-->
+    <!--        android:text="View Event" />-->
 
 </RelativeLayout>

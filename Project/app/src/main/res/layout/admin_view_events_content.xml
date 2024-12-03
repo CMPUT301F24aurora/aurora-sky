@@ -78,29 +78,43 @@
 
     <!-- Remove Event Button -->
     <Button
-        android:id="@+id/admin_ev_remove_qr"
+        android:id="@+id/admin_ev_remove_poster"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginBottom="8dp"
+        android:visibility="gone"
         android:backgroundTint="#3B6064"
-        android:text="Remove QR Code"
+        android:text="Remove Poster"
         android:textColor="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@id/admin_ev_remove"
+        app:layout_constraintBottom_toTopOf="@id/admin_ev_remove_qr"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
+        android:id="@+id/admin_ev_remove_qr"
+        android:layout_width="333dp"
+        android:layout_height="58dp"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="#3B6064"
+        android:text="Remove QR Code"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@id/admin_ev_remove"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.538"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
         android:id="@+id/admin_ev_remove"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
+        android:layout_width="333dp"
+        android:layout_height="58dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="#3B6064"
         android:text="Remove Event"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.541"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

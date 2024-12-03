@@ -13,6 +13,7 @@ import androidx.test.rule.ActivityTestRule;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +48,7 @@ public class AdminBrowseSelectEvents {
         idlingResource = new SimpleIdlingResource();
         IdlingRegistry.getInstance().register(idlingResource);
     }
+
 
     @Test
     public void testAdminLinkNavigatesToAdminView() {

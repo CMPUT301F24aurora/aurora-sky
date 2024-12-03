@@ -3,6 +3,7 @@ package com.example.lotteryapp;
 import android.util.Log;
 
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.android.gms.tasks.Task;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DBManagerEvent {
 
@@ -31,8 +33,13 @@ public class DBManagerEvent {
         eventData.put("description", event.getDescription());
         eventData.put("qr_code", eventId);  // Store QR code as the ID field
         eventData.put("waitingList", event.getWaitingList());  // Store waiting list IDs
+        eventData.put("selectedEntrants", event.getSelectedEntrants());
+        eventData.put("cancelledEntrants", event.getCancelledEntrants());
+        eventData.put("finalEntrants", event.getFinalEntrants());
         eventData.put("image_url", event.getImage_url());
         eventData.put("geolocationRequired", event.getGeolocationRequired());
+        eventData.put("waitlistCap", event.getWaitlistCap());
+
 
         // Add event to "events" collection in Firestore
         DocumentReference eventRef = db.collection("events").document(eventId);
@@ -125,10 +132,54 @@ public class DBManagerEvent {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    public static void removeEntrantsFromList(List<Entrant> entrantList, String listName, EntrantsUpdateCallback callback) {
+        List<String> entrantIds = entrantList.stream().map(Entrant::getId).collect(Collectors.toList());
+        db.collection("events")
+                .whereArrayContainsAny(listName, entrantIds)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        document.getReference().update(listName, FieldValue.arrayRemove(entrantIds.toArray()))
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d("Firestore", "Entrants removed from " + listName + " successfully");
+                                    callback.onSuccess();  // Notify success
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e("Firestore", "Error removing entrants: ", e);
+                                    callback.onFailure(e.getMessage());  // Notify failure
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error querying events: ", e);
+                    callback.onFailure(e.getMessage());  // Notify failure for query error
+                });
+    }
+
+
+    public static void addEntrantsToList(List<Entrant> entrantList, String listName, String eventId, EntrantsUpdateCallback callback) {
+        List<String> entrantIds = entrantList.stream().map(Entrant::getId).collect(Collectors.toList());
+        db.collection("events")
+                .document(eventId)  // Target a specific event by ID
+                .update(listName, FieldValue.arrayUnion(entrantIds.toArray()))
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firestore", "Entrants added to " + listName + " successfully");
+                    callback.onSuccess();  // Notify success
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error adding entrants: ", e);
+                    callback.onFailure(e.getMessage());  // Notify failure with the error message
+                });
+    }
+
+    public interface EntrantsUpdateCallback {
+        void onSuccess();
+        void onFailure(String errorMessage);
+    }
+
     public interface GetEventCallback {
         void onSuccess(Event event);
         void onFailure(Exception e);
     }
-
 
 }

@@ -2,12 +2,14 @@ package com.example.lotteryapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.DocumentReference;
@@ -15,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
+
 /**
  * {@code QRScannerActivity} is an activity that allows the user to scan QR codes associated with events.
  * Upon scanning a QR code, the event details are fetched from Firebase Firestore, and the user is presented with options
@@ -34,31 +37,38 @@ public class QRScannerActivity extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private DecoratedBarcodeView barcodeScannerView;
-    private Button signUpButton, viewEventButton;
 
     private Entrant currentEntrant;
     private Organizer organizer;
-
+    private DBManagerEvent dbManagerEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrscanner);
+        barcodeScannerView = findViewById(R.id.zxing_barcode_scanner);
         currentEntrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
         organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
+        dbManagerEvent = new DBManagerEvent();
         Toast.makeText(this, "Entrant Name: " + currentEntrant.getName(), Toast.LENGTH_SHORT).show();
 
         Button scanEventButton = findViewById(R.id.scan_event_button);
-        barcodeScannerView = findViewById(R.id.zxing_barcode_scanner);
-        signUpButton = findViewById(R.id.sign_up_button);
-        viewEventButton = findViewById(R.id.view_event_button);
 
         // Set up the button to start scanning
         scanEventButton.setOnClickListener(view -> startQRCodeScanner());
+    }
 
-        // Initially hide the option buttons
-        signUpButton.setVisibility(View.GONE);
-        viewEventButton.setVisibility(View.GONE);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        barcodeScannerView = findViewById(R.id.zxing_barcode_scanner);
+        barcodeScannerView.resume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        barcodeScannerView.pause();
     }
 
     /**
@@ -91,34 +101,24 @@ public class QRScannerActivity extends AppCompatActivity {
 
     private void handleScanResult(String qrData) {
         if (qrData != null && !qrData.isEmpty()) {
-            fetchEventFromFirestore(qrData);
+            testEvent(qrData);
         } else {
             Toast.makeText(this, "Invalid QR Code", Toast.LENGTH_SHORT).show();
         }
     }
 
-    /**
-     * Fetches the event from Firestore using the event ID obtained from the QR code.
-     *
-     * @param eventId the ID of the event to retrieve from Firestore
-     */
-    private void fetchEventFromFirestore(String eventId) {
-        DocumentReference eventRef = db.collection("events").document(eventId);
-        eventRef.get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Event event = documentSnapshot.toObject(Event.class);
-                        if (event != null) {
-                            showOptions(event);
-                        }
-                    } else {
-                        Toast.makeText(QRScannerActivity.this, "Event not found.", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error fetching event data", e);
-                    Toast.makeText(QRScannerActivity.this, "Error fetching event data", Toast.LENGTH_SHORT).show();
-                });
+    public void testEvent(String qrcode) {
+        dbManagerEvent.getEventByQRCode(qrcode, new DBManagerEvent.GetEventCallback() {
+            @Override
+            public void onSuccess(Event event) {
+                showOptions(event);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(QRScannerActivity.this, "Error fetching event data", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**
@@ -127,14 +127,35 @@ public class QRScannerActivity extends AppCompatActivity {
      * @param event the event fetched from Firestore
      */
     private void showOptions(Event event) {
-        barcodeScannerView.setVisibility(View.GONE);
-        signUpButton.setVisibility(View.VISIBLE);
-        viewEventButton.setVisibility(View.VISIBLE);
-
-        signUpButton.setOnClickListener(v -> navigateToSignUp(event));
-        viewEventButton.setOnClickListener(v -> navigateToEventDetails(event));
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+        //barcodeScannerView.setVisibility(View.GONE);
+        new AlertDialog.Builder(QRScannerActivity.this)
+                .setTitle("Event Options")
+                .setMessage("Choose an option:")
+                .setPositiveButton("Sign Up", (dialog, which) -> {
+                    navigateToSignUp(event);  // Navigate to the sign-up activity
+                })
+                .setNegativeButton("View Event", (dialog, which) -> {
+                    navigateToEventDetails(event);  // Navigate to the event details activity
+                })
+                .setNeutralButton("Cancel", (dialog, which) -> {
+                    dialog.dismiss();  // Dismiss the dialog
+                    Intent intent = new Intent(QRScannerActivity.this, QRScannerActivity.class);
+                    intent.putExtra("entrant_data", currentEntrant);
+                    intent.putExtra("organizer_data", organizer);
+                    startActivity(intent);
+                })
+                .setOnDismissListener(dialog -> barcodeScannerView.resume())  // Resume scanning when dialog is dismissed
+                .show();
     }
 
+    /**
+     * Navigates to the EntrantEventDetailsActivity to allow the user to sign up for an event.
+     *
+     * @param event The event that the user intends to sign up for.
+     */
     private void navigateToSignUp(Event event) {
         Intent intent = new Intent(QRScannerActivity.this, EntrantEventDetailsActivity.class);
         intent.putExtra("event_data", event);
@@ -144,12 +165,18 @@ public class QRScannerActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Navigates to the EntrantEventDetailsActivity to view the details of an event without signing up.
+     *
+     * @param event The event for which the user is viewing details.
+     */
     private void navigateToEventDetails(Event event) {
         Intent intent = new Intent(QRScannerActivity.this, EntrantEventDetailsActivity.class);
         intent.putExtra("event_data", event);
         intent.putExtra("entrant_data", currentEntrant);
         intent.putExtra("organizer_data", organizer);
         intent.putExtra("sign_up", false);
+        Log.d(TAG, "Navigating to event details for event: " + event.getEventName());
         startActivity(intent);
     }
 }

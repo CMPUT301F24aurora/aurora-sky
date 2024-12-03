@@ -7,10 +7,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
+import android.widget.Filter;
+import android.widget.Filterable;
+import java.util.ArrayList;
+
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
     private final List<Event> eventList;
+    private List<Event> filteredList;      // Filtered list
     private final OnEventClickListener eventClickListener; // Add this
 
     public interface OnEventClickListener {
@@ -19,6 +24,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     public EventAdapter(List<Event> eventList, OnEventClickListener listener) {
         this.eventList = eventList;
+        this.filteredList = new ArrayList<>(eventList);  // Initialize with the full list
         this.eventClickListener = listener; // Initialize the listener
     }
 
@@ -45,7 +51,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
-        Event event = eventList.get(position);
+        Event event = filteredList.get(position);  // Use the filtered list
         holder.eventName.setText(event.getEventName());
         holder.eventDate.setText(event.getEventStartDate());
         holder.eventDescription.setText(event.getDescription());
@@ -56,7 +62,43 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     @Override
     public int getItemCount() {
-        return eventList.size();
+        return filteredList.size();  // Return size of filtered list
+    }
+
+    public void updateData(List<Event> newEventList) {
+        this.eventList.clear();
+        this.eventList.addAll(newEventList);
+        this.filteredList = new ArrayList<>(newEventList);  // Reset filtered list
+        notifyDataSetChanged();  // Notify adapter that the data has changed
+    }
+
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String query = constraint.toString().toLowerCase().trim();
+                FilterResults results = new FilterResults();
+
+                if (query.isEmpty()) {
+                    results.values = eventList;
+                } else {
+                    List<Event> filtered = new ArrayList<>();
+                    for (Event event : eventList) {
+                        if (event.getEventName().toLowerCase().contains(query)) {
+                            filtered.add(event);
+                        }
+                    }
+                    results.values = filtered;
+                }
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                filteredList = (List<Event>) results.values;
+                notifyDataSetChanged();  // Refresh the RecyclerView
+            }
+        };
     }
 
     public class EventViewHolder extends RecyclerView.ViewHolder {

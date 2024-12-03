@@ -3,6 +3,7 @@ package com.example.lotteryapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -26,7 +27,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InvitationActivity extends AppCompatActivity implements EventAdapter.OnEventClickListener{
+/**
+ * Activity for displaying event invitations to the user.
+ * This activity shows a list of events the user has been invited to and allows navigation to other app features.
+ */
+public class InvitationActivity extends AppCompatActivity implements EventInvitationAdapter.OnEventClickListener {
 
     private RecyclerView eventsRecyclerView;
     private DrawerLayout drawerLayout;
@@ -36,10 +41,17 @@ public class InvitationActivity extends AppCompatActivity implements EventAdapte
     private ImageButton profileIcon;
     private RefreshDataManager refreshDataManager;
     private DBManagerEvent dbManagerEvent;
-    private EventAdapter eventAdapter;
+    private EventInvitationAdapter eventInvitationAdapter;
     private List<Event> eventList;
     private TextView noEventsText;
 
+    /**
+     * Initializes the activity, sets up UI components, and loads event data.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being
+     *                           shut down, this Bundle contains the data it most recently supplied
+     *                           in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,9 +81,6 @@ public class InvitationActivity extends AppCompatActivity implements EventAdapte
                 organizerIntent.putExtra("entrant_data", entrant);
                 organizerIntent.putExtra("organizer_data", organizer);
                 startActivity(organizerIntent);
-            } else if (id == R.id.map_nav) {
-                Intent organizerIntent = new Intent(InvitationActivity.this, MapActivity.class);
-                startActivity(organizerIntent);
             } else if (id == R.id.qr_code_nav) {
                 Intent qrScannerIntent = new Intent(InvitationActivity.this, QRScannerActivity.class);
                 qrScannerIntent.putExtra("entrant_data", entrant);
@@ -93,89 +102,51 @@ public class InvitationActivity extends AppCompatActivity implements EventAdapte
 
         // Initialize event list and adapter with click listener
         eventList = new ArrayList<>();
-        eventAdapter = new EventAdapter(eventList, this);
-        eventsRecyclerView.setAdapter(eventAdapter);
+        eventInvitationAdapter = new EventInvitationAdapter(eventList, this);
+        eventsRecyclerView.setAdapter(eventInvitationAdapter);
 
         profileIcon = findViewById(R.id.profile_icon);
         setupProfileIcon();
-        // Load events into RecyclerView
         loadEvents();
     }
 
+    /**
+     * Loads events from the database and updates the UI accordingly.
+     */
     private void loadEvents() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Step 1: Fetch entrant's selected event
-        db.collection("entrants")
-                .whereEqualTo("email", entrant.getEmail()) // Replace with dynamically obtained email for the logged-in entrant
-                .get()
-                .addOnSuccessListener(entrantQuerySnapshot -> {
-                    if (!entrantQuerySnapshot.isEmpty()) {
-                        DocumentSnapshot entrantDoc = entrantQuerySnapshot.getDocuments().get(0);
-                        String selectedEventQrCode = entrantDoc.getString("selected_event");
-
-                        if (selectedEventQrCode == null || selectedEventQrCode.isEmpty()) {
-                            noEventsText.setVisibility(View.VISIBLE);
-                            eventsRecyclerView.setVisibility(View.GONE);
-                            noEventsText.setText("No event selected.");
-                            return;
-                        }
-
-                        // Step 2: Fetch event details based on the selected event's QR code
-                        db.collection("events")
-                                .whereEqualTo("qr_code", selectedEventQrCode)
-                                .get()
-                                .addOnSuccessListener(eventQuerySnapshot -> {
-                                    List<Event> matchedEvents = new ArrayList<>();
-                                    for (DocumentSnapshot eventDoc : eventQuerySnapshot.getDocuments()) {
-                                        Event event = eventDoc.toObject(Event.class); // Assuming you have an Event model
-                                        if (event != null) {
-                                            matchedEvents.add(event);
-                                        }
-                                    }
-
-                                    // Step 3: Update UI with the matched event
-                                    eventList.clear();
-                                    eventList.addAll(matchedEvents);
-
-                                    if (eventList.isEmpty()) {
-                                        noEventsText.setVisibility(View.VISIBLE);
-                                        eventsRecyclerView.setVisibility(View.GONE);
-                                        noEventsText.setText("No matching event found.");
-                                    } else {
-                                        noEventsText.setVisibility(View.GONE);
-                                        eventsRecyclerView.setVisibility(View.VISIBLE);
-                                    }
-
-                                    eventAdapter.notifyDataSetChanged();
-                                })
-                                .addOnFailureListener(e -> {
-                                    noEventsText.setVisibility(View.VISIBLE);
-                                    eventsRecyclerView.setVisibility(View.GONE);
-                                    noEventsText.setText("Failed to load event details. Please try again.");
-                                });
-                    } else {
-                        noEventsText.setVisibility(View.VISIBLE);
-                        eventsRecyclerView.setVisibility(View.GONE);
-                        noEventsText.setText("Entrant not found.");
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    noEventsText.setVisibility(View.VISIBLE);
+        dbManagerEvent.getEventsByQRCodes(entrant.getSelected_event(), new GetEventsCallback() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                eventList.clear();
+                eventList.addAll(events);
+                if (eventList.isEmpty()) {
                     eventsRecyclerView.setVisibility(View.GONE);
-                    noEventsText.setText("Failed to load entrant details. Please try again.");
-                });
+                    noEventsText.setVisibility(View.VISIBLE);
+                } else {
+                    eventsRecyclerView.setVisibility(View.VISIBLE);
+                    noEventsText.setVisibility(View.GONE);
+                }
+                eventInvitationAdapter.updateData(events);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                eventsRecyclerView.setVisibility(View.GONE);
+            }
+        });
+        eventInvitationAdapter.notifyDataSetChanged(); // Refresh adapter to show added events
     }
 
-
-
+    /**
+     * Sets up the profile icon with the user's image and click listener.
+     */
     private void setupProfileIcon() {
         if (profileIcon != null && entrant != null && entrant.getImage_url() != null) {
             Glide.with(this)
-                    .load(entrant.getImage_url()) // Load the URL from the entrant object
-                    .placeholder(R.drawable.ic_profile_photo) // Optional: Placeholder while loading
-                    .error(R.drawable.ic_profile_photo) // Optional: Fallback image on error
-                    .circleCrop() // Makes the image circular
+                    .load(entrant.getImage_url())
+                    .placeholder(R.drawable.ic_profile_photo)
+                    .error(R.drawable.ic_profile_photo)
+                    .circleCrop()
                     .into(profileIcon);
 
             profileIcon.setOnClickListener(v -> {
@@ -187,6 +158,11 @@ public class InvitationActivity extends AppCompatActivity implements EventAdapte
         }
     }
 
+    /**
+     * Handles click events on individual events in the list.
+     *
+     * @param event The Event object that was clicked.
+     */
     @Override
     public void onEventClick(Event event) {
         Intent eventDetailsIntent = new Intent(InvitationActivity.this, AcceptDeclineActivity.class);

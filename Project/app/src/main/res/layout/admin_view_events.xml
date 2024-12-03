@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#191F36">
 
     <TextView
         android:id="@+id/admin_v_ev_txt"
@@ -13,45 +13,47 @@
         android:layout_marginTop="16dp"
         android:text="Events"
         android:textAppearance="@style/TextAppearance.AppCompat.Display3"
-        android:textColor="#070707"
+        android:textColor="#FDFDFD"
         android:textSize="60sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!--<SearchView
-        android:id="@+id/admin_search_ev"
-        android:layout_width="392dp"
-        android:layout_height="51dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.473"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/admin_v_ev_txt" />-->
-
-    <RelativeLayout
-        android:id="@+id/rel_layout_events_admin"
-        android:layout_width="match_parent"
+    <!-- SearchView for filtering events -->
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/admin_ev_search_view"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:layout_marginTop="12dp"
+        android:background="@color/white"
+        android:queryHint="Search events..."
+        app:layout_constraintTop_toBottomOf="@id/admin_v_ev_txt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    </RelativeLayout>
-
+    <!-- RecyclerView for listing events -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/admin_ev_list"
-        android:layout_width="wrap_content"
-        android:layout_height="460dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
         android:overScrollMode="never"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@id/admin_ev_search_view"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/admin_v_ev_txt">
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    </androidx.recyclerview.widget.RecyclerView>
+    <!-- TextView to display when no events are found -->
+    <TextView
+        android:id="@+id/admin_no_events_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No events found"
+        android:textColor="#FDFDFD"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/admin_ev_search_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

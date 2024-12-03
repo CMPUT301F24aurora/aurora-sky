@@ -77,6 +77,7 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
         entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
         organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
         signUp = getIntent().getBooleanExtra("sign_up", false);
+        Log.d("", "Signup Value: " + String.valueOf(signUp));
 
         if (event == null) {
             Log.e(TAG, "Event data is missing from intent.");
@@ -138,7 +139,7 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
     private void showJoinConfirmationDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Join Waiting List")
-                .setMessage("Are you sure you want to join the waiting list for this event?")
+                .setMessage("Are you sure you want to join the waiting list for this event? This event has geolocation requirement!!")
                 .setPositiveButton("Yes", (dialog, which) -> {
                     joinWaitingList();
                 })
@@ -299,8 +300,8 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
      */
     private void autoRegisterIfSignUpTrue() {
         if (signUp) {
-            joinWaitingList();
-        }
+            Log.d("", "Trying to sign up auto");
+            enterWaitingButton.performClick();        }
     }
 
     /**

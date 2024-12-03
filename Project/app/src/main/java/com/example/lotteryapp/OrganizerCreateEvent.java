@@ -26,6 +26,18 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+/**
+ * This class represents the activity where the event organizer can create or edit event details.
+ * It handles event creation, editing, image upload, and saving event details to the database.
+ * <p>
+ * The activity retrieves event data from the intent to preload the form if it's an edit action.
+ * It validates the input and saves the event to a database or updates an existing event.
+ * </p>
+ *
+ * @see Organizer
+ * @see Event
+ * @see Entrant
+ */
 public class OrganizerCreateEvent extends AppCompatActivity {
 
     private static final String TAG = "OrganizerCreateEvent";

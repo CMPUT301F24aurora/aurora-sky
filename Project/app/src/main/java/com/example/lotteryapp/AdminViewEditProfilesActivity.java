@@ -76,6 +76,14 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
         loadEntrants();
     }
 
+    /**
+     * Initializes the search functionality for filtering the entrant list.
+     * This method sets up a {@link SearchView} to listen for query text input and applies a filter
+     * to the {@link EntrantAdapter} to dynamically update the displayed list based on the entered text.
+     *
+     * @see SearchView
+     * @see EntrantAdapter#getFilter()
+     */
     private void setupSearchView() {
         SearchView searchView = findViewById(R.id.admin_pro_search_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {

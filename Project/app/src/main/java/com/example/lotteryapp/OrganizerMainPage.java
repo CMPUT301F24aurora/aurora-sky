@@ -21,6 +21,18 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The main activity for the organizer's page that allows managing events, facilities, and navigating to other sections.
+ * <p>
+ * This activity includes the ability to view and create events, manage facilities, and navigate to different pages such as the Entrant events, QR code scanner, and invitations.
+ * It uses a navigation drawer for navigation and a RecyclerView for displaying a list of events.
+ * </p>
+ *
+ * @see AppCompatActivity
+ * @see OrgEventAdapter
+ * @see Organizer
+ * @see Entrant
+ */
 public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdapter.OnEventClickListener {
 
     private Button createEventButton;
@@ -34,6 +46,21 @@ public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdap
     private List<Event> eventList;
     private DBManagerEvent dbManagerEvent;
 
+    /**
+     * Called when the activity is first created.
+     * <p>
+     * This method initializes the views, sets up the event adapter for the RecyclerView, handles navigation drawer items,
+     * and loads the events for the current organizer.
+     * </p>
+     *
+     * @param savedInstanceState If the activity is being re-initialized after being previously shut down,
+     *                           this Bundle contains the data it most recently supplied in
+     *                           {@link #onSaveInstanceState(Bundle)}.
+     *                           Otherwise, it is null.
+     * @return void
+     * @see #setupFacilityButton()
+     * @see #loadEvents()
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,6 +127,16 @@ public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdap
         loadEvents();
     }
 
+    /**
+     * Sets up the facility button to either create or manage a facility based on the current organizer's data.
+     * <p>
+     * If the organizer does not have a facility, the button allows creating a new facility.
+     * If the organizer already has a facility, the button allows managing the existing facility.
+     * </p>
+     *
+     * @return void
+     * @see OrganizerFacilityActivity
+     */
     private void setupFacilityButton() {
         if (currentOrganizer != null) { // Check if currentOrganizer is initialized
             Log.w("Yes", currentOrganizer.getName());
@@ -129,6 +166,17 @@ public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdap
         }
     }
 
+    /**
+     * Loads the events associated with the current organizer from the database.
+     * This method fetches the events using the organizer's event hashes and updates the RecyclerView with the results.
+     * <p>
+     * If the events list is empty, the RecyclerView is hidden. Otherwise, the events are displayed.
+     * </p>
+     *
+     * @return void
+     * @see DBManagerEvent
+     * @see Event
+     */
     private void loadEvents() {
         dbManagerEvent.getEventsByQRCodes(currentOrganizer.getEventHashes(), new GetEventsCallback() {
             @Override
@@ -174,6 +222,16 @@ public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdap
 //    }
 
 
+    /**
+     * Called when an event item is clicked in the RecyclerView.
+     * <p>
+     * This method starts the {@link OrganizerEventDetailsActivity} and passes the event details to display in the new activity.
+     * </p>
+     *
+     * @param event The {@link Event} object that was clicked.
+     * @return void
+     * @see OrganizerEventDetailsActivity
+     */
     public void onEventClick(Event event) {
         Intent eventDetailsIntent = new Intent(this, OrganizerEventDetailsActivity.class);
         eventDetailsIntent.putExtra("event_data", event);

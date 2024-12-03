@@ -81,7 +81,7 @@ public class OrganizerMainPageTest {
 
         // Directly set the date and time in the EditText
         String predefinedDateTime = "2023-12-31 10:00"; // Adjust this format as needed
-        //onView(withId(R.id.editTextDateTime)).perform(setText(predefinedDateTime));
+        onView(withId(R.id.editTextDateTime)).perform(setText(predefinedDateTime));
 
         // Input number of people and description directly
         onView(withId(R.id.editNumberOfMembers)).perform(setText("100"));

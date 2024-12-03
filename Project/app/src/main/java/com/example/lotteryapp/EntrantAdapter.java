@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -87,6 +88,18 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
         Entrant entrant = filteredEntrantList.get(position);
         Log.d("EntrantAdapter", "Displaying: " + entrant.getName());
         holder.entrantName.setText(entrant.getName());
+        String entrantPhoto = entrant.getImage_url();
+        if (entrantPhoto != null && !entrantPhoto.isEmpty()) {
+            Glide.with(context)
+                    .load(entrantPhoto)
+                    .placeholder(R.drawable.ic_profile_photo) // Fallback placeholder image
+                    .error(R.drawable.ic_profile_photo) // Fallback error image
+                    .circleCrop() // Make image circular
+                    .into(holder.profilePicture);
+        }
+        else {
+            holder.profilePicture.setImageResource(R.drawable.ic_profile_photo); // Default placeholder
+        }
         holder.itemView.setOnClickListener(v -> clickListener.onEntrantClick(entrant));
     }
 
@@ -141,6 +154,7 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
      */
     public static class EntrantViewHolder extends RecyclerView.ViewHolder {
         TextView entrantName;
+        private ImageView profilePicture;
 
         /**
          * Constructor for EntrantViewHolder.
@@ -150,6 +164,7 @@ public class EntrantAdapter extends RecyclerView.Adapter<EntrantAdapter.EntrantV
         public EntrantViewHolder(@NonNull View itemView) {
             super(itemView);
             entrantName = itemView.findViewById(R.id.admin_ent_name);
+            profilePicture = itemView.findViewById(R.id.admin_ent_photo);
         }
     }
 }

@@ -46,6 +46,7 @@ public class QRScannerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrscanner);
+        barcodeScannerView = findViewById(R.id.zxing_barcode_scanner);
         currentEntrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
         organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
         dbManagerEvent = new DBManagerEvent();
@@ -100,8 +101,7 @@ public class QRScannerActivity extends AppCompatActivity {
 
     private void handleScanResult(String qrData) {
         if (qrData != null && !qrData.isEmpty()) {
-            barcodeScannerView.pause();
-            new Handler().postDelayed(() -> testEvent(qrData), 100);
+            testEvent(qrData);
         } else {
             Toast.makeText(this, "Invalid QR Code", Toast.LENGTH_SHORT).show();
         }

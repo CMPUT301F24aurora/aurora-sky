@@ -78,7 +78,7 @@
             android:layout_width="180dp"
             android:layout_height="180dp"
             android:layout_marginTop="20dp"
-            android:src="@drawable/ic_profile_photo"
+            android:src="@drawable/no_image"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/event_description"
             app:layout_constraintTop_toTopOf="parent"

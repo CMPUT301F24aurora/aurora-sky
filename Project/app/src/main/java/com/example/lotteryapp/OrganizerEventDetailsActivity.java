@@ -128,8 +128,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             eventPosterView.setVisibility(View.VISIBLE);
             Glide.with(this)
                     .load(event.getImage_url())
-                    .placeholder(R.drawable.ic_profile_photo)
-                    .error(R.drawable.ic_profile_photo)
+                    .placeholder(R.drawable.no_image)
+                    .error(R.drawable.no_image)
                     .into(eventPosterView);
         } else {
             //eventPosterView.setVisibility(View.GONE);

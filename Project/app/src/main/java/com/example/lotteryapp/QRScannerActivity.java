@@ -29,7 +29,6 @@ public class QRScannerActivity extends AppCompatActivity {
         entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
         organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
         dbManagerEvent = new DBManagerEvent();
-        Toast.makeText(this, "Scanned: ", Toast.LENGTH_LONG).show();
 
         scanEventButton = findViewById(R.id.scan_event_button);
         scanEventButton.setOnClickListener(view -> startQRCodeScanner());

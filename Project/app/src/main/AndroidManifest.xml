@@ -56,7 +56,8 @@
         <activity
             android:name=".EntrantProfileEditActivity"
             android:exported="true" />
-        <activity android:name=".EntrantsEventsActivity" />
+        <activity android:name=".EntrantsEventsActivity"
+            android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".OrganizerEventDetailsActivity" />
         <activity android:name=".EntrantEventDetailsActivity" />
         <activity android:name=".EntrantProfileActivity" />

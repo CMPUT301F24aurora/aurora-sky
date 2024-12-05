@@ -13,8 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -23,7 +23,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,27 +38,32 @@ import java.util.Map;
  */
 public class AdminViewEventsContent extends AppCompatActivity {
 
-    private TextView eventNameTextView, eventDescriptionTextView, eventCapacityTextView, eventDateTextView, eventEndDate, registrationDeadline, price;
+    private static final String TAG = "AdminViewEventsContent";
+
+    private TextView eventNameTextView, eventDescriptionTextView, eventCapacityTextView, eventDateTextView,
+            eventEndDate, registrationDeadline, price;
     private ImageView eventPosterImageView;
-    private Button adminEvRemove;
-    private Button adminQrRemove;
-    private Button adminPosterRemove;
+    private Button adminEvRemove, adminQrRemove, adminPosterRemove;
+
     private FirebaseFirestore db;
     private Event event;
     private String eventHash;
 
-    /**
-     * Called when the activity is first created.
-     * This method sets up the layout and initializes views and Firestore.
-     *
-     * @param savedInstanceState If the activity is being re-initialized after previously being shut down, this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle). Otherwise, it is null.
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.admin_view_events_content);
+        initializeViews();
+        setupButtonListeners();
 
-        // Initialize views
+    }
+
+    /**
+     * Initializes all view components.
+     */
+    private void initializeViews() {
+        db = FirebaseFirestore.getInstance();
+
         eventNameTextView = findViewById(R.id.admin_event_name);
         eventDescriptionTextView = findViewById(R.id.admin_event_description);
         eventCapacityTextView = findViewById(R.id.admin_event_capacity);
@@ -71,219 +75,179 @@ public class AdminViewEventsContent extends AppCompatActivity {
         adminEvRemove = findViewById(R.id.admin_ev_remove);
         adminQrRemove = findViewById(R.id.admin_ev_remove_qr);
         adminPosterRemove = findViewById(R.id.admin_ev_remove_poster);
+
+        // Retrieve event data from the intent
         event = (Event) getIntent().getSerializableExtra("event_data");
+    }
 
-        // Get the intent extras and set the text views
-        String eventName = event.getEventName();
-        String eventDescription = event.getDescription();
-        String eventCapacity = String.valueOf(event.getNumPeople());
-        String eventDate = event.getEventStartDate();
-        String eventImageUrl = event.getImage_url();
+    /**
+     * Sets up the event details on the UI components.
+     */
+    private void setupEventDetails() {
+        if (event == null) return;
+
         eventHash = event.getQR_code();
-
-        // Set values to TextViews
-        eventNameTextView.setText(eventName);
-        eventDescriptionTextView.setText("Description:\n" + eventDescription);
-        eventCapacityTextView.setText("Capacity: " + eventCapacity);
+        eventNameTextView.setText(event.getEventName());
+        eventDescriptionTextView.setText("Description:\n" + event.getDescription());
+        eventCapacityTextView.setText("Capacity: " + event.getNumPeople());
         eventEndDate.setText("End Date: " + event.getEventEndDate());
         registrationDeadline.setText("Registration Deadline: " + event.getRegistrationDeadline());
         price.setText("Price: " + event.getEventPrice());
-        eventDateTextView.setText("Start Date: " + eventDate);
+        eventDateTextView.setText("Start Date: " + event.getEventStartDate());
 
-        // Load the poster image if URL is not null or empty
+        loadPosterImage();
+    }
+
+    /**
+     * Loads the event poster image if available.
+     */
+    private void loadPosterImage() {
+        String eventImageUrl = event.getImage_url();
         if (eventImageUrl != null && !eventImageUrl.isEmpty()) {
             eventPosterImageView.setVisibility(View.VISIBLE);
             adminPosterRemove.setVisibility(View.VISIBLE);
             Glide.with(this)
                     .load(eventImageUrl)
-                    .placeholder(R.drawable.ic_profile_photo)  // Optional placeholder image
-                    .error(R.drawable.ic_profile_photo)        // Optional error image
+                    .placeholder(R.drawable.ic_profile_photo)
+                    .error(R.drawable.ic_profile_photo)
                     .into(eventPosterImageView);
         } else {
             eventPosterImageView.setVisibility(View.GONE);
+            adminPosterRemove.setVisibility(View.GONE);
         }
-
-        // Set up the remove button
-        adminEvRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteEvent();
-            }
-        });
-
-        adminQrRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteQrHash(eventHash);
-            }
-        });
-
-        if (adminPosterRemove.getVisibility() == View.VISIBLE){
-            adminPosterRemove.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    deleteEventPoster(eventHash, eventImageUrl);
-                }
-            });
-        }
-
-        db = FirebaseFirestore.getInstance();
     }
 
-    public void deleteEventPoster(String eventId, String eventPosterUrl){
-        DocumentReference docRef = db.collection("events").document(eventId);
+    /**
+     * Sets up the button click listeners for various actions.
+     */
+    private void setupButtonListeners() {
+        adminEvRemove.setOnClickListener(v -> deleteEvent());
+        adminQrRemove.setOnClickListener(v -> deleteQrHash(eventHash));
+        adminPosterRemove.setOnClickListener(v -> {
+            if (adminPosterRemove.getVisibility() == View.VISIBLE) {
+                deleteEventPoster(eventHash, event.getImage_url());
+            }
+        });
+    }
 
-        docRef.update("image_url", null)
-                .addOnSuccessListener(aVoid -> {
-                    // Successfully deleted the image_url field
-                    Log.i("AdminDeletePoster", "image_url deleted successfully!");
-
-                    // Delete the Image from Firebase Storage
-                    StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(eventPosterUrl); // Replace with your image URL
-
-                    storageRef.delete().addOnSuccessListener(aVoid1 -> {
-                        // Successfully deleted the image from Firebase Storage
-                        Toast.makeText(AdminViewEventsContent.this, "Event Poster deleted successfully!",  Toast.LENGTH_SHORT).show();
-
-                        // Refresh page with no poster image and no remove poster button
-                        Intent intent = new Intent(this, AdminViewEventsContent.class);
-                        intent.putExtra("event_data", event);
-                        finish();
-                        startActivity(intent);
-                    }).addOnFailureListener(exception -> {
-                        // Handle any errors that occurred
-                        Log.e("AdminDeletePoster","Error deleting image from Firebase Storage: " + exception.getMessage());
-                    });
-                })
-                .addOnFailureListener(e -> {
-                    // Handle the failure to delete the URL
-                    Log.e("AdminDeletePoster","Error deleting image_url: " + e.getMessage());
+    /**
+     * Deletes the event from Firestore and updates the UI.
+     */
+    private void deleteEvent() {
+        db.collection("events").document(eventHash)
+                .delete()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        removeEventHashFromOrganizer(eventHash);
+                        Toast.makeText(this, "Event deleted successfully", Toast.LENGTH_SHORT).show();
+                        navigateBackToEventList();
+                    } else {
+                        Toast.makeText(this, "Error deleting event: " + task.getException(), Toast.LENGTH_SHORT).show();
+                    }
                 });
-
     }
-    public void deleteQrHash(final String currentQrHash) {
-        DocumentReference oldDocRef = db.collection("events").document(currentQrHash);
-        oldDocRef.get().addOnCompleteListener(task -> {
+
+    /**
+     * Deletes the QR code and updates the document with a new hash.
+     */
+    private void deleteQrHash(final String currentQrHash) {
+        DocumentReference docRef = db.collection("events").document(currentQrHash);
+        docRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult().exists()) {
-                DocumentSnapshot document = task.getResult();
                 String newQrHash = event.generateQRHash();
-                Map<String, Object> docData = document.getData();
-                docData.put("qr_code", newQrHash);
-                createNewDocumentWithNewId(oldDocRef, docData, newQrHash, currentQrHash);
-
-                // Update the current Event Hash
-                event.setQR_code(newQrHash);
-                eventHash = newQrHash;
-                Toast.makeText(AdminViewEventsContent.this, "Event QR deleted successfully", Toast.LENGTH_SHORT).show();
+                Map<String, Object> data = task.getResult().getData();
+                data.put("qr_code", newQrHash);
+                createNewEventDocument(docRef, data, newQrHash, currentQrHash);
             } else {
-                Log.e("AdminDeleteQrHash", "Error fetching event with that qrHash!");
+                Log.e(TAG, "Error fetching event for QR hash update.");
             }
         });
     }
 
-    private void createNewDocumentWithNewId(DocumentReference oldDocRef, Map<String, Object> data, String newDocId, String currentQrHash) {
-        oldDocRef.delete().addOnSuccessListener(aVoid -> {
-                    // Successfully deleted the old document
-                    Log.i("AdminDeleteQrHash", "Successfully deleted old Event doc");
-                })
-                .addOnFailureListener(e -> {
-                    // Handle the failure
-                    Log.e("AdminDeleteQrHash", "Couldn't delete old Event doc!");
-                });
-        DocumentReference newDocRef = db.collection("events").document(newDocId);
+    private void createNewEventDocument(DocumentReference oldDocRef, Map<String, Object> data, String newDocId, String oldQrHash) {
+        oldDocRef.delete().addOnSuccessListener(aVoid -> Log.i(TAG, "Old event document deleted"))
+                .addOnFailureListener(e -> Log.e(TAG, "Failed to delete old document."));
 
-        newDocRef.set(data).addOnSuccessListener(aVoid -> {
-            // Successfully created the new document
-            updateOrganizers(currentQrHash, newDocId);
-            Log.i("AdminDeleteQrHash", "Successfully created new Event doc");
-        }).addOnFailureListener(e -> {
-            // Handle the failure
-            Log.e("AdminDeleteQrHash", "Couldn't create new Event doc!");
-        });
+        db.collection("events").document(newDocId)
+                .set(data)
+                .addOnSuccessListener(aVoid -> updateOrganizers(oldQrHash, newDocId))
+                .addOnFailureListener(e -> Log.e(TAG, "Failed to create new event document."));
     }
-
 
     private void updateOrganizers(String oldQrHash, String newQrHash) {
-
-        // Query the organizers collection
         db.collection("organizers").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (DocumentSnapshot document : task.getResult()) {
                     List<String> eventHashes = (List<String>) document.get("eventHashes");
-
                     if (eventHashes != null && eventHashes.contains(oldQrHash)) {
-                        // Replace the old QR hash with the new one
                         eventHashes.remove(oldQrHash);
                         eventHashes.add(newQrHash);
-
-                        // Update the document with the new list
                         document.getReference().update("eventHashes", eventHashes)
-                                .addOnFailureListener(e -> {
-                                    // Handle failure to update organizer document
-                                    Log.e("AdminDeleteQrHash", "Couldn't update the eventHashes list!");
-                                });
+                                .addOnFailureListener(e -> Log.e(TAG, "Failed to update organizer event hashes."));
                     }
                 }
-            } else {
-                // Handle failure to query organizers collection
-                Log.e("AdminDeleteQrHash", "Couldn't fetch organizers!");
             }
         });
     }
 
-    /**
-     * Deletes the event from the database and updates the UI.
-     * Retrieves the event ID and hash from the intent and deletes the event document from Firestore.
-     * If successful, navigates back to the event list and removes the event hash from the organizer.
-     */
-    private void deleteEvent() {
-        CollectionReference eventsRef = db.collection("events");
-        String eventId = event.getQR_code();
-
-        eventsRef.document(eventId).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    adminEvRemove.setVisibility(View.GONE);
-                    removeEventHashFromOrganizer(eventId);
-                    Toast.makeText(AdminViewEventsContent.this, "Event deleted successfully", Toast.LENGTH_SHORT).show();
-
-                    // Navigate back to Events List
-                    Intent intent = new Intent(AdminViewEventsContent.this, AdminViewEditEventsActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    Toast.makeText(AdminViewEventsContent.this, "Error deleting event: " + task.getException(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+    private void deleteEventPoster(String eventId, String eventPosterUrl) {
+        db.collection("events").document(eventId).update("image_url", null)
+                .addOnSuccessListener(aVoid -> {
+                    StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(eventPosterUrl);
+                    storageRef.delete().addOnSuccessListener(aVoid1 -> {
+                        Toast.makeText(this, "Event poster deleted.", Toast.LENGTH_SHORT).show();
+                        event.setImage_url(null);
+                        setupEventDetails();
+                    });
+                });
     }
 
-    /**
-     * Removes the event hash from the organizer's document in the database.
-     * Queries the "organizers" collection for documents containing the specified event hash and removes it.
-     *
-     * @param eventHash the hash of the event to be removed
-     */
     private void removeEventHashFromOrganizer(String eventHash) {
-        db.collection("organizers")
-                .whereArrayContains("eventHashes", eventHash)
+        db.collection("organizers").whereArrayContains("eventHashes", eventHash)
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        // Get the first document (assuming unique eventHashes per organizer)
-                        DocumentSnapshot organizerDocument = queryDocumentSnapshots.getDocuments().get(0);
-                        String organizerId = organizerDocument.getId();
-
-                        // Remove the eventHash from the eventHashes array
-                        db.collection("organizers").document(organizerId)
-                                .update("eventHashes", FieldValue.arrayRemove(eventHash))
-                                .addOnSuccessListener(aVoid -> Log.d("OrganizerEventHash", "Event hash removed successfully"))
-                                .addOnFailureListener(e -> Log.e("OrganizerEventHash", "Error removing event hash", e));
-                    } else {
-                        Log.d("OrganizerEventHash", "No organizer found with the specified event hash");
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
+                        doc.getReference().update("eventHashes", FieldValue.arrayRemove(eventHash))
+                                .addOnFailureListener(e -> Log.e(TAG, "Failed to remove event hash from organizer."));
                     }
-                })
-                .addOnFailureListener(e -> Log.e("OrganizerEventHash", "Error querying organizers", e));
+                });
+    }
+
+    private void refreshActivity() {
+        Intent intent = new Intent(this, AdminViewEventsContent.class);
+        intent.putExtra("event_data", event);
+        finish();
+        startActivity(intent);
+    }
+
+    private void navigateBackToEventList() {
+        startActivity(new Intent(this, AdminViewEditEventsActivity.class));
+        finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshEventDetails();
+    }
+
+    private void refreshEventDetails() {
+        if (event != null && event.getQR_code() != null) {
+            new DBManagerEvent().getEventByQRCode(event.getQR_code(), new DBManagerEvent.GetEventCallback() {
+                @Override
+                public void onSuccess(Event updatedEvent) {
+                    event = updatedEvent;
+                    initializeViews();
+                    setupEventDetails();
+                    setupButtonListeners();
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Log.e("OrganizerEventDetails", "Error refreshing event details: " + e.getMessage());
+                }
+            });
+        }
     }
 }

@@ -178,7 +178,7 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ad
     }
 
     @Override
-    public  void onResume(){
+    public void onResume(){
         super.onResume();
         loadEvents();
     }

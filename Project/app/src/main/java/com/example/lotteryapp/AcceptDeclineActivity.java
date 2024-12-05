@@ -126,6 +126,17 @@ public class AcceptDeclineActivity extends AppCompatActivity {
                                                 .addOnFailureListener(e -> {
                                                     Toast.makeText(this, "Failed to select replacement entrant.", Toast.LENGTH_SHORT).show();
                                                 });
+                                        db.collection("entrants").document(newEntrantId)
+                                                .update(
+                                                        "selected_event", FieldValue.arrayUnion(eventId)
+                                                )
+                                                .addOnSuccessListener(replaceVoid -> {
+                                                    Toast.makeText(this, "Invitation declined and replacement selected.", Toast.LENGTH_SHORT).show();
+                                                    navigateBackToInvitation();
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    Toast.makeText(this, "Failed to select replacement entrant.", Toast.LENGTH_SHORT).show();
+                                                });
                                     } else {
                                         Toast.makeText(this, "No entrants available in the waiting list.", Toast.LENGTH_SHORT).show();
                                     }

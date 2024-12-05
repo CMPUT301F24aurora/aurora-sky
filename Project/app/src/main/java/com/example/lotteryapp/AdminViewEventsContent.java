@@ -100,7 +100,7 @@ public class AdminViewEventsContent extends AppCompatActivity {
                     .error(R.drawable.ic_profile_photo)        // Optional error image
                     .into(eventPosterImageView);
         } else {
-            eventPosterImageView.setVisibility(View.GONE);
+            //eventPosterImageView.setVisibility(View.GONE);
         }
 
         // Set up the remove button
@@ -139,7 +139,7 @@ public class AdminViewEventsContent extends AppCompatActivity {
                     Log.i("AdminDeletePoster", "image_url deleted successfully!");
 
                     // Delete the Image from Firebase Storage
-                    StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(eventPosterUrl); // Replace with your image URL
+                    StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(eventPosterUrl);
 
                     storageRef.delete().addOnSuccessListener(aVoid1 -> {
                         // Successfully deleted the image from Firebase Storage

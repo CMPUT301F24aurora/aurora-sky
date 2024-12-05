@@ -16,7 +16,7 @@
         android:paddingTop="16dp"
         android:text="Event Name"
         android:textColor="@color/white"
-        android:textSize="24sp"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

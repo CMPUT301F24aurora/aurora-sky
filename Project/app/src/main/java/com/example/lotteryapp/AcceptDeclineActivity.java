@@ -77,29 +77,23 @@ public class AcceptDeclineActivity extends AppCompatActivity {
                     Toast.makeText(this, "Failed to accept the invitation. Try again.", Toast.LENGTH_SHORT).show();
                     Log.e("AcceptDeclineActivity", "Error updating entrant status", e);
                 });
+
+        db.collection("entrants")
+                .document(entrantId)
+                .update("selected_event", com.google.firebase.firestore.FieldValue.arrayRemove(eventId))
+                .addOnSuccessListener(aVoid -> {
+                    // Navigate back to InvitationActivity after success
+                    Toast.makeText(this, "Did not accept the invitation", Toast.LENGTH_SHORT).show();
+                    Intent backIntent = new Intent(AcceptDeclineActivity.this, InvitationActivity.class);
+                    backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    startActivity(backIntent);
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure
+                    Toast.makeText(this, "Failed to accept the invitation. Try again.", Toast.LENGTH_SHORT).show();
+                });
     }
 
-
-//    private void addEntrantToCancelledEntrant(String eventId, String entrantId) {
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//
-//        // Update the event document by adding entrantId to the final_entrants list
-//        db.collection("events")
-//                .document(eventId)
-//                .update("cancelledEntrants", com.google.firebase.firestore.FieldValue.arrayUnion(entrantId),
-//                        "selectedEntrants", com.google.firebase.firestore.FieldValue.arrayRemove(entrantId))
-//                .addOnSuccessListener(aVoid -> {
-//                    // Navigate back to InvitationActivity after success
-//                    Toast.makeText(this, "Did not accept the invitation", Toast.LENGTH_SHORT).show();
-//                    Intent backIntent = new Intent(AcceptDeclineActivity.this, InvitationActivity.class);
-//                    backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//                    startActivity(backIntent);
-//                })
-//                .addOnFailureListener(e -> {
-//                    // Handle failure
-//                    Toast.makeText(this, "Failed to accept the invitation. Try again.", Toast.LENGTH_SHORT).show();
-//                });
-//    }
 
     private void addEntrantToCancelledEntrant(String eventId, String entrantId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

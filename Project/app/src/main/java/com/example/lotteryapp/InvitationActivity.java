@@ -86,7 +86,13 @@ public class InvitationActivity extends AppCompatActivity implements EventInvita
                 qrScannerIntent.putExtra("entrant_data", entrant);
                 qrScannerIntent.putExtra("organizer_data", organizer);
                 startActivity(qrScannerIntent);
-            } else if (id == R.id.entrant_nav) {
+            } else if (id == R.id.main_nav) {
+                Intent mainIntent = new Intent(InvitationActivity.this, MainActivity.class);
+//                mainIntent.putExtra("entrant_data", entrant);
+//                mainIntent.putExtra("organizer_data", currentOrganizer);
+                startActivity(mainIntent);
+
+            }else if (id == R.id.entrant_nav) {
                 Intent entrantIntent = new Intent(InvitationActivity.this, EntrantsEventsActivity.class);
                 entrantIntent.putExtra("entrant_data", entrant);
                 entrantIntent.putExtra("organizer_data", organizer);

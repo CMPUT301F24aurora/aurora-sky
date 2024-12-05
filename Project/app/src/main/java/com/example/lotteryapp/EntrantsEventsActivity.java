@@ -69,6 +69,10 @@ public class EntrantsEventsActivity extends AppCompatActivity implements EventAd
                 organizerIntent.putExtra("entrant_data", entrant);
                 organizerIntent.putExtra("organizer_data", organizer);
                 startActivity(organizerIntent);
+            }else if (id == R.id.main_nav) {
+                Intent mainIntent = new Intent(EntrantsEventsActivity.this, MainActivity.class);
+//                mainIntent.putExtra("entrant_data", entrant);
+                startActivity(mainIntent);
             }else if (id == R.id.qr_code_nav) {
                 Intent qrScannerIntent = new Intent(EntrantsEventsActivity.this, QRScannerActivity.class);
                 qrScannerIntent.putExtra("entrant_data", entrant);

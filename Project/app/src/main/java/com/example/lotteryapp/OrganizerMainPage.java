@@ -105,7 +105,13 @@ public class OrganizerMainPage extends AppCompatActivity implements OrgEventAdap
                 qrScannerIntent.putExtra("organizer_data", currentOrganizer);
                 startActivity(qrScannerIntent);
 
-            } else if (id == R.id.invitation_nav) {
+            } else if (id == R.id.main_nav) {
+                Intent mainIntent = new Intent(OrganizerMainPage.this, MainActivity.class);
+                mainIntent.putExtra("entrant_data", entrant);
+                mainIntent.putExtra("organizer_data", currentOrganizer);
+                startActivity(mainIntent);
+
+            }else if (id == R.id.invitation_nav) {
                 Intent organizerIntent = new Intent(OrganizerMainPage.this, InvitationActivity.class);
                 organizerIntent.putExtra("entrant_data", entrant);
                 organizerIntent.putExtra("entrant_id", entrant.getId());

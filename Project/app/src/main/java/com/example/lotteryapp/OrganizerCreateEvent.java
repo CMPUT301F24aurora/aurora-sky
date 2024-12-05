@@ -52,6 +52,8 @@ public class OrganizerCreateEvent extends AppCompatActivity {
     private DBManagerEvent dbManagerEvent;
     private Uri imageUri;
     private Event event;
+    private boolean isPosterRemoved = false;
+
 
 
     @Override
@@ -63,6 +65,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
         organizer = (Organizer) getIntent().getSerializableExtra("organizer_data");
         entrant = (Entrant) getIntent().getSerializableExtra("entrant_data");
         event = (Event) getIntent().getSerializableExtra("event_data");
+        Log.d("", organizer.getEventHashes().toString());
 
 
         if (organizer == null) {
@@ -102,6 +105,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
 
         buttonRemovePoster.setOnClickListener(v -> {
             imageUri = null;  // Clear local reference
+            isPosterRemoved = true;
             buttonUploadPoster.setImageResource(R.drawable.ic_upload_icon);  // Reset upload icon
             buttonRemovePoster.setEnabled(false);
             Toast.makeText(this, "Poster removed", Toast.LENGTH_SHORT).show();
@@ -248,7 +252,7 @@ public class OrganizerCreateEvent extends AppCompatActivity {
                 }
             });
         } else {
-            if (imageUri == null && event.getImage_url() != null) {
+            if (isPosterRemoved && event.getImage_url() != null) {
                 // Delete image from storage and remove URL from the event object
                 deletePosterImage(event.getImage_url());
                 event.setImage_url(null);

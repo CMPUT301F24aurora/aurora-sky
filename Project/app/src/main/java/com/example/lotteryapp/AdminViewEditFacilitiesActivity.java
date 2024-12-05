@@ -161,4 +161,10 @@ public class AdminViewEditFacilitiesActivity extends AppCompatActivity implement
         intent.putExtra("facilityId", facility.getOrganizerId());
         startActivity(intent);
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        loadFacilities();
+    }
 }

@@ -27,7 +27,7 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
     private static final String TAG = "EntrantEventDetails";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
-    private TextView eventTitle, eventDescription, eventDate, eventCapacity;
+    private TextView eventTitle, eventDescription, eventDate, eventCapacity, eventEndDate, registrationDeadline, price ;
     private Event event;
     private Entrant entrant;
     private Organizer organizer;
@@ -64,6 +64,9 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
         eventTitle = findViewById(R.id.event_title);
         eventDescription = findViewById(R.id.event_description);
         eventDate = findViewById(R.id.event_date);
+        eventEndDate = findViewById(R.id.end_event_date);
+        registrationDeadline = findViewById(R.id.registration_event_date);
+        price = findViewById(R.id.price_event);
         eventCapacity = findViewById(R.id.event_capacity);
         enterWaitingButton = findViewById(R.id.enter_waiting);
         leaveWaitingButton = findViewById(R.id.leave_waiting);
@@ -98,6 +101,9 @@ public class EntrantEventDetailsActivity extends AppCompatActivity {
             eventTitle.setText(event.getEventName());
             eventDescription.setText(event.getDescription());
             eventDate.setText("Date: " + event.getEventStartDate());
+            eventEndDate.setText("End Date: " + event.getEventEndDate());
+            registrationDeadline.setText("Registration Deadline: " + event.getRegistrationDeadline());
+            price.setText("Price: " + event.getEventPrice());
             eventCapacity.setText("Capacity: " + event.getNumPeople());
 
             if (event.getImage_url() != null && !event.getImage_url().isEmpty()) {

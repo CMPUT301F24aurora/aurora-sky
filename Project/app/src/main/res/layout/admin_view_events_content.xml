@@ -22,6 +22,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/registration_event_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Registration Deadline: MM/DD/YYYY"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/admin_event_name" />
+
+    <TextView
+        android:id="@+id/price_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Price: "
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/registration_event_date" />
+
     <!-- Poster Image (Initially Hidden) -->
     <ImageView
         android:id="@+id/admin_event_poster"
@@ -29,11 +55,40 @@
         android:layout_height="200dp"
         android:scaleType="centerCrop"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/admin_event_name"
+        app:layout_constraintTop_toBottomOf="@id/price_event"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="Event Poster"
-         />
+        android:contentDescription="Event Poster" />
+
+    <!-- Event Date -->
+    <TextView
+        android:id="@+id/admin_event_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:text="Start Date: Jan 01, 2024"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/admin_event_poster" />
+
+
+    <TextView
+        android:id="@+id/end_event_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:text="End Date: MM/DD/YYYY"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/admin_event_date" />
 
     <!-- Event Description -->
     <TextView
@@ -46,7 +101,7 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/admin_event_poster" />
+        app:layout_constraintTop_toBottomOf="@id/end_event_date" />
 
     <!-- Event Capacity -->
     <TextView
@@ -55,26 +110,13 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:text="Capacity: 100"
+        android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/admin_event_description" />
-
-    <!-- Event Date -->
-    <TextView
-        android:id="@+id/admin_event_date"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:text="Date: Jan 01, 2024"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/admin_event_capacity" />
-
-    <!-- Remove QR Code Button -->
+        app:layout_constraintTop_toBottomOf="@id/admin_event_description"
+        app:layout_constraintBottom_toTopOf="@id/admin_ev_remove_poster"/>
 
     <!-- Remove Event Button -->
     <Button

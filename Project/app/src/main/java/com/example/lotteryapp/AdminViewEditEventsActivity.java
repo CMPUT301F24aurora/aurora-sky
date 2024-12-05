@@ -176,5 +176,11 @@ public class AdminViewEditEventsActivity extends AppCompatActivity implements Ad
         intent.putExtra("event_data", event);
         startActivity(intent);
     }
+
+    @Override
+    public  void onResume(){
+        super.onResume();
+        loadEvents();
+    }
 }
 

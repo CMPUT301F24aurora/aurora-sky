@@ -39,7 +39,7 @@ import java.util.Map;
  */
 public class AdminViewEventsContent extends AppCompatActivity {
 
-    private TextView eventNameTextView, eventDescriptionTextView, eventCapacityTextView, eventDateTextView;
+    private TextView eventNameTextView, eventDescriptionTextView, eventCapacityTextView, eventDateTextView, eventEndDate, registrationDeadline, price;
     private ImageView eventPosterImageView;
     private Button adminEvRemove;
     private Button adminQrRemove;
@@ -65,6 +65,9 @@ public class AdminViewEventsContent extends AppCompatActivity {
         eventCapacityTextView = findViewById(R.id.admin_event_capacity);
         eventDateTextView = findViewById(R.id.admin_event_date);
         eventPosterImageView = findViewById(R.id.admin_event_poster);
+        eventEndDate = findViewById(R.id.end_event_date);
+        registrationDeadline = findViewById(R.id.registration_event_date);
+        price = findViewById(R.id.price_event);
         adminEvRemove = findViewById(R.id.admin_ev_remove);
         adminQrRemove = findViewById(R.id.admin_ev_remove_qr);
         adminPosterRemove = findViewById(R.id.admin_ev_remove_poster);
@@ -80,9 +83,12 @@ public class AdminViewEventsContent extends AppCompatActivity {
 
         // Set values to TextViews
         eventNameTextView.setText(eventName);
-        eventDescriptionTextView.setText(eventDescription);
+        eventDescriptionTextView.setText("Description:\n" + eventDescription);
         eventCapacityTextView.setText("Capacity: " + eventCapacity);
-        eventDateTextView.setText("Date: " + eventDate);
+        eventEndDate.setText("End Date: " + event.getEventEndDate());
+        registrationDeadline.setText("Registration Deadline: " + event.getRegistrationDeadline());
+        price.setText("Price: " + event.getEventPrice());
+        eventDateTextView.setText("Start Date: " + eventDate);
 
         // Load the poster image if URL is not null or empty
         if (eventImageUrl != null && !eventImageUrl.isEmpty()) {

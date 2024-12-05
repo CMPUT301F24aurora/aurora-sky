@@ -153,5 +153,11 @@ public class AdminViewEditProfilesActivity extends AppCompatActivity implements 
         intent.putExtra("entrantPhoto", entrant.getImage_url());
         startActivity(intent);
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        loadEntrants();
+    }
 }
 

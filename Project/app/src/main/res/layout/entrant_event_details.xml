@@ -13,11 +13,10 @@
         android:id="@+id/event_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:text="Event Title"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="30sp"
+        android:textSize="32sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,7 +34,7 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/price_event" />
+        app:layout_constraintTop_toBottomOf="@id/event_title" />
 
     <!-- Event Poster -->
     <ImageView
@@ -43,11 +42,12 @@
         android:layout_width="0dp"
         android:layout_height="200dp"
         android:layout_marginTop="20dp"
-        android:scaleType="centerCrop"
         android:contentDescription="Event Poster"
-        app:layout_constraintTop_toBottomOf="@id/registration_event_date"
+        android:scaleType="centerCrop"
+        android:src="@drawable/no_image"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/price_event" />
 
     <!-- Event Date -->
     <TextView
@@ -61,7 +61,7 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/event_title" />
+        app:layout_constraintTop_toBottomOf="@id/registration_event_date" />
 
 
     <!-- Event Date -->

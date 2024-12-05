@@ -286,7 +286,17 @@ public class OrganizerFacilityActivity extends AppCompatActivity {
             public void onSuccess() {
                 Toast.makeText(OrganizerFacilityActivity.this, "Facility saved successfully", Toast.LENGTH_SHORT).show();
                 organizer.setFacility_id(facility.getOrganizerId());
-                navigateToOrganizerMainPage();
+                DatabaseManager.saveOrganizer(organizer, new SaveOrganizerCallback() {
+                    @Override
+                    public void onSuccess() {
+                        navigateToOrganizerMainPage();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e("", "did not save organizer");
+                    }
+                });
             }
 
             @Override

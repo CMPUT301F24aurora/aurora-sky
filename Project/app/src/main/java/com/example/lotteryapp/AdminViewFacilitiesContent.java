@@ -74,7 +74,7 @@ public class AdminViewFacilitiesContent extends AppCompatActivity {
                             .addOnFailureListener(e -> Log.e("OrganizerFacilityDeletion", "Error deleting facility_id field", e));
                     Toast.makeText(AdminViewFacilitiesContent.this, "Facility deleted successfully", Toast.LENGTH_SHORT).show();
                     // Navigate back to AdminViewEditFacilitiesActivity
-                    Intent intent = new Intent(AdminViewFacilitiesContent.this, AdminViewEditFacilitiesActivity.class);
+                    Intent intent = new Intent(AdminViewFacilitiesContent.this, AdminViewFacilitiesContent.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     finish();

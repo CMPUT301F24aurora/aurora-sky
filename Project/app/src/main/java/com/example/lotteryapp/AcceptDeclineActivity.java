@@ -126,6 +126,9 @@ public class AcceptDeclineActivity extends AppCompatActivity {
                                                 .addOnFailureListener(e -> {
                                                     Toast.makeText(this, "Failed to select replacement entrant.", Toast.LENGTH_SHORT).show();
                                                 });
+
+                                        Log.d("entrantId: ", ""+ newEntrantId);
+                                        Log.d("eventId: ", ""+ eventId);
                                         db.collection("entrants").document(newEntrantId)
                                                 .update(
                                                         "selected_event", FieldValue.arrayUnion(eventId)

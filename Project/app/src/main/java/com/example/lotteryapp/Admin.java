@@ -23,7 +23,7 @@ import android.content.Context;
 public class Admin extends User {
     // private EntrantsOrganizer entrantsOrganizer;
     // private Event eventsFacility;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseFirestore db;
     private Context context;
 
     /**
@@ -37,6 +37,19 @@ public class Admin extends User {
     }
 
     /**
+     * Constructor for the Admin class.
+     * Initializes the Admin with the specified context and Firestore instance.
+     *
+     * @param context   the context in which the Admin operates
+     * @param firestore the FirebaseFirestore instance to be used
+     */
+    public Admin(Context context, FirebaseFirestore firestore) {
+        this.context = context;
+        this.db = firestore;
+    }
+
+
+    /**
      * Displays the user's information.
      * This method is overridden from the User class.
      *
@@ -47,15 +60,10 @@ public class Admin extends User {
         // Implementation for displaying user info
     }
 
-    /**
+     /**
      * Removes an event from the database.
-     * Deletes the event document identified by the provided eventId from the "events" collection.
      *
      * @param eventId the ID of the event to be removed
-     * @throws Exception if an error occurs while deleting the event
-     *
-     * @see FirebaseFirestore#collection(String)
-     * @see FirebaseFirestore#document(String)
      */
     public void removeEvent(String eventId) {
         db.collection("events").document(eventId).delete()
